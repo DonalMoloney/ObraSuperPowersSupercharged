@@ -741,7 +741,7 @@ Argument: `$ARGUMENTS`
   `git diff --name-only --staged` (if not a git repo, tell the user and stop).
 - Empty → the whole current project.
 
-Count source files in scope (`find <scope> -name "*.py" -o -name "*.ts" -o -name "*.js" -o -name "*.go" -o -name "*.java" -o -name "*.rb" -o -name "*.rs" | wc -l`, adjust extensions to the project).
+Count source files in scope (`find <scope> \( -name "*.py" -o -name "*.ts" -o -name "*.js" -o -name "*.go" -o -name "*.java" -o -name "*.rb" -o -name "*.rs" \) | wc -l`, adjust extensions to the project).
 **If the count exceeds 200, stop and ask the user to narrow the scope** (suggest
 `--diff` or a subdirectory). Do not run a partial sweep.
 
@@ -768,6 +768,8 @@ that errors is recorded as a COVERAGE GAP — never silently dropped.
 
 Dispatch `bug-hunter:finding-verifier` ONCE with the complete finding list
 (every field each hunter reported). If there are zero findings, skip this step.
+Carry each hunter's original confidence through to its confirmed finding when
+assembling the report.
 
 ## 5. Report
 
@@ -821,7 +823,7 @@ syntax-checked but never executed.
 
 ## boundary_bugs.py → boundary-bug-hunter (4 bugs)
 1. `average` — ZeroDivisionError on empty list.
-2. `top_n` — `range(1, n)` skips the top score (index 0) and returns n-1 items.
+2. `top_n` — `range(1, n)` skips the top score (index 0) and returns n-1 items. (This function contains more than one genuine defect — it also raises IndexError when n > len(scores); hunters may legitimately report these as multiple distinct findings, and the acceptance check should not score extra genuine findings in the same function as false positives.)
 3. `label_for` — no return for score <= 50; returns None where callers expect a string.
 4. `first_initial` — IndexError on empty string.
 
@@ -832,7 +834,7 @@ syntax-checked but never executed.
 
 ## resource_leaks.py → resource-leak-hunter (3 bugs)
 1. `read_header` — file handle never closed.
-2. `fetch_status` — socket leaks on the empty-response raise path.
+2. `fetch_status` — socket leaks on the empty-response raise path. (The socket also leaks if `sendall` or `recv` raise; hunters may legitimately report these as multiple distinct findings, and the acceptance check should not score extra genuine findings in the same function as false positives.)
 3. `append_log` — an exception while writing skips `close()`; no with/finally.
 
 ## contract_drift.py → contract-drift-hunter (3 bugs)
@@ -871,7 +873,7 @@ read-only bug-class specialist agents in parallel, an adversarial verifier
 filters false positives, and one ranked evidence-backed report is produced.
 Report-only — it never fixes. Confirmed findings feed the v1
 **systematic-debugging** workflow.
-Spec: `docs/superpowers/specs/2026-06-10-bug-hunter-plugin-design.md`.
+Spec: `docs/superpowers/specs/2026-06-10-bug-hunter-plugin-design.md` (repo root).
 
 tier: v2 · supports: systematic-debugging, requesting-code-review
 
