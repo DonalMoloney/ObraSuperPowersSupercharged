@@ -220,3 +220,23 @@ second round. K2/C3/C5/C6 are good but narrower; K4 is fun but lowest daily valu
 2. Should any pick get a hook/plugin component now (C1's blocking hook is the main
    candidate), or keep round one skills-only?
 3. Tackle the v5-collision pair (K3, K7) this round with bookkeeping, or defer?
+
+---
+
+## Status tracker (round one — 2026-06-10)
+
+| Idea | Status |
+|------|--------|
+| K1 autonomy-slider | built (round one) |
+| K2 short-leash-increments | deferred — narrower; fold-in candidate for autonomy-slider |
+| K3 context-paging | deferred — v5 collision (salience-compressor, sample-context-fairly); needs promote-or-delete round |
+| K4 vibe-coding-guardrails | deferred — lowest daily value this round |
+| K5 fast-verify-loop | built (round one) |
+| K6 cognitive-prosthetics | built (round one) |
+| K7 fix-the-dataset | deferred — v5 collision (sync-claude-md); needs promote-or-delete round |
+| C1 verification-target-first | built (round one; blocking-hook variant is the named follow-up) |
+| C2 bash-first-tooling | built (round one) |
+| C3 simplest-thing-gate | deferred — narrower |
+| C4 fresh-context-review | built (round one) |
+| C5 checklist-working-memory | deferred — narrower |
+| C6 hook-the-must-happens | deferred — possible merge with K7 next round |

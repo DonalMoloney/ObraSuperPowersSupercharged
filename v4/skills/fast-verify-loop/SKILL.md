@@ -8,7 +8,7 @@ chains-to: [loop-until-green]
 
 # Fast Verify Loop
 
-**Not this skill if:** you need the loop RUN repeatedly until green → v2 `loop-until-green` (this skill chooses the verifier; that one drives it); you don't know the project's canonical build/test/lint commands → v2 `verify-command-suggester`; you need a verification TARGET defined (what "correct" even means) → v4 `verification-target-first`.
+**Not this skill if:** you need the loop RUN repeatedly until green → v2 `loop-until-green` (this skill chooses the verifier; that one drives it); you don't know the project's canonical build/test/lint commands → no current skill (`verify-command-suggester` was deferred in the v2 reanalysis — detect them from package.json/pyproject.toml/Makefile by hand); you need a verification TARGET defined (what "correct" even means) → v4 `verification-target-first`.
 
 This skill answers one question before the first edit: **what is the cheapest check that would actually catch a mistake in this change?** Run that check between increments. Save the expensive checks for the end.
 

@@ -10,7 +10,7 @@ inspiration: "Cherny — bash as the universal tool: Claude Code inherits your b
 **Not this skill if:**
 
 - You already chose the tool and need the simplest IMPLEMENTATION with it → that is general YAGNI discipline (`v1/brainstorming`'s simplicity principle), not a tool-acquisition question.
-- You need to know THIS project's canonical verify commands (test/lint/build) → `v2/verify-command-suggester` (v2).
+- You need to know THIS project's canonical verify commands (test/lint/build) → no current skill (`verify-command-suggester` was deferred in the v2 reanalysis); detect commands from package.json/pyproject.toml/Makefile by hand.
 
 ## The ladder
 
