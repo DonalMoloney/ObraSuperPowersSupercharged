@@ -1,0 +1,8 @@
+{
+  "name": "chrome-devtools-toolkit",
+  "version": "0.1.0",
+  "description": "Diagnosis skills that supercharge v1 systematic-debugging and verification-before-completion with real-Chrome evidence: console/network capture, performance traces, heap-snapshot leak hunting. Requires the chrome-devtools MCP server. tier: v2.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "playwright-toolkit",
+  "version": "0.1.0",
+  "description": "Interaction skills that supercharge v1 verification-before-completion, systematic-debugging, and test-driven-development by driving the browser deterministically: UI verification loops, minimal bug reproductions, e2e test generation from observed selectors. Requires the playwright MCP server. tier: v2.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}

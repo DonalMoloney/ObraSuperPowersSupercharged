@@ -44,9 +44,17 @@ Layout: skills live in `skills/<skill-name>/SKILL.md`, plugins in `plugins/<plug
 | `security-audit` | requesting-code-review, verification-before-completion |
 | `track-assumption` | brainstorming, executing-plans, finishing-a-development-branch |
 | `write-adr` | brainstorming, writing-plans |
+| `browser-evidence-debugging` (plugin: chrome-devtools-toolkit) | systematic-debugging |
+| `performance-trace-audit` (plugin: chrome-devtools-toolkit) | verification-before-completion |
+| `memory-leak-hunt` (plugin: chrome-devtools-toolkit) | systematic-debugging |
+| `ui-verification-loop` (plugin: playwright-toolkit) | verification-before-completion |
+| `bug-reproduction-script` (plugin: playwright-toolkit) | systematic-debugging |
+| `e2e-test-generation` (plugin: playwright-toolkit) | test-driven-development |
 
 ## Current plugins
 
 | Plugin | Supports (v1) | Components |
 |---|---|---|
 | `verification-gate` | verification-before-completion, test-driven-development | Stop + PostToolUse hooks, `/verify-status` command |
+| `chrome-devtools-toolkit` | systematic-debugging, verification-before-completion | 3 skills: browser-evidence-debugging, performance-trace-audit, memory-leak-hunt |
+| `playwright-toolkit` | verification-before-completion, systematic-debugging, test-driven-development | 3 skills: ui-verification-loop, bug-reproduction-script, e2e-test-generation |
