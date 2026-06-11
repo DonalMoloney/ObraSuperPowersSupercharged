@@ -22,6 +22,7 @@ idea material for v2/v3/v4 — never copied into v1.
 | `v3/` | Crazy / experimental AI ideas | Creativity over polish. Mark every skill `status: experimental` in frontmatter. No v1/v2 quality bar applies. |
 | `v4/` | Claude Code tools built on Karpathy + Boris Cherny ideas | Each tool MUST cite the specific idea it builds on (e.g. Karpathy: LLM-as-OS, autonomy sliders, context discipline; Cherny: verification loops, hooks discipline, do-the-simple-thing). |
 | `v5/` | General catch-all — skills imported wholesale from the Forge fork (`superpowers2/skills/`) | Holding area, no tier discipline. Keep skills verbatim as imported. When a skill earns a real home, promote it into v1–v4 under that tier's rules and remove it from v5. |
+| `frontend/` | Domain folder (subject matter, not provenance) — frontend design, verification, debugging, performance skills | Browser-tool-driven: skills name concrete Chrome DevTools MCP / Playwright MCP steps, not abstract process. Frontmatter: `name`, `description`, `cluster: design \| verify \| debug \| perf` (no `tier:`). Every skill MUST end with a `## Verification` section naming concrete browser-tool evidence. Reference v1 skills, never duplicate them. |
 
 ## Skill format (all tiers)
 
