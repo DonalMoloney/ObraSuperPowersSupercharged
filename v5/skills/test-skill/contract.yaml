@@ -1,0 +1,54 @@
+name: test-skill
+version: "1.0"
+
+trigger:
+  - "test this skill"
+  - "verify skill behaviour"
+  - "check if skill works"
+  - "run skill contract tests"
+  - "skill regression test"
+  - "does this skill still work"
+
+required_inputs:
+  target_skill:
+    type: string
+    description: Name of the skill to test (must exist in skills/)
+  contract_file:
+    type: file
+    path: "skills/<target>/contract.yaml"
+    description: Machine-readable contract for the target skill
+
+required_outputs:
+  report:
+    type: markdown
+    sections:
+      - prompt_used: string
+      - clause_table:
+          columns: [clause, result, evidence]
+          all_clauses_present: true
+      - overall_verdict: "PASS | FAIL"
+      - fix_required:
+          present_when: verdict == FAIL
+          content: specific clause name and governing SKILL.md section
+  run_artifacts:
+    type: directory
+    path: "test-skill-workspace/<target>/run-<n>/outputs/"
+
+required_proof:
+  tag: "PROVEN BY:"
+  format: "<command> → <output or exit code>"
+
+gates:
+  all_clauses_must_pass:
+    description: A partial pass is a fail — no skipped clauses
+  no_eyeball_grading:
+    description: Checks must be run as commands; eyeball grading only as last resort
+  contract_must_exist:
+    description: If contract.yaml is absent, write it before running the test
+  judge_before_test:
+    description: Run judge-skill on a new draft before test-skill — style violations pollute the contract run
+
+contract_notes:
+  - "Test prompt must NOT hint at the correct output shape"
+  - "Same clause failing twice consecutively = contract regression, not a single failure"
+  - "Overall PASS routes next to judge-skill for style check"

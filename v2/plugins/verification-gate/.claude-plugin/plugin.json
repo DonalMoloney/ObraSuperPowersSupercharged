@@ -1,0 +1,8 @@
+{
+  "name": "verification-gate",
+  "version": "0.1.0",
+  "description": "Harness enforcement of v1 verification-before-completion: warns or blocks success claims until a verification command has run after the last edit. tier: v2.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}

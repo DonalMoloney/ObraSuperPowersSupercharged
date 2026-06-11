@@ -1,0 +1,100 @@
+<h2>Supercharging brainstorming: how should mockup fidelity work?</h2>
+<p class="subtitle">Same example screen (a login page) shown the way each option would render it. This decides the headline improvement option for the <strong>brainstorming</strong> section of the v1 doc.</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Fidelity Ladder — user asks to level up</h3>
+      <p>Every mockup starts as a fast wireframe. The page itself offers "Show me this in high fidelity" as a clickable action. Spec depth follows: wireframe-only screens get a one-paragraph spec section; screens you leveled up get full visual-detail spec sections (colors, spacing, states).</p>
+      <div class="split">
+        <div class="mockup">
+          <div class="mockup-header">Step 1 — default wireframe (cheap, fast)</div>
+          <div class="mockup-body">
+            <div style="border:2px dashed #999; padding:16px; max-width:280px; margin:0 auto; background:#fafafa;">
+              <div style="border:1px dashed #aaa; height:24px; width:60%; margin:0 auto 12px; display:flex;align-items:center;justify-content:center; color:#888; font-size:11px;">LOGO</div>
+              <div style="border:1px dashed #aaa; height:28px; margin-bottom:8px; color:#888; font-size:11px; display:flex;align-items:center;padding-left:8px;">email</div>
+              <div style="border:1px dashed #aaa; height:28px; margin-bottom:12px; color:#888; font-size:11px; display:flex;align-items:center;padding-left:8px;">password</div>
+              <div style="border:1px solid #888; height:30px; background:#ddd; display:flex;align-items:center;justify-content:center; font-size:11px; color:#555;">[ sign in ]</div>
+              <div style="margin-top:10px; text-align:center; font-size:10px; color:#aaa;">forgot password?</div>
+            </div>
+            <div style="text-align:center; margin-top:10px;"><span style="font-size:11px; background:#eef; border:1px solid #99c; border-radius:12px; padding:3px 10px; color:#447;">⬆ Show me this in high fidelity</span></div>
+          </div>
+        </div>
+        <div class="mockup">
+          <div class="mockup-header">Step 2 — only if you ask: high fidelity</div>
+          <div class="mockup-body">
+            <div style="border-radius:12px; padding:24px; max-width:280px; margin:0 auto; background:linear-gradient(160deg,#1e293b,#0f172a); box-shadow:0 8px 24px rgba(0,0,0,.25);">
+              <div style="text-align:center; margin-bottom:16px;"><span style="font-weight:700; font-size:18px; color:#fff; letter-spacing:1px;">⚡ Acme</span></div>
+              <input style="width:100%; box-sizing:border-box; padding:9px 12px; margin-bottom:8px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:#cbd5e1; font-size:12px;" placeholder="you@company.com">
+              <input style="width:100%; box-sizing:border-box; padding:9px 12px; margin-bottom:14px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:#cbd5e1; font-size:12px;" placeholder="••••••••" type="password">
+              <div style="background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:8px; padding:10px; text-align:center; color:#fff; font-weight:600; font-size:13px; box-shadow:0 4px 12px rgba(99,102,241,.4);">Sign in</div>
+              <div style="margin-top:12px; text-align:center; font-size:11px; color:#64748b;">Forgot password? <span style="color:#818cf8;">Reset it</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Cheap by default, expensive only on request</li><li>Spec depth maps 1:1 to where you invested attention</li><li>Explicit control — never burns tokens uninvited</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Extra round-trip when you do want hi-fi</li><li>You must know to ask</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Auto-matched fidelity — skill infers from the question</h3>
+      <p>The skill picks fidelity from the question type: layout/structure questions get wireframes, look-and-feel/polish questions automatically get high fidelity. No asking needed — but also no manual override defined.</p>
+      <div class="split">
+        <div class="mockup">
+          <div class="mockup-header">"Which layout?" → auto wireframe</div>
+          <div class="mockup-body">
+            <div style="display:flex; gap:8px;">
+              <div style="flex:1; border:2px dashed #999; padding:8px; background:#fafafa;"><div style="border:1px dashed #aaa; height:14px; margin-bottom:6px;"></div><div style="border:1px dashed #aaa; height:48px;"></div></div>
+              <div style="flex:1; border:2px dashed #999; padding:8px; background:#fafafa; display:flex; gap:6px;"><div style="border:1px dashed #aaa; width:30%;"></div><div style="border:1px dashed #aaa; flex:1;"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mockup">
+          <div class="mockup-header">"Which feels premium?" → auto hi-fi</div>
+          <div class="mockup-body">
+            <div style="display:flex; gap:8px;">
+              <div style="flex:1; border-radius:10px; padding:12px; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.12);"><div style="font-weight:700; font-size:12px; color:#111;">Minimal light</div><div style="height:6px; width:70%; background:#e5e7eb; border-radius:3px; margin-top:8px;"></div><div style="height:6px; width:50%; background:#e5e7eb; border-radius:3px; margin-top:5px;"></div></div>
+              <div style="flex:1; border-radius:10px; padding:12px; background:linear-gradient(160deg,#312e81,#0f172a); box-shadow:0 4px 14px rgba(49,46,129,.4);"><div style="font-weight:700; font-size:12px; color:#fff;">Deep dark</div><div style="height:6px; width:70%; background:#475569; border-radius:3px; margin-top:8px;"></div><div style="height:6px; width:50%; background:#475569; border-radius:3px; margin-top:5px;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Zero friction — right fidelity appears automatically</li><li>Fewer round-trips than the ladder</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Skill can guess wrong and waste tokens on hi-fi you didn't want</li><li>No explicit lever tying fidelity to spec depth</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Fidelity contract — set once at session start, drives the whole spec</h3>
+      <p>At companion-offer time the skill asks one extra question: "wireframe pass, or full visual design pass?" That single choice sets mockup fidelity for the session AND the spec template — a visual-design pass produces a spec with a full visual-design chapter (palette, type scale, component states); a wireframe pass produces a lean structural spec.</p>
+      <div class="mockup">
+        <div class="mockup-header">Session start — one extra question</div>
+        <div class="mockup-body">
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1; border:1px solid #cbd5e1; border-radius:10px; padding:12px; background:#f8fafc;"><div style="font-weight:700; font-size:12px;">🩻 Wireframe pass</div><div style="font-size:11px; color:#64748b; margin-top:4px;">Fast structural mockups → lean spec (flows + layout only)</div></div>
+            <div style="flex:1; border:1px solid #cbd5e1; border-radius:10px; padding:12px; background:#f8fafc;"><div style="font-weight:700; font-size:12px;">🎨 Visual design pass</div><div style="font-size:11px; color:#64748b; margin-top:4px;">Hi-fi mockups throughout → in-depth spec with visual-design chapter</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Strongest fidelity↔spec-depth coupling — exactly your stated goal</li><li>Predictable token cost, decided up front</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>All-or-nothing for the session — can't level up just one screen</li><li>One more question before brainstorming starts</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">These can also combine — e.g., C's session default + A's per-screen "level up" escape hatch. Click a card, then tell me in the terminal (including if you want a hybrid).</p>

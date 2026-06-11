@@ -1,0 +1,56 @@
+name: orchestrate-feature
+version: "1.0"
+
+trigger:
+  - "build this feature end to end"
+  - "run the full development loop"
+  - "implement and ship this autonomously"
+  - "orchestrate this feature"
+  - "full cycle for"
+  - "go end to end on"
+
+required_inputs:
+  task_description:
+    type: string
+    description: What to build — used by route-to-skill as the seed query
+
+required_outputs:
+  skill_chain:
+    type: list
+    items: skill_name
+    description: The ordered chain returned by route-to-skill at step 1
+  plan_file:
+    type: file
+    path: "docs/plans/YYYY-MM-DD-*.md"
+    description: Implementation plan written by outline-plan
+  telemetry_entries:
+    type: list
+    path: ".forge/telemetry.jsonl"
+    description: One JSON line per skill invoked in the chain
+  proof_block:
+    type: string
+    tag: "PROVEN BY:"
+    description: Final evidence block from verify-before-done
+  branch_finished:
+    type: boolean
+    description: finish-branch completed with post-merge proof
+
+required_proof:
+  tag: "PROVEN BY:"
+  format: "<command> → <output or exit code>"
+  required_at: [verify-before-done, finish-branch]
+
+gates:
+  no_proceed_without_spec_approval:
+    description: scope-feature must get explicit user approval before outline-plan runs
+  no_silent_gate_override:
+    description: A gate firing pauses the chain — never bypass silently
+  proven_by_required_on_every_completion:
+    description: Every task marked done must carry PROVEN BY: — UNVERIFIED is acceptable, implicit success is not
+  telemetry_logged_per_skill:
+    description: gate_blocked must be set correctly in each telemetry entry
+
+contract_notes:
+  - "Invoke each skill separately — do not merge all into one mega-prompt"
+  - "Gate fires are the skill working correctly, not failures"
+  - "Requires Pinecone index to be populated for route-to-skill to function at full quality"

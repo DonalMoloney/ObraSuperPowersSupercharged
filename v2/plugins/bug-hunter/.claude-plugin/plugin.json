@@ -1,0 +1,8 @@
+{
+  "name": "bug-hunter",
+  "version": "0.1.0",
+  "description": "Swarm bug hunting for any codebase: /hunt-bugs dispatches six read-only bug-class specialist agents in parallel, an adversarial verifier filters false positives, and one ranked evidence-backed report is produced. Report-only, never fixes. tier: v2.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}

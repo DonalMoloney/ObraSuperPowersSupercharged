@@ -1,0 +1,139 @@
+{
+  "changes": [
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/{v1,v2,v3,v4}",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-10T22:53:03Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-10T22:54:05Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-10T23:11:26Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-10T23:11:33Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-10T23:12:17Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-10T23:12:21Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-10T23:12:32Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v5",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-10T23:15:19Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-10T23:15:35Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-10T23:16:12Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-10T23:16:14Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/skills/review-clarification-gate",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-10T23:56:53Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-11T00:04:18Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-11T00:04:29Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/skills/decision-ledger",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:12:50Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v3/skills/skill-darwin",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:13:04Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v3/skills/skill-scar-tissue",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:13:16Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v3/skills/skill-cannibal",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:13:27Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v3/skills/agent-bazaar",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:13:37Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v3/skills/predator-prey-review",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:13:47Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v3/skills/parliament-of-ghosts",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:13:57Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/deferred-work-tracker/.claude-plugin",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:16:50Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/deferred-work-tracker/scripts",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:16:52Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/deferred-work-tracker/hooks",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T00:16:54Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/docs/superpowers/specs",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:34:11Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-11T03:38:36Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/bug-hunter/.claude-plugin",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:38:41Z"
+    }
+  ]
+}
