@@ -559,6 +559,32 @@ Agent found new rationalization? Add explicit counter. Re-test until bulletproof
 - Plugging holes systematically
 - Meta-testing techniques
 
+## Pressure-Test Harness
+
+Use `scripts/pressure-test.sh` in this skill's directory to make RED and GREEN commands instead of a manual ritual:
+
+```bash
+bash scripts/pressure-test.sh scaffold tdd-sunk-cost                                            # template with pressure-type menu
+bash scripts/pressure-test.sh baseline pressure-tests/tdd-sunk-cost.scenario.md                 # RED: no skill
+bash scripts/pressure-test.sh run pressure-tests/tdd-sunk-cost.scenario.md --skill ../my-skill  # RED + GREEN + compare stub
+```
+
+Baseline and with-skill transcripts are saved side by side with a grading stub (choice made, rationalizations verbatim, sections cited, loopholes to REFACTOR). Dispatches via `claude -p` from a clean temp directory; without the CLI it writes ready-to-dispatch prompt files for Task-tool subagents. Run with `--help` for all subcommands.
+
+**Clean baseline:** if the skill under test is already installed somewhere discoverable (e.g. `~/.claude/skills`), move it aside before the baseline run — a discoverable skill contaminates RED.
+
+## Skill Linter
+
+`scripts/lint-skill.sh` mechanically checks: frontmatter validity (required fields, max 1024 chars), kebab-case name, description starts with "Use when", word-count budget by skill class, and no cross-file `@` force-loads.
+
+```bash
+bash scripts/lint-skill.sh path/to/skill                        # one skill (standard: 500-word budget)
+bash scripts/lint-skill.sh --class always-loaded path/to/skill  # 200-word budget
+bash scripts/lint-skill.sh skills/                              # every SKILL.md under a tree; non-zero exit on FAIL (CI)
+```
+
+The linter catches format, not effectiveness — a passing skill still needs pressure testing. (In this repo, the v2 `skill-lint` skill layers tier-specific structural rules on top of this generic check.)
+
 ## Anti-Patterns
 
 ### ❌ Narrative Example
@@ -598,8 +624,8 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 **IMPORTANT: Use TodoWrite to create todos for EACH checklist item below.**
 
 **RED Phase - Write Failing Test:**
-- [ ] Create pressure scenarios (3+ combined pressures for discipline skills)
-- [ ] Run scenarios WITHOUT skill - document baseline behavior verbatim
+- [ ] Create pressure scenarios (3+ combined pressures for discipline skills) — `scripts/pressure-test.sh scaffold <name>`
+- [ ] Run scenarios WITHOUT skill (`scripts/pressure-test.sh baseline <scenario>`) - document baseline behavior verbatim
 - [ ] Identify patterns in rationalizations/failures
 
 **GREEN Phase - Write Minimal Skill:**
@@ -612,14 +638,14 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] Address specific baseline failures identified in RED
 - [ ] Code inline OR link to separate file
 - [ ] One excellent example (not multi-language)
-- [ ] Run scenarios WITH skill - verify agents now comply
+- [ ] Run scenarios WITH skill (`scripts/pressure-test.sh with-skill <scenario> --skill <skill-dir>`) - verify agents now comply
 
 **REFACTOR Phase - Close Loopholes:**
 - [ ] Identify NEW rationalizations from testing
 - [ ] Add explicit counters (if discipline skill)
 - [ ] Build rationalization table from all test iterations
 - [ ] Create red flags list
-- [ ] Re-test until bulletproof
+- [ ] Re-test until bulletproof (re-run `scripts/pressure-test.sh run` per scenario)
 
 **Quality Checks:**
 - [ ] Small flowchart only if decision non-obvious
@@ -627,6 +653,7 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] Common mistakes section
 - [ ] No narrative storytelling
 - [ ] Supporting files only for tools or heavy reference
+- [ ] `scripts/lint-skill.sh <skill-dir>` passes — frontmatter, kebab-case name, "Use when" description, word budget, no `@` force-loads
 
 **Deployment:**
 - [ ] Commit skill to git and push to your fork (if configured)
@@ -653,3 +680,14 @@ Same cycle: RED (baseline) → GREEN (write skill) → REFACTOR (close loopholes
 Same benefits: Better quality, fewer surprises, bulletproof results.
 
 If you follow TDD for code, follow it for skills. It's the same discipline applied to documentation.
+
+## Supercharged vs upstream
+
+Baseline: obra/superpowers 5.1.0 `writing-skills`, otherwise verbatim. Change applied: **Option B — Pressure-test harness (+C linter), recommended options adopted 2026-06-11** (v1/SUPERCHARGING-OPTIONS.md; both options use CC3 — executable helpers).
+
+What changed and why:
+
+- **Shipped `scripts/pressure-test.sh`** (Option B): scaffolds pressure scenarios from a template carrying the pressure-type menu and forced A/B/C choice, dispatches the baseline (no-skill) and with-skill runs via `claude -p` from a clean temp directory, and saves both transcripts side by side plus a compare stub with a grading checklist (choice made, rationalizations verbatim, sections cited, loopholes to REFACTOR). Why: upstream describes "run pressure scenarios with subagents" but never automates it — the RED phase was a 30-minute manual ritual, exactly the kind of step that gets skipped; making it a command makes the Iron Law followable at scale. When the `claude` CLI is unavailable, it falls back to writing fully-built prompt files for manual dispatch as Task-tool subagents.
+- **Shipped `scripts/lint-skill.sh`** (Option C): mechanical checks — frontmatter validity (required fields, max 1024 chars), kebab-case naming, description starts with "Use when", word-count budget by skill class (always-loaded 200 / standard 500 / reference 2000, with `--max-words` escape hatch), no cross-file `@` force-loads — over a single skill or a whole tree, non-zero exit on any failure. Why: these checks were prose scattered through this SKILL.md plus a manual `wc -w` step; the script makes them cheap CI for v1–v5. Format only — effectiveness still requires the pressure harness. In this repo, the v2 `skill-lint` skill layers tier-specific structural rules on top; the shipped script stays generic and portable.
+- **New "Pressure-Test Harness" and "Skill Linter" sections** pointing to the scripts, with full detail kept in `--help` per this skill's own move-details-to-tool-help guidance.
+- **Skill Creation Checklist wired to the scripts**: the RED items name the `scaffold`/`baseline` commands, the GREEN verify item names `with-skill`, the REFACTOR re-test item names `run`, and Quality Checks gains a lint item — so the harness and linter sit on the tracked-todo path instead of being optional tooling.

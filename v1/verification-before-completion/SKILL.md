@@ -37,6 +37,59 @@ BEFORE claiming any status or expressing satisfaction:
 Skip any step = lying, not verifying
 ```
 
+When the project has a verification manifest (below), steps 1–3 collapse into one
+command.
+
+## The Verification Manifest
+
+The gate fails most often at the moment it matters most: end of task, tired, N
+commands to remember. Make the gate one command instead.
+
+Keep a `verify.yaml` at the project root mapping claim types to the commands that
+prove them — flat `claim-type: command` pairs, one per line:
+
+```yaml
+tests-pass: pytest -q
+build-succeeds: npm run build
+lint-clean: ruff check .
+```
+
+Run the runner shipped with this skill (`scripts/verify-claims.sh`, path relative
+to this SKILL.md):
+
+```bash
+scripts/verify-claims.sh                      # run every manifest entry fresh
+scripts/verify-claims.sh tests-pass           # run only the named claim type(s)
+scripts/verify-claims.sh --init               # scaffold a starter verify.yaml
+```
+
+The runner executes each entry fresh and prints one timestamped evidence block per
+claim — claim type, command, exit code, UTC timestamp, output tail — and exits
+non-zero if anything failed. Paste the blocks into the completion message, so the
+claim and the evidence proving it travel together:
+
+```
+### Evidence: tests-pass
+- command: pytest -q
+- exit code: 0
+- timestamp (UTC): 2026-06-11T14:02:31Z
+- output (last 10 lines; full log: /tmp/verify-claims.x7Kp2q/tests-pass.log):
+    34 passed in 2.41s
+```
+
+**Manifest rules:**
+
+- No manifest yet? Run `--init` once and fill in this project's real commands.
+  Setup is one-time per project; every completion afterward is one command.
+- The gate's IDENTIFY step still applies. Confirm the manifest command actually
+  proves the claim you're making — a stale manifest verifies the wrong thing,
+  which is worse than no manifest. Project changed its test runner? Update
+  `verify.yaml` first.
+- A claim type with no manifest entry does NOT get a pass. Add the entry, or run
+  the proving command manually and quote its output.
+- Evidence expires. If any relevant file changed after the run, the blocks are
+  stale — run again.
+
 ## Common Failures
 
 | Claim | Requires | Not Sufficient |
@@ -84,6 +137,8 @@ Skip any step = lying, not verifying
 **Regression tests (TDD Red-Green):**
 ```
 ✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
+✅ A captured RED+GREEN evidence block from test-driven-development's
+   evidence trail (failure was already proven before the fix existed)
 ❌ "I've written a regression test" (without red-green verification)
 ```
 
@@ -137,3 +192,31 @@ From 24 failure memories:
 Run the command. Read the output. THEN claim the result.
 
 This is non-negotiable.
+
+## Supercharged vs upstream
+
+Option A — Verification manifest, recommended option adopted 2026-06-11
+(cross-cutting concepts CC3 executable helpers, CC5 evidence capture).
+
+- **Added `## The Verification Manifest` section.** A per-project `verify.yaml`
+  maps claim types to the commands that prove them, so steps 1–3 of the gate
+  function become one command. Why: upstream's gate depends on the agent
+  voluntarily running N remembered commands at the exact moment (end-of-task
+  fatigue) it is most tempted to skip them; one command makes the iron law
+  cheaper to obey than to violate.
+- **Shipped `scripts/verify-claims.sh`** (CC3). Runs all or only the named
+  manifest entries fresh, emits one timestamped evidence block per claim —
+  claim type, command, exit code, UTC timestamp, output tail (the CC5 evidence
+  format) — for pasting into the completion message, exits non-zero on any
+  failure, errors on claim types missing from the manifest, and scaffolds a
+  starter manifest via `--init`.
+- **Added stale-manifest guardrails** (the option's stated trade-off): the
+  gate's IDENTIFY step still applies to manifest commands, missing entries
+  never earn a pass, and evidence expires when relevant files change after the
+  run.
+- **One pointer line added after the gate function** linking it to the
+  manifest.
+- **Regression-test pattern accepts test-driven-development's evidence trail**
+  (audit follow-up, 2026-06-11): a captured RED+GREEN block proves failure
+  before the fix existed, so the revert-and-rerun dance is unnecessary when
+  the trail exists. All other upstream content unchanged.

@@ -113,6 +113,8 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - Steps that describe what to do without showing how (code blocks required for code steps)
 - References to types, functions, or methods not defined in any task
 
+The plan linter (`scripts/lint-plan.py`, next to this file) flags every one of these mechanically — see Self-Review.
+
 ## Remember
 - Exact file paths always
 - Complete code in every step — if a step changes code, show the code
@@ -121,19 +123,27 @@ Every step must contain the actual content an engineer needs. These are **plan f
 
 ## Self-Review
 
-After writing the complete plan, look at the spec with fresh eyes and check the plan against it. This is a checklist you run yourself — not a subagent dispatch.
+After writing the complete plan: run the linter, fix, rerun — then check the things a linter can't. This is a loop you run yourself, not a subagent dispatch.
 
-**1. Spec coverage:** Skim each section/requirement in the spec. Can you point to a task that implements it? List any gaps.
+**1. Run the plan linter:**
 
-**2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
+```bash
+python3 scripts/lint-plan.py docs/superpowers/plans/<filename>.md
+```
 
-**3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
+(The script lives at `scripts/lint-plan.py` next to this skill file — use the absolute path from this skill's directory.) It mechanically checks the format rules above: required plan header, checkbox syntax, per-task **Files:** blocks with exact non-template paths, every placeholder phrase from "No Placeholders", code blocks present in code steps, run steps with a command and expected output, and cross-task identifier drift (a function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug — the linter flags the near-miss).
 
-If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
+Fix every ERROR. Read every WARN and either fix it or consciously decide it's fine. Rerun until exit 0. `--strict` treats warnings as errors.
+
+**2. Spec coverage (judgment — the linter can't see the spec):** Skim each section/requirement in the spec. Can you point to a task that implements it? If a requirement has no task, add the task.
+
+**3. Code correctness (judgment — lexical checks can't tell whether the code in a step is *right*):** Re-read each code block with fresh eyes against the spec. Does the test actually test the requirement? Does the implementation match the signatures and types defined in earlier tasks in *meaning*, not just spelling?
+
+If you find issues, fix them inline and rerun the linter. No need to re-review — just fix and move on.
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving the plan and getting a clean lint (Self-Review step 1), offer execution choice:
 
 **"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Two execution options:**
 
@@ -150,3 +160,16 @@ After saving the plan, offer execution choice:
 **If Inline Execution chosen:**
 - **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
 - Batch execution with checkpoints for review
+
+## Supercharged vs upstream
+
+Baseline: obra/superpowers 5.1.0 `writing-plans`, otherwise verbatim. Change applied: **Option A — Plan linter, recommended option adopted 2026-06-11** (`v1/SUPERCHARGING-OPTIONS.md`, cites CC3 — executable helpers).
+
+What changed and why:
+
+- **Shipped `scripts/lint-plan.py`** (Python 3, stdlib only) — a plan linter that mechanically enforces the skill's own rules against a saved plan file: required plan header (H1 + agentic-workers note + Goal/Architecture/Tech Stack, with template-residue detection), checkbox syntax (missing, malformed, or pre-checked boxes), per-task **Files:** blocks with exact non-template paths, every placeholder phrase from "No Placeholders" (in prose and inside code blocks), code blocks present in code steps, run steps carrying a command and expected output, and cross-task identifier consistency (near-miss names like `clearLayers` vs `clearFullLayers` flagged via fuzzy match between defined and referenced identifiers, drift in defined spellings like `clear_layers` vs `clearLayers` flagged via normalization). ERROR fails the lint (exit 1); WARN is advisory unless `--strict`.
+- **Self-Review section restructured around the linter** — per the option text, self-review becomes "run the linter, fix, rerun". The old manual placeholder scan and type-consistency checks are now linter-backed; the two checks a lexical tool cannot do remain manual and are labeled as judgment: spec coverage (the linter can't see the spec) and code correctness (the option's stated trade-off — lexical checks can't judge whether the code in a step is *right*; the linter's OK message repeats this).
+- **"No Placeholders" gained one cross-reference line** noting the linter flags each listed pattern mechanically.
+- **Execution Handoff entry condition tightened** — handoff now happens "after saving the plan and getting a clean lint", so plan quality is enforced at the boundary where subagents consume the plan (the gap the tracker's current-state note identifies).
+
+Everything else — overview, scope check, file structure, task granularity, header/task templates, Remember list, handoff options — is verbatim upstream. No prose was replaced by the script beyond the Self-Review mechanics; CC3's intent is that the skill text shrinks to judgment calls while the script does the mechanical work.

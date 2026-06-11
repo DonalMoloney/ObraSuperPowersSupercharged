@@ -1064,10 +1064,10 @@ inline, and "run pressure scenarios with subagents" is described, never automate
 | systematic-debugging | A — Debugging ledger | Medium | **A** | implemented 2026-06-11 |
 | test-driven-development | A — Red-green evidence trail | Medium | **A** | implemented 2026-06-11 |
 | using-git-worktrees | A + C — Scriptify + baseline handshake | Adv+Medium | **A + C** | implemented 2026-06-11 |
-| using-superpowers | A + B — Token diet + routing table | Medium | — | pending |
-| verification-before-completion | A — Verification manifest | Advanced | — | pending |
-| writing-plans | A — Plan linter | Advanced | — | pending |
-| writing-skills | B — Pressure-test harness (+C linter) | Advanced | — | pending |
+| using-superpowers | A + B — Token diet + routing table | Medium | **A + B** | implemented 2026-06-11 |
+| verification-before-completion | A — Verification manifest | Advanced | **A** | implemented 2026-06-11 |
+| writing-plans | A — Plan linter | Advanced | **A** | implemented 2026-06-11 |
+| writing-skills | B — Pressure-test harness (+C linter) | Advanced | **B (+C)** | implemented 2026-06-11 |
 
 Skill renaming decisions are tracked separately in `RENAMING-OPTIONS.md`.
 

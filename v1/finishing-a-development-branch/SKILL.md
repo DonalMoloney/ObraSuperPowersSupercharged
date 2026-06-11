@@ -42,6 +42,13 @@ Stop. Don't proceed to Step 2.
 
 **If tests pass:** Continue to Step 2.
 
+**Baseline handshake (worktree branches):** if the worktree has a recorded
+baseline (see using-git-worktrees), run
+`bash ../path-to/v1/using-git-worktrees/scripts/setup-worktree.sh baseline-compare`
+instead of judging raw test output: `VERDICT=clean` or `VERDICT=fixed` proceeds;
+`VERDICT=regression` stops; `VERDICT=pre-existing-failure` means the failure
+predates this branch — surface it to the user rather than blocking on it.
+
 ### Step 2: Detect Environment
 
 **Run the helper — don't re-derive the git state by hand:**
@@ -236,3 +243,4 @@ What changed and why:
 - **Steps 2–6 collapsed into Steps 2–4 around script calls**: upstream's hand-written `GIT_DIR`/`GIT_COMMON` detection, base-branch probing, merge recipe, and cleanup procedure are replaced by `detect` (fixed key=value output the agent reads), `merge` (stops on conflict, prints `MERGE_SHA`), and `cleanup` (`--force` for discard). Why: SKILL.md now carries only the judgment calls — verify tests, choose an exit, write the PR body, confirm destruction — per Option A's "skill text shrinks to judgment calls".
 - **Structured exit menu with recommended default** (Option B folded in, CC1): the prose 4-option/3-option menus become AskUserQuestion-style structured choices with per-option descriptions and a recommended default (PR when an `origin` remote exists, local merge otherwise). Why: prose menus get misread; structured choices don't. Discard keeps its typed-"discard" confirmation on top of the structured choice.
 - **Common Mistakes and Red Flags rewritten to match**: the three script-prevented mistakes collapse into one "hand-rolling the mechanics" entry; the remaining entries (test verification, structured choice, Option-2 preservation, typed discard) stay as judgment rules. Why: prose warnings should only cover what the script can't enforce.
+- **Step 1 consumes using-git-worktrees' baseline handshake** (audit follow-up, 2026-06-11): when a recorded baseline exists, `baseline-compare`'s VERDICT replaces raw test-output judgment, so pre-existing failures are surfaced instead of blocking the merge. Why: closes the one-directional cross-reference the skill-auditor flagged.
