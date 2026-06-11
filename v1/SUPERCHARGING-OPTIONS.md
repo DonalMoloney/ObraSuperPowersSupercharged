@@ -15,8 +15,8 @@ Every option is filed under one band so effort is visible before choosing:
 - **Simple** — content-only: tables, worked examples, checklists, prose tightening.
   No new mechanics; lowest risk; an afternoon of writing.
 - **Medium** — process and interaction changes: structured choices (CC1), tracked
-  todos (CC4), evidence formats (CC5), restructuring (CC6). Changes how the skill
-  *runs*, but ships no code.
+  todos (CC4), evidence formats (CC5), restructuring (CC6), fast-paths (CC7), durable
+  artifacts (CC8). Changes how the skill *runs*, but ships no code.
 - **Advanced** — shipped code or platform coupling: helper scripts (CC3), hooks,
   harness-native rewrites (CC2 at the platform level). Highest leverage, needs
   maintenance.
@@ -24,11 +24,13 @@ Every option is filed under one band so effort is visible before choosing:
 Option letters are stable IDs — A–C are carried over from the previous revision of
 this doc (the tracker references them), D+ were added next, and the 2026-06-10
 expansion appended three Simple + one Medium option per skill after each skill's
-last existing letter — so letters appear out of alphabetical order within the bands.
+last existing letter, and a second 2026-06-10 pass appended one Medium + one Advanced
+option per skill (citing the new CC7–CC8) — so letters appear out of alphabetical
+order within the bands.
 
 ---
 
-## Cross-cutting upgrades (CC1–CC6)
+## Cross-cutting upgrades (CC1–CC8)
 
 Conventions any skill can adopt. Defined once here; per-skill options cite them.
 
@@ -53,6 +55,15 @@ Conventions any skill can adopt. Defined once here; per-skill options cite them.
 - **CC6 — Token discipline.** Lean SKILL.md (<200 words for always-loaded skills, <500
   otherwise), with depth moved to reference files loaded on demand. Upstream's own
   writing-skills preaches this; several v1 skills violate it.
+- **CC7 — Proportional ceremony.** Any gate, ledger, or todo mechanism must define its
+  own trivial-case fast-path: the threshold that qualifies and the reduced procedure
+  that still applies. Discipline that scales with stakes gets followed; discipline
+  that doesn't gets skipped wholesale. Several existing options' trade-offs ask for
+  exactly this — CC7 names the convention once.
+- **CC8 — Durable artifacts.** Ledgers, logs, baselines, and evidence blocks are
+  written to predictable repo paths (default `docs/superpowers/artifacts/`) instead of
+  living only in the conversation, so later sessions and sibling skills can consume
+  them. Conversation-only artifacts die with the context window.
 
 ---
 
@@ -105,6 +116,12 @@ visual exploration happened.
   (purpose, constraints, success criteria, out-of-scope) become tracked todos; the
   design cannot be presented while one is open. *Trade-off:* ceremony on tiny features;
   needs a fast-path for trivial scopes.
+- **Option K — Assumption register** *(uses CC8)*. Whenever the user answers "whatever
+  you think" or a question is skipped for scope reasons, record the assumption made on
+  their behalf in a register that travels into the spec as its own section — so a
+  post-ship surprise traces to a named assumption, not a silent one. *Trade-off:*
+  register bloat with highly-deferential users; cap entries to assumptions that change
+  the design.
 
 ### Advanced
 
@@ -118,6 +135,11 @@ visual exploration happened.
   choice — into the selected template, so the spec cannot silently omit a screen that
   was mocked and approved. *Trade-off:* requires the session to keep artifacts in
   predictable paths; compiler output still needs a human read-through.
+- **Option L — Prior-art scan** *(uses CC3)*. A script that greps the repo, the specs
+  directory, and recent commits for features touching the same nouns before questioning
+  starts, and surfaces what already exists — so brainstorming refines or extends prior
+  work instead of unknowingly redesigning it. *Trade-off:* keyword matching misses
+  renamed concepts; treat hits as prompts, not verdicts.
 
 > **Recommended: A (with the B escape hatch).** Chosen by Donal during the 2026-06-10
 > brainstorm — strongest coupling between mockup fidelity and spec depth, which was the
@@ -168,6 +190,10 @@ is freeform.
   re-dispatch with tightened scope and the failure evidence attached; a second failure
   escalates to the human. *Trade-off:* budgets guessed wrong kill healthy agents; start
   generous.
+- **Option K — Merge-order protocol** *(uses CC5)*. Returned write-agents integrate one
+  at a time in dependency order, re-running the verification command after each merge —
+  so a conflict implicates exactly one agent instead of the whole batch. *Trade-off:*
+  serial integration gives back some of the time parallel execution won.
 
 ### Advanced
 
@@ -182,6 +208,10 @@ is freeform.
   dispatch; overlapping domains get merged into one agent. Removes the biggest failure
   mode (two agents editing the same file) mechanically. *Trade-off:* heuristic file
   mapping won't catch semantic coupling.
+- **Option L — Dispatch archive** *(uses CC8)*. Persist each dispatch's prompt and
+  returned result to a durable artifacts path, so failed fan-outs can be forensically
+  reviewed and effective prompt patterns reused instead of re-derived per session.
+  *Trade-off:* archives grow unbounded; needs a retention rule.
 
 > **Recommended: A.** The skill's value is parallelism, and worktree isolation makes the
 > "agents interfere" caveat largely obsolete — that's a step-change, not a polish.
@@ -231,6 +261,11 @@ body.
   one structured question (retry with fix / skip task and continue / abort batch) with
   a recommended default and the blocker evidence attached. *Trade-off:* interaction
   cost per blocker; prevents the silent-skip failure mode.
+- **Option K — Trivial-batch fast-path** *(uses CC7)*. Tasks the plan marks trivial
+  (single file, no new behavior) execute as one batch with a single combined checkpoint
+  instead of per-task ceremony — the fast-path the checkpoint protocol (A) needs to
+  stay tolerable on long plans. *Trade-off:* a misclassified "trivial" task skips
+  review exactly where it needed it; classification errors land on writing-plans.
 
 ### Advanced
 
@@ -243,6 +278,12 @@ body.
   history, and re-verify the last checkpoint's evidence before continuing.
   *Trade-off:* only pays off on multi-session plans; needs the plan file to be the
   source of truth (pairs with D).
+- **Option L — Checkpoint reviewer dispatch** *(uses CC2)*. When subagents are
+  available but the plan is being run in-session, each checkpoint dispatches a
+  read-only reviewer agent to audit the batch's evidence against the plan — splitting
+  the difference between this skill and subagent-driven-development. *Trade-off:*
+  reviewer cost per checkpoint; blurs the boundary between the two execution skills
+  (C must define it).
 
 > **Recommended: C.** It fixes the real architectural gap — upstream's two execution
 > skills drift apart — and pulls A's checkpoint evidence in as part of the shared
@@ -291,6 +332,10 @@ time.
   test run on the result — the artifact verification-before-completion consumes.
   *Trade-off:* small bulk per finish; mostly valuable when things later need
   forensics.
+- **Option K — Stacked-branch guard.** Before merge or discard, check whether other
+  branches build on this one (`git branch --contains`); a dependent branch turns
+  discard into a structured warning and merge into a rebase-the-children reminder.
+  *Trade-off:* a rare-situation tax on every finish — but it's one cheap command.
 
 ### Advanced
 
@@ -304,6 +349,11 @@ time.
   or failed and report the result before declaring the branch finished; a red check
   routes back into systematic-debugging instead of ending the session on an unverified
   push. *Trade-off:* adds wall-clock wait; needs a timeout policy and a no-CI fallback.
+- **Option L — Changelog deriver** *(uses CC3)*. A script that drafts the
+  changelog/release-note entry from the branch's commits and spec summary at finish
+  time, while the context is still loaded — instead of reconstructing it at release
+  time. *Trade-off:* draft quality tracks commit-message quality (pairs with I's
+  commit-story audit).
 
 > **Recommended: A.** This skill is 80% mechanical; mechanics belong in a script. B can
 > ride along almost for free.
@@ -355,6 +405,11 @@ time.
   table (item → classification → artifact) as one structured confirmation before
   implementing anything, so a misclassified item gets re-routed while it's still
   cheap. *Trade-off:* one extra round-trip per review.
+- **Option L — Recurring-feedback memory** *(uses CC8)*. Append each review's findings,
+  tagged by category, to a durable log; the third occurrence of the same category
+  triggers a proposal to fix the source (CLAUDE.md rule, lint config, skill edit)
+  instead of hand-fixing instance four. *Trade-off:* categorization is judgment;
+  miscategorized entries hide the pattern they should reveal.
 
 ### Advanced
 
@@ -367,6 +422,11 @@ time.
   document and posts it back to the PR thread, closing the loop with the reviewer in
   the same evidence format the triage produced. *Trade-off:* only valuable once A or B
   exists to produce the artifacts.
+- **Option M — Claim-check runner** *(uses CC3)*. Script the fast-check list (J):
+  existence greps, dead-code checks, test-coverage queries per claim type, emitting
+  the evidence artifacts that evidence-gated triage (A) demands — verifying a claim
+  becomes one command per item. *Trade-off:* only as good as its claim-type patterns;
+  novel claims still need manual checks.
 
 > **Recommended: A.** It converts the skill's core principle ("verify before
 > implementing") from exhortation into a gate, which is exactly how upstream's own
@@ -412,6 +472,10 @@ every change; reviewer context assembled by hand.
   structured choice: block until findings return, or continue on non-dependent work
   meanwhile (independence judged per dispatching-parallel-agents). *Trade-off:*
   continuing risks rework if the review lands blockers in shared code.
+- **Option K — Findings archive** *(uses CC8)*. Persist each review's findings and
+  their final statuses to a durable path keyed by branch — the prior-findings input
+  the re-review delta protocol (F) needs, available mechanically instead of from
+  memory. *Trade-off:* worthless until F (or A) exists to consume it.
 
 ### Advanced
 
@@ -424,6 +488,11 @@ every change; reviewer context assembled by hand.
   the reviewer's context mechanically: SHAs, diff stat, test output, the relevant plan
   section. Reviewer quality is mostly context quality. *Trade-off:* script can
   over-include; needs a size cap.
+- **Option L — Coverage-hint generator** *(uses CC3)*. A script that computes which
+  changed lines lack test coverage and prepends the result to the review request as
+  look-here hints, pointing reviewer depth at the genuinely unverified code.
+  *Trade-off:* needs a working coverage setup per project; absent one, it must degrade
+  silently to no hints.
 
 > **Recommended: A**, with C's bundler as its mechanism — depth scaling is the visible
 > win, and it needs the bundled evidence anyway.
@@ -473,6 +542,11 @@ multiple implementation subagents in parallel."
   verification command + output) and re-requests the missing fields rather than
   accepting prose. *Trade-off:* an extra round-trip when implementers under-report
   despite honest work.
+- **Option K — Trivial-task fast-path** *(uses CC7)*. Tasks below a stated threshold
+  (single file, no new public surface) skip the two-stage review and accumulate into
+  one combined review at the end of their wave — proportional ceremony for the plan's
+  long tail. *Trade-off:* the threshold is gameable; the combined review must be able
+  to bounce a task back to the full process.
 
 ### Advanced
 
@@ -484,6 +558,11 @@ multiple implementation subagents in parallel."
   clusters, continue one implementer with its context intact instead of paying
   cold-start per task; keep fresh-per-task for unrelated tasks. *Trade-off:* trades away
   the "no context pollution" guarantee; needs a clear cluster heuristic.
+- **Option L — Orchestration journal** *(uses CC8)*. Persist per-task dispatch records
+  (prompt, model, status, review outcomes) to a durable path as the plan executes, so
+  an interrupted orchestration resumes from the journal and a failed plan can be
+  post-mortemed from its records. *Trade-off:* journal upkeep is orchestrator overhead
+  on every task.
 
 > **Recommended: A.** It's the biggest throughput unlock and composes with
 > dispatching-parallel-agents Option A (same isolation machinery).
@@ -531,6 +610,11 @@ conversation.
   with distinct predicted observations before testing any — anchoring on hypothesis #1
   is this skill's most common silent failure. *Trade-off:* forced second hypotheses can
   be strawmen; the ledger (A) makes that visible.
+- **Option K — Root-cause history** *(uses CC8)*. Confirmed root causes append one line
+  (symptom signature → root cause → fix commit) to a durable debug-history file, and
+  Phase 1 starts by grepping it — "have we seen this before?" gets a real answer
+  instead of a hunch. *Trade-off:* low hit-rate while the file is young; value
+  compounds with project age.
 
 ### Advanced
 
@@ -542,6 +626,11 @@ conversation.
   the ledger file, appends entries, and refuses the Phase-4 gate unless a hypothesis
   entry carries a confirming test result — Option A's format with enforcement attached.
   *Trade-off:* pure ceremony unless A is adopted first; F is A's enforcement layer.
+- **Option L — Repro scaffolder** *(uses CC3)*. A script that scaffolds a minimal
+  reproduction test from the failing case (failing input, expected vs actual,
+  environment pins) — Phase 1's "shrink to the smallest failing case" becomes an
+  artifact, which then becomes the regression test after the fix. *Trade-off:*
+  scaffolds are stack-specific; build for the project's primary test harness.
 
 > **Recommended: A.** The ledger makes the Iron Law auditable, and its fix count is
 > exactly what the architecture-escalation rule needs.
@@ -589,6 +678,11 @@ self-discipline.
   per behavior; a GREEN todo cannot complete without the RED one before it — lighter
   than evidence capture (A), mechanical where the iron law is willpower. *Trade-off:*
   todo churn on many-small-behavior sessions.
+- **Option K — Micro-change fast-path** *(uses CC7)*. Define exactly which changes are
+  exempt from the cycle (comments, tool-assisted renames, formatting, config values
+  already under test) and the reduced check each still requires — bounding the "too
+  small for TDD" loophole instead of pretending it doesn't exist. *Trade-off:* every
+  named exemption is a wedge; the list must be closed, not exemplary.
 
 ### Advanced
 
@@ -602,6 +696,10 @@ self-discipline.
   hook" appendix (hook config itself is v4 territory, mirroring
   verification-before-completion Option B). *Trade-off:* per-user configuration;
   heuristic detection.
+- **Option L — Red-green archive** *(uses CC8)*. The evidence trail (A) writes to a
+  durable per-branch file instead of living only in the conversation, so finishing's
+  PR bodies and verification's gate read the same artifact rather than trusting the
+  transcript. *Trade-off:* depends on A; adds file churn per behavior.
 
 > **Recommended: A.** Discipline skills get stronger when claims become evidence, and it
 > wires TDD tighter into the verification chain (CC2 for free).
@@ -646,6 +744,11 @@ self-discipline.
   worktrees (3) with one tracked todo per live tree; exceeding the cap forces a
   finish-or-discard decision before creating the next. *Trade-off:* the cap is
   arbitrary; the real constraint is the human's review bandwidth.
+- **Option K — Worktree registry** *(uses CC8)*. A durable registry file records each
+  worktree's branch, purpose, baseline result, and creation date; the inventory habit
+  (H) reads the registry instead of guessing intent from directory names. *Trade-off:*
+  drifts if manual `git worktree` commands bypass it; reconcile against
+  `git worktree list`.
 
 ### Advanced
 
@@ -658,6 +761,10 @@ self-discipline.
   (EnterWorktree, `isolation: "worktree"` on Agent calls) as the primary path, demoting
   manual git worktrees to a clearly-marked legacy appendix. *Trade-off:* platform
   coupling; other harnesses fall to the appendix.
+- **Option L — Dependency drift syncer** *(uses CC3)*. A script that detects
+  lockfile/config drift between a worktree and its base branch and re-runs installs as
+  needed — mechanizing the biggest row of the not-isolated card (I). *Trade-off:*
+  per-ecosystem logic (npm, pip, cargo); start with the project's own stack.
 
 > **Recommended: A + C together.** They're nearly disjoint (mechanics + memory), and C
 > gives the finish skill something no amount of prose provides.
@@ -707,6 +814,10 @@ implicit.
   the expected skill chain in one line ("brainstorming → writing-plans → SDD") before
   starting — making routing auditable and corrections cheap. *Trade-off:* the
   declaration can be wrong; it's a prediction, not a contract.
+- **Option K — Persistent miss corpus** *(uses CC8)*. The skill-miss log (H) writes to
+  a durable path and gets a periodic review pass; it doubles as the input corpus the
+  trigger eval harness (E) replays. *Trade-off:* inherits H's undercounting; the
+  periodic review is one more habit to keep.
 
 ### Advanced
 
@@ -719,6 +830,11 @@ implicit.
   start (hook or script) from installed skills' frontmatter descriptions, so the table
   cannot drift as skills are added or renamed. *Trade-off:* platform-coupled; generated
   triggers are only as good as each skill's description (pressure on CSO quality).
+- **Option L — Usage telemetry** *(uses CC3)*. A script tallies which skills actually
+  fired across session transcripts, surfacing never-fired skills (description problem
+  or dead weight) and over-firers (trigger too broad) — the empirical complement to
+  E's synthetic evals. *Trade-off:* transcript formats are platform-specific; mind
+  privacy on shared machines.
 
 > **Recommended: A + B.** Diet funds the routing table's token cost; together the entry
 > skill gets smaller *and* smarter.
@@ -764,6 +880,11 @@ the agent voluntarily running the gate function at the moment it's most tempted 
   deleted, release tagged) require a second check by a *different* method than the one
   that did the work (row count after the migration script, not the script's own exit
   code). *Trade-off:* doubles verification cost; reserve for a named high-stakes list.
+- **Option K — Stakes-scaled gate** *(uses CC7)*. Classify claim types low/high stakes
+  once: low-stakes claims need the standard evidence block, high-stakes claims (J's
+  list) need the independent double-check — making the proportionality rule explicit
+  instead of leaving J's scope to mood. *Trade-off:* the classification line invites
+  litigation; default unknown claims to high.
 
 ### Advanced
 
@@ -778,6 +899,10 @@ the agent voluntarily running the gate function at the moment it's most tempted 
   blocks with a reminder. Moves enforcement from willpower to the harness.
   *Trade-off:* claim-detection heuristics are fragile; hook config is per-user
   (overlaps v4 territory — keep the v1 change to a "pair with a hook" appendix).
+- **Option L — Evidence ledger file** *(uses CC8)*. Evidence blocks append to a durable
+  per-branch ledger as they're produced; finishing's receipt and PR bodies cite ledger
+  entries instead of re-running commands or trusting the transcript. *Trade-off:* a
+  stale ledger misleads worse than no ledger — pair with H's freshness rule.
 
 > **Recommended: A.** It makes the iron law *cheaper to obey than to skip*, which is the
 > only reliable way to beat end-of-task fatigue.
@@ -824,6 +949,11 @@ boundary where subagents consume it.
   while planning; the plan isn't done while any requirement lacks a mapped task —
   Option C's matrix, enforced during writing instead of assembled at the end.
   *Trade-off:* requires the spec to enumerate requirements cleanly.
+- **Option K — Plan-weight classes** *(uses CC7)*. Three plan formats by scope (patch:
+  checklist only; feature: full format; epic: full format + decomposition pass), each
+  with its required sections — so a three-task fix doesn't carry epic ceremony and an
+  epic can't ship as a checklist. *Trade-off:* boundary cases burn a classification
+  decision; default upward.
 
 ### Advanced
 
@@ -837,6 +967,11 @@ boundary where subagents consume it.
   produced mechanically instead of hand-written, feeding SDD's wave dispatch and model
   routing directly. *Trade-off:* requires B's metadata conventions first; two formats
   (markdown + JSON) to keep consistent.
+- **Option L — Planning feedback loop** *(uses CC8)*. After execution, divergences
+  (deviation-log entries, re-planned tasks, blown estimates) get summarized into a
+  durable planning-lessons file the next planning session reads first — plans learn
+  from their own execution history. *Trade-off:* depends on executing-plans D (the
+  deviation log) producing the raw material.
 
 > **Recommended: A**, adding B if subagent-driven-development Option A is chosen — the
 > two upgrades are designed to meet in the middle.
@@ -885,6 +1020,12 @@ inline, and "run pressure scenarios with subagents" is described, never automate
   picking — descriptions are the highest-leverage 50 words in any skill. *Trade-off:*
   doubles drafting effort for a marginal-looking gain that compounds across every
   session.
+- **Option K — Edit-size fast-path** *(uses CC7)*. Typo fixes and description tweaks
+  get a reduced checklist (frontmatter still valid, description still triggers); new
+  skills and behavior changes get the full RED-GREEN cycle — the small-edit fast-path
+  F's trade-off explicitly asks for. *Trade-off:* "just a description tweak" is
+  exactly where triggering regressions hide; the reduced checklist must still include
+  a trigger check.
 
 ### Advanced
 
@@ -897,6 +1038,11 @@ inline, and "run pressure scenarios with subagents" is described, never automate
   description starts with "Use when", word-count budgets by skill class, no `@`
   force-loads, kebab-case naming. Cheap CI for v1–v5. *Trade-off:* catches format, not
   effectiveness.
+- **Option L — Pressure-test regression suite** *(uses CC8)*. Persist B's scenarios and
+  transcripts as a durable corpus, and re-run the relevant scenarios whenever a skill
+  changes — pressure tests become regression tests instead of one-shot birth
+  certificates. *Trade-off:* only meaningful after B exists; transcript-based
+  assertions are fuzzy to evaluate.
 
 > **Recommended: B.** The skill's whole thesis is "no skill without a failing test
 > first" — the harness is what makes that law followable at scale. Take C as a cheap
@@ -908,7 +1054,7 @@ inline, and "run pressure scenarios with subagents" is described, never automate
 
 | Skill | Recommended | Band | Chosen | Status |
 |---|---|---|---|---|
-| brainstorming | A — Fidelity contract (+B escape hatch) | Medium | **A** | decided 2026-06-10 |
+| brainstorming | A — Fidelity contract (+B escape hatch) | Medium | **A** | implemented 2026-06-11 |
 | dispatching-parallel-agents | A — Harness-native dispatch | Advanced | — | pending |
 | executing-plans | C — Degraded-mode twin | Medium | — | pending |
 | finishing-a-development-branch | A — Scriptify (+B menu) | Advanced | — | pending |

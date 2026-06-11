@@ -22,11 +22,11 @@ Every project goes through this process. A todo list, a single-function utility,
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
-2. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
+2. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. If the user accepts, ask the fidelity contract question (wireframe pass vs visual design pass) before continuing. See the Visual Companion section below.
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
+6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit. If a visual companion session ran, use the spec template selected by the fidelity contract (lean spec vs full visual-design chapter — see Visual Companion section)
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 8. **User reviews written spec** — ask user to review the spec file before proceeding
 9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
@@ -110,6 +110,9 @@ digraph brainstorming {
 
 - Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
   - (User preferences for spec location override this default)
+- If a visual companion session ran, the fidelity contract selects the spec template:
+  - **Wireframe pass** → lean spec: flows + layout only. No visual-design chapter. Exception: any screen the user leveled up gets its own deep visual-design section (palette, typography, spacing, component states for that screen).
+  - **Visual design pass** → spec includes a full visual-design chapter: palette, typography, spacing, and component states for every mocked screen, written so implementation can build from it directly.
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git
 
@@ -120,6 +123,7 @@ After writing the spec document, look at it with fresh eyes:
 2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
 3. **Scope check:** Is this focused enough for a single implementation plan, or does it need decomposition?
 4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
+5. **Fidelity match (visual sessions only):** Does spec depth match the fidelity contract? A wireframe-pass spec should not contain an invented visual-design chapter; a visual-design-pass spec must cover palette, typography, spacing, and component states for every mocked screen; every leveled-up screen must have its deep section.
 
 Fix any issues inline. No need to re-review — just fix and move on.
 
@@ -153,6 +157,21 @@ A browser-based companion for showing mockups, diagrams, and visual options duri
 
 **This offer MUST be its own message.** Do not combine it with clarifying questions, context summaries, or any other content. The message should contain ONLY the offer above and nothing else. Wait for the user's response before continuing. If they decline, proceed with text-only brainstorming.
 
+**Fidelity contract (at accept time):** If the user accepts the companion, ask exactly ONE structured follow-up question — also its own message — before building any mockup:
+
+> "One setting before we start: should this be a **wireframe pass** or a **visual design pass**?
+> - **A) Wireframe pass** — fast structural mockups (boxes, labels, layout only). The spec stays lean: flows + layout, no visual-design chapter.
+> - **B) Visual design pass** — high-fidelity mockups throughout (real palette, typography, spacing, component states). The spec gets a full visual-design chapter the implementation can build from directly."
+
+The answer is a session-wide contract. It sets BOTH the mockup fidelity for every screen AND the spec template:
+
+- **Wireframe pass** → every mockup is structural (mock elements, placeholders, no color/type decisions), and the spec uses the lean template: flows + layout only.
+- **Visual design pass** → every mockup is high-fidelity (real palette, typography, spacing, component states), and the spec includes a full visual-design chapter covering those decisions for each mocked screen.
+
+Do not silently drift between fidelities mid-session — the contract is what keeps token cost predictable and spec depth honest.
+
+**Level-up escape hatch (wireframe sessions only):** Every screen in a wireframe session MUST offer a "Level up to high fidelity" action alongside its regular options (e.g., an extra clickable option with `data-choice="level-up"`). If the user selects it, rebuild that one screen as a high-fidelity mockup and iterate there. Leveled-up screens get the deep spec treatment (their own visual-design section: palette, type, spacing, states); all other screens stay lean. Leveling up individual screens does NOT flip the session contract.
+
 **Per-question decision:** Even after the user accepts, decide FOR EACH QUESTION whether to use the browser or the terminal. The test: **would the user understand this better by seeing it than reading it?**
 
 - **Use the browser** for content that IS visual — mockups, wireframes, layout comparisons, architecture diagrams, side-by-side visual designs
@@ -162,3 +181,15 @@ A question about a UI topic is not automatically a visual question. "What does p
 
 If they agree to the companion, read the detailed guide before proceeding:
 `skills/brainstorming/visual-companion.md`
+
+## Supercharged vs upstream
+
+Baseline: obra/superpowers 5.1.0 `brainstorming`, otherwise verbatim. Change applied: **Option A — Fidelity contract, with the Option B level-up escape hatch** (v1/SUPERCHARGING-OPTIONS.md, decided 2026-06-10 by Donal).
+
+What changed and why:
+
+- **Fidelity contract at companion-accept time** (Visual Companion section): when the user accepts the companion, one structured question — wireframe pass or visual design pass — sets mockup fidelity for the whole session AND selects the spec template. Why: upstream's fidelity is one-size ("keep mockups simple") and spec depth never responds to how much visual exploration happened; the contract couples the two explicitly with predictable token cost.
+- **Per-screen level-up escape hatch** (Visual Companion section): every screen in a wireframe session offers a "Level up to high fidelity" action; leveled-up screens are rebuilt high-fidelity and earn deep spec sections without flipping the session contract. Why: Option A alone is all-or-nothing per session; the Option B hatch lets a cheap session still go deep on the one screen that needs it.
+- **Spec template selection** (Documentation section): wireframe pass → lean spec (flows + layout only, plus deep sections for leveled-up screens); visual design pass → full visual-design chapter (palette, typography, spacing, component states per mocked screen). Why: this is the spec-depth half of the contract.
+- **Spec self-review check 5** (Fidelity match): verifies spec depth actually matches the contract and leveled-up screens got their deep sections. Why: makes the contract enforced, not just declared.
+- **Checklist items 2 and 6** updated to surface the contract question at accept time and the template selection at doc-writing time. Why: the checklist is the tracked-todo source of truth; a contract that isn't in it gets skipped.
