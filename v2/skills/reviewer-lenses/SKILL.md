@@ -27,7 +27,7 @@ A single reviewer asked to check "everything" anchors on whatever they notice fi
 |---|---|---|
 | Correctness | Does the code do what the requirements say, including edge cases? | Logic errors, unhandled cases, off-by-ones, wrong behavior |
 | Architecture | Do boundaries, dependencies, and ownership make sense? | Coupling, leaky abstractions, wrong-layer logic, god objects |
-| Security | What can an adversary do with this change? | Injection, authz/authn gaps, secrets handling, unsafe input paths |
+| Security | What can an adversary do with this change? | OWASP-style checks: injection (including prompt injection via tool output), authz/authn gaps, secrets handling, unsafe input paths |
 | Test quality | Would these tests catch the bugs that matter? | Untested branches, assertion-free tests, mock-heavy tests, missing failure cases |
 | Product/UX | Does this serve the user's actual goal? | Confusing flows, surprising defaults, error messages a user can't act on |
 

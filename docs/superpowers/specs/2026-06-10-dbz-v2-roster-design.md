@@ -182,3 +182,21 @@ Approved after Batch 1 shipped. Same constraints and house style as above.
 
 Acceptance: four new directories under `v2/skills/`, README table at 16 rows,
 skill-auditor reports no blocking findings.
+
+## Addendum (2026-06-10): Batch 3 — completing the roster
+
+Two final skills covering the last v1 areas without a Dragon Ball-named
+supporter. Same constraints and house style.
+
+| Skill | Type | Supports (v1) | One-line mechanism |
+|---|---|---|---|
+| `hyperbolic-time-chamber` | technique | writing-skills | Stress-test a draft skill against 3+ should-trigger scenarios and 2+ near-misses before release; tighten description/triggers until all positives fire and all near-misses don't, plus one cold read of the body |
+| `hoi-poi-capsule` | process | using-git-worktrees, finishing-a-development-branch | Inventory every worktree/branch as a capsule, classify active/finished/stale/unknown, route finished ones to the v1 finishing flow and stale ones to explicit recover-or-discard — never silent deletion |
+
+Boundary notes: hyperbolic-time-chamber is behavioral simulation, distinct
+from v2 skill-lint's static checks (pairs-with it). hoi-poi-capsule manages
+the *fleet* of existing workspaces, distinct from v1 using-git-worktrees
+(creation) and v2 spike-in-worktree (single-spike lifecycle).
+
+Acceptance: two new directories under `v2/skills/`, two new README rows,
+skill-auditor reports no blocking findings.

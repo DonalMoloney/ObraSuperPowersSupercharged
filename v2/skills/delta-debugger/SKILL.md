@@ -10,9 +10,10 @@ pairs-with: loop-until-green
 
 ## Not this skill if
 
+- The fix is already known or obvious — just fix it and prove it with v1 **verification-before-completion**; localization machinery adds nothing.
 - The failure is not reproducible yet — establish a deterministic repro first via v1 **systematic-debugging** Phase 1; ddmin and bisect both require a stable pass/fail predicate.
 - The input is already minimal and the introducing commit is known — go straight to v1 **test-driven-development** to pin it with a failing test.
-- You have a tight repro and want to iterate on the *fix* — that is v2 **loop-until-green**; this skill minimizes and localizes, it never repairs.
+- You are iterating fix → verify until a suite goes green — that is v2 **loop-until-green**; this skill finds *where* the fault is before any fix is attempted, it never repairs.
 - The project has no usable commit history — `git bisect` cannot run; minimize only (Steps 1–2) and skip localization.
 
 # Delta Debugger
@@ -56,3 +57,5 @@ PROVEN BY:
 - git bisect: first bad commit `<SHA>` — "`<commit message>`" by `<author>`
 - Two-point check: parent `<parent-SHA>` exits 0, bad `<SHA>` exits 1
 - Minimized test case handed to the RED phase at `<file path>`
+
+Localization claims without `PROVEN BY:` are invalid under this skill.

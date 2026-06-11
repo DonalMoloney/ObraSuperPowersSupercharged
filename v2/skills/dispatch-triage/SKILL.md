@@ -20,8 +20,8 @@ pairs-with: compile-goal-to-contract
 
 Two decisions in v1 **subagent-driven-development** are stated as instructions without a procedure:
 
-1. **Model selection.** v1 names the signals — 1-2 files with a complete spec → cheap model; multi-file integration → standard; design judgment or broad codebase understanding → most capable — but gives no matrix and no rule for when the signals disagree. v1 gives the signals; the table below makes them a decision rule.
-2. **BLOCKED handling.** v1 lists four remediation paths (more context + same model; more capable model; break the task into pieces; escalate — the plan is wrong) but zero criteria for telling which one applies. The diagnosis ladder below supplies the missing questions, each answered from observable evidence in the BLOCKED report.
+1. **Model selection.** v1 names three complexity signals (file count, spec completeness, integration scope) but gives no matrix and no rule for when the signals disagree. v1 gives the signals; the table below makes them a decision rule.
+2. **BLOCKED handling.** v1 lists four remediation paths but zero criteria for telling which one applies. The diagnosis ladder below supplies the missing questions, each answered from observable evidence in the BLOCKED report.
 
 This skill pairs with v2 **compile-goal-to-contract**: the contract is the input artifact. Task size and risk are read off the contract's fields (acceptance-criteria count, constraints, open-decisions) rather than guessed from the conversation.
 
@@ -35,12 +35,12 @@ Score each dimension independently, then resolve.
 |---|---|---|---|
 | **File count** | 1–2 files, all named in the task | 3–5 files, all identifiable upfront | File set unknown, or spans modules that must be discovered |
 | **Spec completeness** (from the contract) | Contract complete: every acceptance criterion testable, `open-decisions: none`, ≤5 acceptance criteria | Minor gaps, each bounded by a decision rule ("if X then Y"); or >5 acceptance criteria | No contract, or unresolved open-decisions, or constraints requiring trade-off judgment (perf budgets, API compatibility) |
-| **Integration scope** | Isolated function or file; no shared interfaces touched | Touches shared interfaces; multi-file coordination with known call sites | Requires design judgment, new abstractions, or broad codebase understanding |
+| **Integration scope** | Isolated function or file; no shared interfaces touched | Touches shared interfaces; multi-file coordination with known call sites | Task must invent interfaces that don't exist yet, or its blast radius can't be enumerated up front |
 
 **Resolution rules (mixed signals):**
 
 1. **Highest-tier signal wins.** A task that is 1 file (cheap) but has unresolved trade-off constraints (most capable) dispatches at most capable. Never average.
-2. **When in doubt, one tier up for review roles.** Spec and code-quality reviewer subagents take the implementer's tier plus one; architecture and final review always get the most capable model, per v1 **subagent-driven-development**.
+2. **When in doubt, one tier up for review roles.** Spec and code-quality reviewers take the implementer's tier plus one — a deliberate v2 relaxation of v1's review-gets-most-capable default, which still applies to architecture and final review.
 3. **Unresolved open-decisions are not a tier signal — they are a gate failure.** Do not dispatch at all; return to v2 **compile-goal-to-contract** to resolve them first.
 4. Subject to rules 1–3, pick the cheapest tier the matrix permits — same cost principle as v1.
 

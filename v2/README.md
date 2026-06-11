@@ -37,6 +37,8 @@ Layout: skills live in `skills/<skill-name>/SKILL.md`, plugins in `plugins/<plug
 | `kaioken` | dispatching-parallel-agents, systematic-debugging |
 | `gravity-chamber` | test-driven-development, verification-before-completion |
 | `fusion-dance` | brainstorming, writing-plans |
+| `hyperbolic-time-chamber` | writing-skills |
+| `hoi-poi-capsule` | using-git-worktrees, finishing-a-development-branch |
 | `blast-radius` | requesting-code-review, verification-before-completion |
 | `devils-advocate` | receiving-code-review, verification-before-completion |
 | `incident-postmortem` | systematic-debugging |
@@ -44,6 +46,14 @@ Layout: skills live in `skills/<skill-name>/SKILL.md`, plugins in `plugins/<plug
 | `security-audit` | requesting-code-review, verification-before-completion |
 | `track-assumption` | brainstorming, executing-plans, finishing-a-development-branch |
 | `write-adr` | brainstorming, writing-plans |
+| `compile-goal-to-contract` | subagent-driven-development, writing-plans |
+| `decision-ledger` | brainstorming, writing-plans, executing-plans |
+| `delta-debugger` | systematic-debugging, test-driven-development |
+| `dispatch-triage` | subagent-driven-development |
+| `done-gate` | verification-before-completion, requesting-code-review |
+| `post-merge-retro` | finishing-a-development-branch |
+| `reviewer-lenses` | requesting-code-review, dispatching-parallel-agents |
+| `scope-decomposition` | brainstorming, writing-plans |
 | `browser-evidence-debugging` (plugin: chrome-devtools-toolkit) | systematic-debugging |
 | `performance-trace-audit` (plugin: chrome-devtools-toolkit) | verification-before-completion |
 | `memory-leak-hunt` (plugin: chrome-devtools-toolkit) | systematic-debugging |
@@ -56,5 +66,6 @@ Layout: skills live in `skills/<skill-name>/SKILL.md`, plugins in `plugins/<plug
 | Plugin | Supports (v1) | Components |
 |---|---|---|
 | `verification-gate` | verification-before-completion, test-driven-development | Stop + PostToolUse hooks, `/verify-status` command |
+| `bug-hunter` | systematic-debugging, requesting-code-review | 6 hunter agents, 1 verifier agent, `/hunt-bugs` command |
 | `chrome-devtools-toolkit` | systematic-debugging, verification-before-completion | 3 skills: browser-evidence-debugging, performance-trace-audit, memory-leak-hunt |
 | `playwright-toolkit` | verification-before-completion, systematic-debugging, test-driven-development | 3 skills: ui-verification-loop, bug-reproduction-script, e2e-test-generation |
