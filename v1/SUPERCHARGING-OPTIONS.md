@@ -22,8 +22,9 @@ Every option is filed under one band so effort is visible before choosing:
   maintenance.
 
 Option letters are stable IDs — A–C are carried over from the previous revision of
-this doc (the tracker references them), D+ are new — so letters appear out of
-alphabetical order within the bands.
+this doc (the tracker references them), D+ were added next, and the 2026-06-10
+expansion appended three Simple + one Medium option per skill after each skill's
+last existing letter — so letters appear out of alphabetical order within the bands.
 
 ---
 
@@ -71,6 +72,19 @@ visual exploration happened.
   underspecified spec excerpt and its repaired version per common failure mode (missing
   edge cases, UI described in adjectives, no out-of-scope section). *Trade-off:*
   lengthens the file; cap at three pairs or move to a reference file (CC6).
+- **Option G — Clarifying-question bank.** A categorized bank of the highest-yield
+  questions (purpose, constraints, success criteria, out-of-scope) with the single
+  strongest opener per category, so the one-question-at-a-time loop starts strong
+  instead of generic. *Trade-off:* canned questions can read as boilerplate; treat as a
+  menu, not a script.
+- **Option H — YAGNI strike pass.** Before presenting any design section, run one
+  explicit "what can be removed" pass and name what was cut — makes "YAGNI ruthlessly"
+  a step instead of a vibe. *Trade-off:* a cut the user wanted resurfaces as a revision
+  round.
+- **Option I — Decision-log convention.** One line per accepted *or rejected*
+  alternative (choice, alternatives considered, why) appended to the spec, so "why
+  didn't we do X?" is answerable months later. *Trade-off:* discipline-dependent;
+  nothing enforces an entry.
 
 ### Medium
 
@@ -87,6 +101,10 @@ visual exploration happened.
   a clickable "show me this in high fidelity" action, and only leveled-up screens get
   deep spec sections. *Trade-off:* cheap by default but adds a round-trip per screen,
   and the user has to know to ask.
+- **Option J — Question-coverage todos** *(uses CC4)*. The four understanding areas
+  (purpose, constraints, success criteria, out-of-scope) become tracked todos; the
+  design cannot be presented while one is open. *Trade-off:* ceremony on tiny features;
+  needs a fast-path for trivial scopes.
 
 ### Advanced
 
@@ -121,6 +139,18 @@ is freeform.
 - **Option E — Worked dispatch examples.** Two or three full transcripts (domain split,
   per-agent prompts, merged result), including one negative example where overlap
   forced a merge. *Trade-off:* lengthens the skill; reference-file material (CC6).
+- **Option G — Dispatch prompt card.** The minimal seven-field prompt template every
+  dispatch must fill: goal, context, file boundary, verification command, output
+  format, explicit non-goals, return protocol. *Trade-off:* template discipline only;
+  nothing checks the fields are honest.
+- **Option H — Fan-out sizing table.** Rows mapping task shape to agent count
+  (N independent domains → N agents, cap 4; serial chain → 1; one big domain → 1 plus
+  an optional research sidekick), including the "one agent would be faster" row.
+  *Trade-off:* numbers are defaults, not laws; judgment still rules the margins.
+- **Option I — Read/write split.** Tag each dispatched agent read-only (research,
+  audit) or write (implementation); only write agents need isolation and collision
+  checks, halving the pre-flight cost of mixed fan-outs. *Trade-off:* a "read-only"
+  agent that quietly writes breaks the assumption; state that the tag is a contract.
 
 ### Medium
 
@@ -133,6 +163,11 @@ is freeform.
   with status (dispatched / returned / integrated / verified), so a forgotten agent
   result is structurally impossible. *Trade-off:* bookkeeping overhead on two-agent
   cases.
+- **Option J — Timeout-and-retry policy** *(uses CC5)*. Every dispatch carries a
+  time/token budget and the one-retry rule: a failed or overrun agent gets exactly one
+  re-dispatch with tightened scope and the failure evidence attached; a second failure
+  escalates to the human. *Trade-off:* budgets guessed wrong kill healthy agents; start
+  generous.
 
 ### Advanced
 
@@ -167,6 +202,18 @@ body.
   (what changed, why, who approved) inline in the plan file itself, so the plan stays
   the single source of truth instead of drifting from reality. *Trade-off:* relies on
   discipline; nothing enforces the log entry.
+- **Option G — Pre-flight checklist.** Before task 1: working tree clean, baseline
+  tests green, correct branch/worktree, plan version current. Four checks that prevent
+  the classic "executed a perfect plan on the wrong baseline". *Trade-off:* content
+  only.
+- **Option H — Completion stamps.** Each checked checkbox gains a one-line stamp:
+  timestamp + verification command + result, so "when did this task actually pass?"
+  has an answer. *Trade-off:* plan files get noisier; stamps are append-only clutter
+  by design.
+- **Option I — Staleness tripwire.** Signals that the plan no longer matches reality
+  (file moved, API changed, dependency vanished) with the rule: return to
+  writing-plans for an amendment, never improvise mid-execution. *Trade-off:*
+  round-trips on small drift; the alternative is silent plan divergence.
 
 ### Medium
 
@@ -180,6 +227,10 @@ body.
   spec pass, then quality pass), same status vocabulary (DONE / BLOCKED /
   NEEDS_CONTEXT), so plans execute identically regardless of platform. *Trade-off:*
   self-review is weaker than fresh-context review; must say so honestly.
+- **Option J — Structured blocker escalation** *(uses CC1)*. Hitting a blocker raises
+  one structured question (retry with fix / skip task and continue / abort batch) with
+  a recommended default and the blocker evidence attached. *Trade-off:* interaction
+  cost per blocker; prevents the silent-skip failure mode.
 
 ### Advanced
 
@@ -213,6 +264,18 @@ time.
   recovery rows ("can't remove worktree" → CWD inside it → cd out and retry; "branch
   delete refused" → unmerged commits → verify merge landed first). *Trade-off:* content
   depth only.
+- **Option G — Exit-path cheat card.** One-screen table of the four exits (merge local /
+  push+PR / keep / discard) with the signals for picking each, so the choice takes
+  seconds instead of re-reading the tree. *Trade-off:* duplicates the decision tree;
+  two artifacts to keep in sync.
+- **Option H — Leftovers sweep.** Checklist of branch droppings to remove before
+  finishing: debug prints, `.only`/`.skip` tests, scratch files, commented-out code,
+  TODOs introduced by this branch. *Trade-off:* overlaps project linters where they
+  exist.
+- **Option I — Commit-story audit.** Quick pass over the branch's commits (do they
+  build a reviewable story? squash fixups?) before the exit menu — PR reviewers read
+  commits, not worktrees. *Trade-off:* history rewriting has sharp edges; needs an
+  "already pushed, don't rebase" guard.
 
 ### Medium
 
@@ -223,6 +286,11 @@ time.
 - **Option C — Evidence-rich PRs** *(uses CC5)*. Option 2 (push + PR) auto-builds the PR
   body from the plan/spec summary plus captured verification output, instead of a
   skeleton template. *Trade-off:* only improves one of the four exit paths.
+- **Option J — Finish receipt** *(uses CC5)*. Whatever exit is chosen, emit one
+  evidence block: merge SHA or PR URL, branch/worktree cleanup confirmation, final
+  test run on the result — the artifact verification-before-completion consumes.
+  *Trade-off:* small bulk per finish; mostly valuable when things later need
+  forensics.
 
 ### Advanced
 
@@ -255,6 +323,18 @@ time.
   (with the verifying artifact), disagree (with the contradicting output), need
   clarification (with the specific question). *Trade-off:* examples drift if the triage
   format later changes.
+- **Option H — Tone-stripping rule.** Separate each item's claim from its framing
+  before triage — blunt phrasing doesn't raise priority, polite phrasing doesn't lower
+  it; two worked examples (harsh-but-wrong, gentle-but-critical). *Trade-off:* content
+  only.
+- **Option I — Batch response convention.** Respond to the whole review once, with the
+  per-item statuses, instead of piecemeal replies as items get fixed — reviewers get
+  one coherent reply and items can't slip between messages. *Trade-off:* slower first
+  response; worth telling the reviewer that's deliberate.
+- **Option J — Fast-check list.** The claim types checkable in under a minute (does
+  this function exist? is this dead code? does a test cover X?) with the command
+  pattern for each — run the check *before* drafting any response. *Trade-off:* the
+  list invites overconfidence on claims that merely look fast-checkable.
 
 ### Medium
 
@@ -271,6 +351,10 @@ time.
 - **Option E — Severity triage.** Classify each item blocker / should-fix / nit before
   acting, and work in that order — so a session can't stall polishing nits while a
   blocker waits. *Trade-off:* adds a classification pass before any fix lands.
+- **Option K — Triage confirmation gate** *(uses CC1)*. Present the completed triage
+  table (item → classification → artifact) as one structured confirmation before
+  implementing anything, so a misclassified item gets re-routed while it's still
+  cheap. *Trade-off:* one extra round-trip per review.
 
 ### Advanced
 
@@ -303,6 +387,16 @@ every change; reviewer context assembled by hand.
   reviewer: stray debug prints, leftover TODOs, accidental files, formatting — so
   reviewer attention goes to substance. *Trade-off:* partially duplicates linters where
   projects have them.
+- **Option G — Diff hygiene pass.** Split unrelated changes out of the diff (separate
+  commit or branch) before requesting review; mixed diffs get worse reviews of both
+  halves. *Trade-off:* content only; some changes resist clean splitting.
+- **Option H — Reviewer brief card.** A fixed one-paragraph brief ahead of the diff:
+  what changed, why, how it was verified, where to look hardest. *Trade-off:* overlaps
+  D's template fields; pick one as the canonical shape.
+- **Option I — Readiness gate.** Don't request review with failing tests, unresolved
+  TODOs, or un-run verification — making "review my WIP" an explicit labeled request
+  instead of an accident. *Trade-off:* discourages legitimate early-feedback asks
+  unless a WIP-labeled path is kept.
 
 ### Medium
 
@@ -314,6 +408,10 @@ every change; reviewer context assembled by hand.
   diff plus the prior findings with their statuses, not the whole change again —
   cheaper rounds and no re-litigating settled items. *Trade-off:* the reviewer loses
   whole-change context; needs a "request full review" escape hatch.
+- **Option J — Block-or-continue choice** *(uses CC1)*. When review is requested, one
+  structured choice: block until findings return, or continue on non-dependent work
+  meanwhile (independence judged per dispatching-parallel-agents). *Trade-off:*
+  continuing risks rework if the review lands blockers in shared code.
 
 ### Advanced
 
@@ -346,6 +444,18 @@ multiple implementation subagents in parallel."
   — implementer ignored the spec, reviewer rubber-stamped, task reported DONE but
   half-finished — each with its detection signal and recovery move. *Trade-off:*
   content only.
+- **Option G — Task brief template.** The fixed fields every implementer dispatch
+  fills: task text, spec excerpt, files in scope, verification command, status
+  vocabulary — the orchestrator stops composing prompts from scratch per task.
+  *Trade-off:* template discipline only.
+- **Option H — Review rubric cards.** Fixed checklists for the spec-review and
+  quality-review stages (spec: every requirement traced; quality: tests meaningful, no
+  silent failures, no scope creep) so reviewer subagents can't rubber-stamp with
+  "LGTM". *Trade-off:* rubrics drift from project norms unless revisited.
+- **Option I — Status vocabulary card.** Precise definitions of DONE / BLOCKED /
+  NEEDS_CONTEXT and the evidence each demands (DONE → verification output; BLOCKED →
+  the blocking artifact; NEEDS_CONTEXT → the specific missing fact). *Trade-off:*
+  content only; enforcement still sits with the orchestrator.
 
 ### Medium
 
@@ -358,6 +468,11 @@ multiple implementation subagents in parallel."
   spec-review, and quality-review stages become tracked todos that cannot be silently
   skipped; the orchestrator's progress is externally visible mid-plan. *Trade-off:*
   todo volume on large plans.
+- **Option J — Return-contract rejection** *(uses CC5)*. The orchestrator mechanically
+  rejects implementer returns that lack the contract fields (files touched,
+  verification command + output) and re-requests the missing fields rather than
+  accepting prose. *Trade-off:* an extra round-trip when implementers under-report
+  despite honest work.
 
 ### Advanced
 
@@ -389,6 +504,17 @@ conversation.
   in agent debugging ("the fix is obvious from the diff", "I'll add the test after
   confirming the fix works", "it's probably the same root cause as last time") with
   rebuttals. *Trade-off:* table growth; needs pruning of stale rows in exchange.
+- **Option G — First-15-minutes card.** The exact Phase 1 opening sequence: reproduce
+  it, capture the literal error text, diff recent changes, shrink to the smallest
+  failing case. Four moves, in order, before any theory. *Trade-off:* content only.
+- **Option H — Can't-reproduce playbook.** The decision path when reproduction fails —
+  capture environment deltas, add observability at the suspected boundary, downgrade
+  to monitoring with a tripwire — instead of "couldn't repro, closing". *Trade-off:*
+  lengthens the skill; reference-file candidate (CC6).
+- **Option I — Fix-scope guard.** Rule: the fix diff must be fully explained by the
+  confirmed hypothesis; any extra "while I'm here" change is a separate commit/task,
+  keeping Phase 4 falsifiable. *Trade-off:* slower when the neighboring code really is
+  broken; that's a feature.
 
 ### Medium
 
@@ -401,6 +527,10 @@ conversation.
   todos with explicit entry/exit criteria; red-flag thoughts trigger a forced return to
   the Phase 1 todo. *Trade-off:* lighter than A but the evidence itself stays
   unstructured.
+- **Option J — Competing-hypotheses minimum.** Require at least two recorded hypotheses
+  with distinct predicted observations before testing any — anchoring on hypothesis #1
+  is this skill's most common silent failure. *Trade-off:* forced second hypotheses can
+  be strawmen; the ledger (A) makes that visible.
 
 ### Advanced
 
@@ -432,6 +562,17 @@ self-discipline.
   cases — spikes, legacy code with no harness, UI tweaks, generated code — with rulings
   consistent with upstream's iron law. *Trade-off:* loosely worded rulings become
   loopholes; each row needs the same rigor as the rationalization table.
+- **Option G — First-test chooser.** A small table for picking the opening failing
+  test per change type: new feature → simplest happy path; bugfix → the reproducing
+  case; refactor → pin current behavior first. *Trade-off:* content only.
+- **Option H — Test-name convention.** Names state behavior, not implementation
+  (`rejects_expired_token`, not `test_validate_2`), with three good/bad pairs — names
+  are the spec the next reader gets. *Trade-off:* conventions vary by stack; keep the
+  examples per-stack light.
+- **Option I — Minimal-implementation ladder.** Fake it → obvious implementation →
+  triangulate, with the rule for when each rung is allowed and when to climb. Stops
+  both gold-plating and permanent fakes. *Trade-off:* ladder discipline is invisible in
+  the final diff; it lives in commit granularity.
 
 ### Medium
 
@@ -444,6 +585,10 @@ self-discipline.
   and move per-stack mechanics (pytest/jest/vitest/go test invocation, watch-mode,
   failure-reading) to on-demand reference files. *Trade-off:* restructuring, not new
   capability — but it pays the always-loaded token tax down.
+- **Option J — Cycle todos** *(uses CC4)*. RED, GREEN, REFACTOR become tracked todos
+  per behavior; a GREEN todo cannot complete without the RED one before it — lighter
+  than evidence capture (A), mechanical where the iron law is willpower. *Trade-off:*
+  todo churn on many-small-behavior sessions.
 
 ### Advanced
 
@@ -475,6 +620,17 @@ self-discipline.
 - **Option E — One-page decision table.** Condense the detect→choose walk-through into
   a single-screen table (situation → mechanism → command), keeping the prose as backing
   detail. *Trade-off:* two representations of one tree must be kept in sync.
+- **Option G — Naming convention.** Worktree directories named `<repo>-<branch-slug>`
+  (or the harness's convention) so `git worktree list` reads as a task list and
+  cleanup targets are unambiguous. *Trade-off:* content only.
+- **Option H — Inventory habit.** `git worktree list` at session start and finish,
+  with triage rules for what a stale entry means (abandoned spike → discard path;
+  finished branch → prune). *Trade-off:* habit, not mechanism; pairs with finishing's
+  cleanup.
+- **Option I — Not-isolated card.** The things worktrees do NOT isolate — global git
+  config, installed dependencies, running services/DB state, untracked env files —
+  each with its mitigation. The skill's silent assumption, made explicit. *Trade-off:*
+  content only.
 
 ### Medium
 
@@ -486,6 +642,10 @@ self-discipline.
   become one structured question with a recommended default, replacing the prose
   back-and-forth before any directory is created. *Trade-off:* interaction polish only;
   mechanics unchanged.
+- **Option J — Concurrency budget** *(uses CC4)*. A default cap on simultaneous
+  worktrees (3) with one tracked todo per live tree; exceeding the cap forces a
+  finish-or-discard decision before creating the next. *Trade-off:* the cap is
+  arbitrary; the real constraint is the human's review bandwidth.
 
 ### Advanced
 
@@ -518,6 +678,18 @@ implicit.
   "Using [skill] to [purpose]" announcement, so the convention is imitable rather than
   abstract. *Trade-off:* spends always-loaded tokens; only worth it alongside the diet
   (A).
+- **Option G — Tiebreaker examples.** Three worked cases of the priority rule (process
+  skill before implementation skill): bug report + UI task, plan-exists + new idea,
+  review feedback + failing tests — each showing the chosen order and why.
+  *Trade-off:* spends always-loaded tokens; pairs with the diet (A).
+- **Option H — Skill-miss log.** A one-line convention for when a skill should have
+  fired but didn't (message, skill, why missed) — the raw corpus the trigger eval
+  harness (E) replays. *Trade-off:* self-reported misses undercount; still better than
+  no corpus.
+- **Option I — Red-flag refresh.** Add the three highest-frequency rationalizations
+  observed since upstream shipped ("the user is in a hurry", "I already know this
+  skill's content", "this is just a follow-up question") with rebuttals; prune three
+  stale rows in exchange. *Trade-off:* table churn; net-zero size by rule.
 
 ### Medium
 
@@ -531,6 +703,10 @@ implicit.
   subagent-driven-development; about to claim done → verification-before-completion"),
   making the workflow graph discoverable from the entry point. *Trade-off:* table must
   stay in sync as skills evolve.
+- **Option J — Declared skill chain.** On first contact with a non-trivial task, name
+  the expected skill chain in one line ("brainstorming → writing-plans → SDD") before
+  starting — making routing auditable and corrections cheap. *Trade-off:* the
+  declaration can be wrong; it's a prediction, not a contract.
 
 ### Advanced
 
@@ -561,6 +737,17 @@ the agent voluntarily running the gate function at the moment it's most tempted 
   that must trigger the gate ("done", "fixed", "should work now", "tests pass",
   "ready to merge") with the evidence-bearing rewrite each one requires. *Trade-off:*
   phrase lists are never exhaustive; the principle still has to carry novel phrasings.
+- **Option G — Honest-partial phrasing.** Approved language for reporting incomplete
+  work ("X verified by <evidence>; Y attempted, not verified because <reason>") so
+  the alternative to overclaiming isn't silence. *Trade-off:* content only.
+- **Option H — Evidence freshness rule.** Evidence expires when any relevant file
+  changes after the run; the gate requires the *latest* run, with one worked example
+  of a stale-green trap. *Trade-off:* "relevant file" is a judgment call; err toward
+  re-running.
+- **Option I — Negative-claim checks.** "Didn't break anything else" is a claim too:
+  the smoke-suite run, the usage grep, the build of dependents — evidence-table rows
+  for the claims everyone skips. *Trade-off:* full negative verification is unbounded;
+  scope it to the stated blast radius.
 
 ### Medium
 
@@ -573,6 +760,10 @@ the agent voluntarily running the gate function at the moment it's most tempted 
   per claim type made during the session; the completion message cannot be written
   while any verification todo is open. *Trade-off:* depends on the agent honestly
   enumerating its own claims — weaker than a hook, cheaper than one.
+- **Option J — Independent double-check.** High-stakes claims (migration applied, data
+  deleted, release tagged) require a second check by a *different* method than the one
+  that did the work (row count after the migration script, not the script's own exit
+  code). *Trade-off:* doubles verification cost; reserve for a named high-stakes list.
 
 ### Advanced
 
@@ -606,6 +797,17 @@ boundary where subagents consume it.
   ones ("add appropriate error handling" → the exact try/except block with file path
   and line anchor), three pairs covering the most common placeholder shapes.
   *Trade-off:* content only; overlaps what the linter (A) would catch mechanically.
+- **Option G — Task-size sniff test.** Signals a task is too big — more than ~5 steps,
+  more than ~3 files, an "and" in the title — with the split move for each.
+  *Trade-off:* content only.
+- **Option H — Per-task file lists.** Every task declares Create/Modify/Test paths up
+  front (upstream's format shows this; make it mandatory) — also the load-bearing
+  input for v2 `parallel-plan-executor`'s independence test. *Trade-off:* file lists
+  guessed early can drift; amend the plan, don't ignore them.
+- **Option I — Rollback notes.** Each risky task (migration, deletion, config change)
+  states its undo in one line; a plan that can't say how to undo a step is flagging a
+  design problem early. *Trade-off:* trivial for most tasks; the value concentrates in
+  the few risky ones.
 
 ### Medium
 
@@ -618,6 +820,10 @@ boundary where subagents consume it.
   tracked todos, and the handoff ends in one structured question (execute now / revise /
   dispatch a plan reviewer) instead of prose trailing off. *Trade-off:* process polish;
   plan content quality still rests on the checklist itself.
+- **Option J — Coverage todos** *(uses CC4)*. One tracked todo per spec requirement
+  while planning; the plan isn't done while any requirement lacks a mapped task —
+  Option C's matrix, enforced during writing instead of assembled at the end.
+  *Trade-off:* requires the spec to enumerate requirements cleanly.
 
 ### Advanced
 
@@ -651,6 +857,17 @@ inline, and "run pressure scenarios with subagents" is described, never automate
   (always-loaded / workflow / reference), giving CC6 a concrete number per class — and
   giving the linter (C) something mechanical to enforce later. *Trade-off:* numbers
   invite gaming; budgets need a stated escape hatch for genuinely irreducible skills.
+- **Option G — Trigger-phrase inventory.** Per skill, list the literal user phrasings
+  that should fire it ("this is broken", "why is this failing" →
+  systematic-debugging); write descriptions *from* the inventory rather than guessing
+  cue words. *Trade-off:* inventories go stale as usage evolves; date them.
+- **Option H — Skill-rot table.** The signs an existing skill is decaying — dangling
+  references, a growing FAQ section, users routinely bypassing it, examples that no
+  longer run — each with the repair move. *Trade-off:* content only.
+- **Option I — One-job test.** A quick check that a skill has a single trigger
+  condition; if the description needs "or" twice, it's probably two skills — cheap
+  decomposition pressure at authoring time. *Trade-off:* over-splitting fragments the
+  library; the test is a prompt, not a rule.
 
 ### Medium
 
@@ -663,6 +880,11 @@ inline, and "run pressure scenarios with subagents" is described, never automate
   tracked todos, so the RED step (write the failing pressure test first) can't be
   silently skipped on the way to shipping a skill. *Trade-off:* ceremony for trivial
   description tweaks; needs a small-edit fast-path.
+- **Option J — Description A/B drafting.** When writing or editing a description,
+  draft two candidates and check both against the trigger-phrase inventory (G) before
+  picking — descriptions are the highest-leverage 50 words in any skill. *Trade-off:*
+  doubles drafting effort for a marginal-looking gain that compounds across every
+  session.
 
 ### Advanced
 
@@ -702,3 +924,26 @@ inline, and "run pressure scenarios with subagents" is described, never automate
 | writing-skills | B — Pressure-test harness (+C linter) | Advanced | — | pending |
 
 Skill renaming decisions are tracked separately in `RENAMING-OPTIONS.md`.
+
+---
+
+## Work orders from the 2026-06-10 v2 re-analysis
+
+Four procedure gaps found in the fresh v1 re-read are in-place improvements to
+existing v1 skills, not v2 skills (spec:
+`docs/superpowers/specs/2026-06-10-v2-reanalysis-design.md`, "Rejected and
+re-routed"). Fold each into its skill's next supercharging pass:
+
+- **brainstorming — spec self-review rubric.** The self-review step lists four
+  dimensions (placeholders, consistency, scope, ambiguity) with no pass/fail
+  criteria per dimension. Add a concrete rubric with one example failure each.
+- **test-driven-development — RED-phase validation checklist.** "Verify the test
+  fails correctly" names symptoms but no procedure. Add a checklist
+  distinguishing assertion-failure from error, expected-message match, and
+  fails-for-the-right-reason confirmation.
+- **systematic-debugging — instrumentation recipes.** "Add diagnostic
+  instrumentation at component boundaries" has no how. Add a short recipe table
+  per context (app code, test harness, CI pipeline, external service boundary).
+- **writing-plans — task-granularity heuristic.** The 2–5-minute step rule has
+  no estimation procedure. Add the three-question check: one sentence to
+  describe? one observable outcome? no hidden sub-decisions?
