@@ -43,6 +43,50 @@ Use for ANY technical issue:
 - You're in a hurry (rushing guarantees rework)
 - Manager wants it fixed NOW (systematic is faster than thrashing)
 
+## The Debugging Ledger
+
+The four phases write to a **ledger** — one structured block you keep updated as you
+work (in your response, or in a scratch file for long hunts). The ledger is the gate
+artifact: every claim lives in it as a literal command + output, not as memory or
+paraphrase.
+
+```
+DEBUG LEDGER: <one-line symptom>
+
+SYMPTOM:  <literal error text — copied, not paraphrased>
+REPRO:    <command> → <literal output>   (or NOT-REPRODUCIBLE: <what you tried>)
+
+EVIDENCE:
+  E1: <command or check> → <literal output> — <what it shows>
+  E2: ...
+
+HYPOTHESES:
+  H1: <X is the root cause because Y> | predicts: <observation if true>
+      | test: <command> → <literal output> | CONFIRMED / REFUTED
+  H2: ...
+
+FIX ATTEMPTS: <count>        # 3+ → question the architecture (Phase 4, step 5)
+
+FIX:      <change made> | failing test: <command> → <red output>
+VERIFY:   <command> → <green output> | full suite: <command> → <output>
+```
+
+**Ledger rules:**
+- Each phase fills its rows before you leave it: Phase 1 → SYMPTOM / REPRO / EVIDENCE,
+  Phase 2 → more EVIDENCE rows, Phase 3 → HYPOTHESES, Phase 4 → FIX / VERIFY.
+- **No Phase 4 without a hypothesis entry marked CONFIRMED.** A confirmed entry carries
+  the test command and the literal output that confirmed it.
+- Refuted hypotheses stay in the ledger, marked REFUTED. They are evidence too.
+- Increment FIX ATTEMPTS every time a fix is tried. The "question the architecture at
+  3+" rule reads this counter, not your recollection.
+
+**2-minute fast-path (trivial bugs):** If the error message names the exact location,
+the fix is obviously one small change, and a test can prove it, compress the ledger to
+three lines — SYMPTOM (literal error), H1 with its confirming test + output, VERIFY.
+The gate still holds: even the compressed ledger needs a CONFIRMED H1 before the fix.
+If the "trivial" fix doesn't verify on the first try, the bug was not trivial — expand
+to the full ledger and start Phase 1 properly.
+
 ## The Four Phases
 
 You MUST complete each phase before proceeding to the next.
@@ -119,6 +163,9 @@ You MUST complete each phase before proceeding to the next.
    - Keep tracing up until you find the source
    - Fix at source, not at symptom
 
+**Ledger gate:** Phase 1 is complete when the SYMPTOM, REPRO, and EVIDENCE rows hold
+literal commands and output. "I looked at it" is not an evidence row.
+
 ### Phase 2: Pattern Analysis
 
 **Find the pattern before fixing:**
@@ -142,13 +189,16 @@ You MUST complete each phase before proceeding to the next.
    - What settings, config, environment?
    - What assumptions does it make?
 
+**Ledger gate:** record each working-vs-broken difference as an EVIDENCE row.
+
 ### Phase 3: Hypothesis and Testing
 
 **Scientific method:**
 
 1. **Form Single Hypothesis**
    - State clearly: "I think X is the root cause because Y"
-   - Write it down
+   - Write it as a HYPOTHESES entry in the ledger, including the observation it
+     predicts if true
    - Be specific, not vague
 
 2. **Test Minimally**
@@ -157,8 +207,8 @@ You MUST complete each phase before proceeding to the next.
    - Don't fix multiple things at once
 
 3. **Verify Before Continuing**
-   - Did it work? Yes → Phase 4
-   - Didn't work? Form NEW hypothesis
+   - Did it work? Yes → mark the entry CONFIRMED (test command + literal output) → Phase 4
+   - Didn't work? Mark the entry REFUTED, keep it, form NEW hypothesis
    - DON'T add more fixes on top
 
 4. **When You Don't Know**
@@ -167,7 +217,14 @@ You MUST complete each phase before proceeding to the next.
    - Ask for help
    - Research more
 
+**Ledger gate:** every hypothesis tested has a HYPOTHESES entry with its predicted
+observation, the test command, the literal result, and CONFIRMED or REFUTED. Phase 3
+is complete only when one entry reads CONFIRMED.
+
 ### Phase 4: Implementation
+
+**Entry gate: the ledger must contain a hypothesis entry marked CONFIRMED.** If it
+doesn't, you are still in Phase 3 — go back.
 
 **Fix the root cause, not the symptom:**
 
@@ -188,10 +245,11 @@ You MUST complete each phase before proceeding to the next.
    - Test passes now?
    - No other tests broken?
    - Issue actually resolved?
+   - Record the FIX and VERIFY ledger rows: commands + literal output
 
 4. **If Fix Doesn't Work**
    - STOP
-   - Count: How many fixes have you tried?
+   - Increment FIX ATTEMPTS in the ledger and read the counter — don't trust recall
    - If < 3: Return to Phase 1, re-analyze with new information
    - **If ≥ 3: STOP and question the architecture (step 5 below)**
    - DON'T attempt Fix #4 without architectural discussion
@@ -224,6 +282,7 @@ If you catch yourself thinking:
 - "Pattern says X but I'll adapt it differently"
 - "Here are the main problems: [lists fixes without investigation]"
 - Proposing solutions before tracing data flow
+- Writing a fix while the ledger has no hypothesis entry marked CONFIRMED
 - **"One more fix attempt" (when already tried 2+)**
 - **Each fix reveals new problem in different place**
 
@@ -254,15 +313,16 @@ If you catch yourself thinking:
 | "Reference too long, I'll adapt the pattern" | Partial understanding guarantees bugs. Read it completely. |
 | "I see the problem, let me fix it" | Seeing symptoms ≠ understanding root cause. |
 | "One more fix attempt" (after 2+ failures) | 3+ failures = architectural problem. Question pattern, don't fix again. |
+| "The ledger is overkill for this bug" | Use the 2-minute fast-path — three lines. Skipping entirely is how "trivial" bugs eat an afternoon. |
 
 ## Quick Reference
 
-| Phase | Key Activities | Success Criteria |
-|-------|---------------|------------------|
-| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
-| **2. Pattern** | Find working examples, compare | Identify differences |
-| **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
-| **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+| Phase | Key Activities | Ledger Rows | Success Criteria |
+|-------|---------------|-------------|------------------|
+| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | SYMPTOM, REPRO, EVIDENCE | Understand WHAT and WHY |
+| **2. Pattern** | Find working examples, compare | More EVIDENCE rows | Identify differences |
+| **3. Hypothesis** | Form theory, test minimally | HYPOTHESES (one CONFIRMED) | Confirmed or new hypothesis |
+| **4. Implementation** | Create test, fix, verify | FIX, VERIFY, FIX ATTEMPTS | Bug resolved, tests pass |
 
 ## When Process Reveals "No Root Cause"
 
@@ -294,3 +354,33 @@ From debugging sessions:
 - Random fixes approach: 2-3 hours of thrashing
 - First-time fix rate: 95% vs 40%
 - New bugs introduced: Near zero vs common
+
+## Supercharged vs upstream
+
+Option A — Debugging ledger, recommended option adopted 2026-06-11 (Medium band;
+uses CC5 evidence capture, with the CC7-style 2-minute fast-path the option requires).
+
+What changed and why — upstream's hypotheses and evidence lived only in conversation
+prose, so phase exits were unverifiable and "how many fixes have we tried?" was a hunch:
+
+- **Added "The Debugging Ledger" section** — a fixed-format gate artifact
+  (SYMPTOM → REPRO → EVIDENCE → HYPOTHESES with predicted observations → FIX
+  ATTEMPTS → FIX/VERIFY) where every claim embeds the literal command + output that
+  proves it (CC5), plus the 2-minute fast-path that compresses the ledger to three
+  lines for genuinely trivial bugs while keeping the confirmed-hypothesis gate.
+- **Phase 1–3 each gained a "Ledger gate" line** stating which rows must be filled
+  before leaving the phase, so phases can no longer blur together.
+- **Phase 3 edits:** "Write it down" now writes the hypothesis as a ledger entry with
+  its predicted observation; verified entries are marked CONFIRMED with the test
+  command + output; refuted entries stay in the ledger marked REFUTED.
+- **Phase 4 gained an entry gate:** no implementation without a CONFIRMED hypothesis
+  entry. Step 3 records the FIX/VERIFY rows; step 4 increments and reads the ledger's
+  FIX ATTEMPTS counter instead of recall, giving "question the architecture after 3
+  fixes" a real counter to read.
+- **Red Flags:** added "writing a fix while the ledger has no CONFIRMED hypothesis".
+- **Common Rationalizations:** added the "ledger is overkill" row, answered by the
+  fast-path.
+- **Quick Reference:** added a "Ledger Rows" column mapping each phase to its entries.
+
+All other upstream content (Iron Law, four-phase structure, examples, reference files)
+is unchanged.

@@ -123,6 +123,10 @@ Confirm:
 - Failure message is expected
 - Fails because feature missing (not typos)
 
+Then capture the RED half of this behavior's evidence block (see
+[Red-Green Evidence Trail](#red-green-evidence-trail)): the exact command plus the
+failing assertion line. Captured now, not reconstructed later.
+
 **Test passes?** You're testing existing behavior. Fix test.
 
 **Test errors?** Fix error, re-run until it fails correctly.
@@ -178,6 +182,9 @@ Confirm:
 - Other tests still pass
 - Output pristine (no errors, warnings)
 
+Then capture the GREEN half of the evidence block: the exact command plus the
+pass/fail summary line. A behavior is done only when its block has both halves.
+
 **Test fails?** Fix code, not test.
 
 **Other tests fail?** Fix now.
@@ -194,6 +201,33 @@ Keep tests green. Don't add behavior.
 ### Repeat
 
 Next failing test for next feature.
+
+## Red-Green Evidence Trail
+
+"I watched it fail" is a claim. The evidence trail makes it checkable.
+
+For every behavior, record one evidence block in this fixed format — exact command,
+real output, trimmed to the lines that prove the state:
+
+```
+EVIDENCE: rejects empty email
+RED   $ npm test src/form.test.ts
+      FAIL  expected 'Email required', received undefined
+GREEN $ npm test src/form.test.ts
+      PASS  12 passed, 0 failed
+```
+
+Rules:
+- RED is captured before any implementation code exists; GREEN after. Never
+  reconstructed from memory or pasted from an earlier session.
+- Trim to the failing assertion line (RED) and the suite summary line (GREEN). Full
+  output dumps add bulk without adding proof — on long sessions, trimming is what
+  keeps the trail affordable.
+- A behavior with no RED entry was not test-driven. Delete the code, start over.
+
+The trail is what `verification-before-completion` consumes: a captured RED run
+already proves the test can fail, satisfying its regression-test red-green pattern
+without the revert-fix-and-rerun dance. Point at the block instead of re-claiming.
 
 ## Good Tests
 
@@ -274,6 +308,7 @@ Tests-first force edge case discovery before implementing. Tests-after verify yo
 - Code before test
 - Test after implementation
 - Test passes immediately
+- Evidence block missing, half-filled, or written from memory after the fact
 - Can't explain why test failed
 - Tests added "later"
 - Rationalizing "just this once"
@@ -330,6 +365,7 @@ Before marking work complete:
 
 - [ ] Every new function/method has a test
 - [ ] Watched each test fail before implementing
+- [ ] Evidence trail complete: every behavior has a RED + GREEN block (command + output)
 - [ ] Each test failed for expected reason (feature missing, not typo)
 - [ ] Wrote minimal code to pass each test
 - [ ] All tests pass
@@ -369,3 +405,34 @@ Otherwise → not TDD
 ```
 
 No exceptions without your human partner's permission.
+
+## Supercharged vs upstream
+
+Option A — Red-green evidence trail, recommended option adopted 2026-06-11.
+Implements CC5 (evidence capture: claims embed the literal command + output in a
+fixed format other skills can consume).
+
+Changes vs upstream obra/superpowers 5.1.0:
+
+- Added `## Red-Green Evidence Trail` section: a fixed per-behavior evidence block
+  (`EVIDENCE:` / `RED` / `GREEN`, command + output trimmed to the proving lines),
+  with rules on capture timing and the no-RED-means-start-over consequence. Why:
+  upstream's "Verify RED/GREEN" steps are mandatory but purely self-attested —
+  "watched it fail" becomes checkable instead of claimed.
+- `### Verify RED - Watch It Fail`: added requirement to capture the RED half of
+  the block at fail time (command + failing assertion line).
+- `### Verify GREEN - Watch It Pass`: added requirement to capture the GREEN half
+  (command + pass summary); a behavior is done only when its block has both halves.
+- `## Red Flags`: added "Evidence block missing, half-filled, or written from
+  memory after the fact".
+- `## Verification Checklist`: added "Evidence trail complete" item.
+- Wired the trail into `verification-before-completion` (see
+  `v1/verification-before-completion/SKILL.md`): a captured RED run satisfies its
+  regression-test red-green pattern directly, so the trail is the artifact its gate
+  consumes rather than a fresh claim. Why: composes TDD into the verification chain
+  (CC2 for free, per the option's rationale).
+- Mitigates the option's stated trade-off (output capture bulks up long sessions)
+  by mandating trimmed output: failing assertion line for RED, suite summary line
+  for GREEN.
+
+All other content is verbatim upstream.

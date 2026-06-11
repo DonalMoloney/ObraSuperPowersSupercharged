@@ -134,6 +134,61 @@
       "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/bug-hunter/.claude-plugin",
       "rule_matched": "new-top-level-dir",
       "ts": "2026-06-11T03:38:41Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/skills/hoi-poi-capsule",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:41:08Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/chrome-devtools-toolkit/.claude-plugin",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:43:49Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/chrome-devtools-toolkit/skills/browser-evidence-debugging",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:46:35Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/chrome-devtools-toolkit/skills/performance-trace-audit",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:48:38Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/chrome-devtools-toolkit/skills/memory-leak-hunt",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:50:20Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/playwright-toolkit/.claude-plugin",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:51:53Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/playwright-toolkit/skills/ui-verification-loop",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:53:38Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/playwright-toolkit/skills/bug-reproduction-script",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:55:14Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v2/plugins/playwright-toolkit/skills/e2e-test-generation",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T03:57:01Z"
+    },
+    {
+      "file": "/tmp/toolkit-smoke",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-11T04:00:28Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-11T04:06:09Z"
     }
   ]
 }

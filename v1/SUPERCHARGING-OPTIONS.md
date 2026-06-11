@@ -1055,15 +1055,15 @@ inline, and "run pressure scenarios with subagents" is described, never automate
 | Skill | Recommended | Band | Chosen | Status |
 |---|---|---|---|---|
 | brainstorming | A — Fidelity contract (+B escape hatch) | Medium | **A** | implemented 2026-06-11 |
-| dispatching-parallel-agents | A — Harness-native dispatch | Advanced | — | pending |
-| executing-plans | C — Degraded-mode twin | Medium | — | pending |
-| finishing-a-development-branch | A — Scriptify (+B menu) | Advanced | — | pending |
-| receiving-code-review | A — Evidence-gated triage | Medium | — | pending |
-| requesting-code-review | A — Risk-scaled depth (via C bundler) | Medium+Adv | — | pending |
-| subagent-driven-development | A — Parallel waves | Advanced | — | pending |
-| systematic-debugging | A — Debugging ledger | Medium | — | pending |
-| test-driven-development | A — Red-green evidence trail | Medium | — | pending |
-| using-git-worktrees | A + C — Scriptify + baseline handshake | Adv+Medium | — | pending |
+| dispatching-parallel-agents | A — Harness-native dispatch | Advanced | **A** | implemented 2026-06-11 |
+| executing-plans | C — Degraded-mode twin | Medium | **C** | implemented 2026-06-11 |
+| finishing-a-development-branch | A — Scriptify (+B menu) | Advanced | **A** | implemented 2026-06-11 |
+| receiving-code-review | A — Evidence-gated triage | Medium | **A** | implemented 2026-06-11 |
+| requesting-code-review | A — Risk-scaled depth (via C bundler) | Medium+Adv | **A** | implemented 2026-06-11 |
+| subagent-driven-development | A — Parallel waves | Advanced | **A** | implemented 2026-06-11 |
+| systematic-debugging | A — Debugging ledger | Medium | **A** | implemented 2026-06-11 |
+| test-driven-development | A — Red-green evidence trail | Medium | **A** | implemented 2026-06-11 |
+| using-git-worktrees | A + C — Scriptify + baseline handshake | Adv+Medium | **A + C** | implemented 2026-06-11 |
 | using-superpowers | A + B — Token diet + routing table | Medium | — | pending |
 | verification-before-completion | A — Verification manifest | Advanced | — | pending |
 | writing-plans | A — Plan linter | Advanced | — | pending |

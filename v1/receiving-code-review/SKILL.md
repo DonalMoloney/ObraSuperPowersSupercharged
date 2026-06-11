@@ -19,10 +19,48 @@ WHEN receiving code review feedback:
 1. READ: Complete feedback without reacting
 2. UNDERSTAND: Restate requirement in own words (or ask)
 3. VERIFY: Check against codebase reality
-4. EVALUATE: Technically sound for THIS codebase?
+4. TRIAGE: Sound for THIS codebase? Classify each item:
+   implement / clarify / push back (see Evidence-Gated Triage)
 5. RESPOND: Technical acknowledgment or reasoned pushback
 6. IMPLEMENT: One item at a time, test each
 ```
+
+## Evidence-Gated Triage
+
+Every feedback item gets exactly one classification, and every classification is
+gated on an artifact. No item moves — no fix, no reply, no dismissal — until its
+artifact is captured.
+
+| Classification | Required artifact | The artifact is... |
+|----------------|-------------------|--------------------|
+| **Implement** | The verifying test | A test (or command + output) that fails now and passes when fixed — proof the issue is real, then proof the fix landed |
+| **Clarify** | The specific question | The literal question you will ask. "Item 4 is unclear" is not an artifact; "Should `parse()` reject or coerce empty strings?" is |
+| **Push back** | The contradicting output | The literal grep/test command and its output that contradicts the reviewer's claim |
+
+**Artifact format** (fixed, so the response can embed it verbatim):
+
+```
+Item: <reviewer's claim, restated>
+Classification: implement | clarify | push back
+Command: <what you ran>            (clarify: the question instead)
+Output: <literal output, trimmed to the relevant lines>
+```
+
+**Worked example:**
+
+```
+Item: "This endpoint is unused, remove it"
+Classification: push back
+Command: grep -rn "metrics/export" src/ tests/
+Output: src/cli/report.py:88:    fetch("/metrics/export?fmt=csv")
+Response: "It's called from src/cli/report.py:88. Keep it, or is the CLI report going away too?"
+```
+
+**Fast-path for trivial items:** typo-level feedback — typos, comment wording,
+import ordering, formatting — skips the pre-artifact. Still classify it (almost
+always implement); the diff of the fix is the artifact. Qualifies only if the fix
+is mechanical, single-site, and changes no behavior. Anything touching logic,
+APIs, security, or code deletion never takes the fast-path.
 
 ## Forbidden Responses
 
@@ -172,6 +210,7 @@ State the correction factually and move on.
 | Avoiding pushback | Technical correctness > comfort |
 | Partial implementation | Clarify all items first |
 | Can't verify, proceed anyway | State limitation, ask for direction |
+| Responding without the artifact | Capture command + output (or the specific question) first |
 
 ## Real Examples
 
@@ -211,3 +250,27 @@ When replying to inline review comments on GitHub, reply in the comment thread (
 Verify. Question. Then implement.
 
 No performative agreement. Technical rigor always.
+
+## Supercharged vs upstream
+
+Baseline: obra/superpowers 5.1.0 `receiving-code-review`, kept verbatim except as
+listed below. Change source: Option A — Evidence-gated triage, recommended option
+adopted 2026-06-11 (v1/SUPERCHARGING-OPTIONS.md; uses CC5 — evidence capture).
+
+- **Response pattern step 4** changed from `EVALUATE` (an instruction with no
+  procedure) to `TRIAGE`, pointing at the new gate. Why: upstream's "VERIFY: check
+  against codebase reality" told you to verify but never said what verified looks
+  like.
+- **Added "Evidence-Gated Triage" section.** Every item gets exactly one
+  classification — implement / clarify / push back — and each classification is
+  gated on an artifact: implement needs the verifying test, clarify needs the
+  literal question, push back needs the contradicting command + output. Artifacts
+  use a fixed format (item / classification / command / output) so responses embed
+  evidence verbatim instead of asserting it.
+- **Added the trivial-item fast-path** (the option's stated trade-off): typo-level,
+  single-site, behavior-free fixes use the fix diff as the artifact; logic, API,
+  security, and deletion items never qualify.
+- **Added one Common Mistakes row** ("Responding without the artifact") so the gate
+  appears in the failure table, not just the procedure.
+
+Everything else is upstream-verbatim.

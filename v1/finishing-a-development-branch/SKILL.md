@@ -11,6 +11,11 @@ Guide completion of development work by presenting clear options and handling ch
 
 **Core principle:** Verify tests → Detect environment → Present options → Execute choice → Clean up.
 
+The mechanical steps — environment detection, CWD-safe merge, provenance-checked
+cleanup — are implemented in `scripts/finish-branch.sh` (next to this file). The
+skill text covers the judgment calls: verifying tests, presenting the choice,
+writing the PR, confirming destruction.
+
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
 ## The Process
@@ -39,84 +44,89 @@ Stop. Don't proceed to Step 2.
 
 ### Step 2: Detect Environment
 
-**Determine workspace state before presenting options:**
+**Run the helper — don't re-derive the git state by hand:**
 
 ```bash
-GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
-GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
+scripts/finish-branch.sh detect
 ```
 
-This determines which menu to show and how cleanup works:
+(Path is relative to this skill's directory.)
 
-| State | Menu | Cleanup |
-|-------|------|---------|
-| `GIT_DIR == GIT_COMMON` (normal repo) | Standard 4 options | No worktree to clean up |
-| `GIT_DIR != GIT_COMMON`, named branch | Standard 4 options | Provenance-based (see Step 6) |
-| `GIT_DIR != GIT_COMMON`, detached HEAD | Reduced 3 options (no merge) | No cleanup (externally managed) |
-
-### Step 3: Determine Base Branch
-
-```bash
-# Try common base branches
-git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
-```
-
-Or ask: "This branch split from main - is that correct?"
-
-### Step 4: Present Options
-
-**Normal repo and named-branch worktree — present exactly these 4 options:**
+Output is a fixed key=value block:
 
 ```
-Implementation complete. What would you like to do?
-
-1. Merge back to <base-branch> locally
-2. Push and create a Pull Request
-3. Keep the branch as-is (I'll handle it later)
-4. Discard this work
-
-Which option?
+STATE=normal-repo | worktree-branch | worktree-detached
+BRANCH=<branch name or DETACHED>
+BASE_BRANCH=main | master | UNKNOWN
+WORKTREE_PATH=<path>
+MAIN_ROOT=<path>
+PROVENANCE=none | superpowers | external
+MENU=standard-4 | detached-3
+CLEANUP=no-worktree | script-owned | harness-owned-do-not-remove
 ```
 
-**Detached HEAD — present exactly these 3 options:**
+- `MENU` selects which menu to present in Step 3.
+- `CLEANUP` says who owns workspace cleanup: `script-owned` worktrees are removed
+  by the `cleanup` subcommand; `harness-owned-do-not-remove` worktrees are never
+  removed (the script refuses by design — if your platform provides a
+  workspace-exit tool, use it; otherwise leave the workspace in place).
+- If `BASE_BRANCH=UNKNOWN`, ask: "This branch split from main - is that correct?"
+  and pass the answer explicitly to `merge` in Step 4.
 
-```
-Implementation complete. You're on a detached HEAD (externally managed workspace).
+### Step 3: Present Options
 
-1. Push as new branch and create a Pull Request
-2. Keep as-is (I'll handle it later)
-3. Discard this work
+**Use a structured multiple-choice question (AskUserQuestion-style) with a
+recommended default — not a prose menu.**
 
-Which option?
-```
+**Recommended default:** "Push and create a Pull Request" when an `origin` remote
+exists (`git remote get-url origin`), otherwise "Merge back locally".
 
-**Don't add explanation** - keep options concise.
+**`MENU=standard-4` — present exactly these 4 options:**
 
-### Step 5: Execute Choice
+| # | Label | Description |
+|---|-------|-------------|
+| 1 | Merge back to <base-branch> locally | Land it now: merge, retest, clean up branch and worktree |
+| 2 | Push and create a Pull Request | Send for review; branch and worktree stay for iteration |
+| 3 | Keep the branch as-is | I'll handle it later; nothing changes |
+| 4 | Discard this work | Destructive: deletes branch, commits, and worktree (typed confirmation required) |
+
+**`MENU=detached-3` — present exactly these 3 options (no local merge on a
+detached HEAD):**
+
+| # | Label | Description |
+|---|-------|-------------|
+| 1 | Push as new branch and create a Pull Request | Send for review |
+| 2 | Keep as-is | I'll handle it later; nothing changes |
+| 3 | Discard this work | Destructive: deletes commits (typed confirmation required) |
+
+**Don't add explanation beyond the descriptions** - keep options concise.
+
+### Step 4: Execute Choice
 
 #### Option 1: Merge Locally
 
 ```bash
-# Get main repo root for CWD safety
-MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
-cd "$MAIN_ROOT"
-
-# Merge first — verify success before removing anything
-git checkout <base-branch>
-git pull
-git merge <feature-branch>
-
-# Verify tests on merged result
-<test command>
-
-# Only after merge succeeds: cleanup worktree (Step 6), then delete branch
+scripts/finish-branch.sh merge <feature-branch> [base-branch]
 ```
 
-Then: Cleanup worktree (Step 6), then delete branch:
+The script cds to the main repo root (CWD safety), checks out the base branch,
+fast-forwards from upstream when one exists, merges, and prints `MERGE_SHA=<sha>`.
+On conflict it stops and leaves branch and worktree intact.
+
+Then verify tests on the merged result:
 
 ```bash
-git branch -d <feature-branch>
+<test command>
 ```
+
+**Only after tests pass on the merged result:**
+
+```bash
+scripts/finish-branch.sh cleanup <feature-branch>
+```
+
+`cleanup` removes the worktree first (provenance-checked, executed from the main
+root), then deletes the branch — in that order, by construction.
 
 #### Option 2: Push and Create PR
 
@@ -135,13 +145,14 @@ EOF
 )"
 ```
 
-**Do NOT clean up worktree** — user needs it alive to iterate on PR feedback.
+**Do NOT run `cleanup`** — user needs the branch and worktree alive to iterate on
+PR feedback.
 
 #### Option 3: Keep As-Is
 
 Report: "Keeping branch <name>. Worktree preserved at <path>."
 
-**Don't cleanup worktree.**
+**Don't run `cleanup`.**
 
 #### Option 4: Discard
 
@@ -155,50 +166,26 @@ This will permanently delete:
 Type 'discard' to confirm.
 ```
 
-Wait for exact confirmation.
+Wait for exact confirmation. The structured choice in Step 3 does NOT replace
+this — discard always requires the typed word.
 
 If confirmed:
-```bash
-MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
-cd "$MAIN_ROOT"
-```
-
-Then: Cleanup worktree (Step 6), then force-delete branch:
-```bash
-git branch -D <feature-branch>
-```
-
-### Step 6: Cleanup Workspace
-
-**Only runs for Options 1 and 4.** Options 2 and 3 always preserve the worktree.
 
 ```bash
-GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
-GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
-WORKTREE_PATH=$(git rev-parse --show-toplevel)
+scripts/finish-branch.sh cleanup <feature-branch> --force
 ```
 
-**If `GIT_DIR == GIT_COMMON`:** Normal repo, no worktree to clean up. Done.
-
-**If worktree path is under `.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`:** Superpowers created this worktree — we own cleanup.
-
-```bash
-MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
-cd "$MAIN_ROOT"
-git worktree remove "$WORKTREE_PATH"
-git worktree prune  # Self-healing: clean up any stale registrations
-```
-
-**Otherwise:** The host environment (harness) owns this workspace. Do NOT remove it. If your platform provides a workspace-exit tool, use it. Otherwise, leave the workspace in place.
+`--force` uses `git branch -D`. The provenance check still applies: the script
+refuses to remove harness-owned worktrees even when discarding.
 
 ## Quick Reference
 
-| Option | Merge | Push | Keep Worktree | Cleanup Branch |
-|--------|-------|------|---------------|----------------|
-| 1. Merge locally | yes | - | - | yes |
-| 2. Create PR | - | yes | yes | - |
-| 3. Keep as-is | - | - | yes | - |
-| 4. Discard | - | - | - | yes (force) |
+| Option | Merge | Push | Keep Worktree | Cleanup Branch | Script command |
+|--------|-------|------|---------------|----------------|----------------|
+| 1. Merge locally | yes | - | - | yes | `merge`, test, then `cleanup` |
+| 2. Create PR | - | yes | yes | - | none |
+| 3. Keep as-is | - | - | yes | - | none |
+| 4. Discard | - | - | - | yes (force) | `cleanup <branch> --force` |
 
 ## Common Mistakes
 
@@ -208,44 +195,44 @@ git worktree prune  # Self-healing: clean up any stale registrations
 
 **Open-ended questions**
 - **Problem:** "What should I do next?" is ambiguous
-- **Fix:** Present exactly 4 structured options (or 3 for detached HEAD)
+- **Fix:** Present the structured choice with a recommended default (4 options, or 3 for detached HEAD)
 
 **Cleaning up worktree for Option 2**
 - **Problem:** Remove worktree user needs for PR iteration
-- **Fix:** Only cleanup for Options 1 and 4
-
-**Deleting branch before removing worktree**
-- **Problem:** `git branch -d` fails because worktree still references the branch
-- **Fix:** Merge first, remove worktree, then delete branch
-
-**Running git worktree remove from inside the worktree**
-- **Problem:** Command fails silently when CWD is inside the worktree being removed
-- **Fix:** Always `cd` to main repo root before `git worktree remove`
-
-**Cleaning up harness-owned worktrees**
-- **Problem:** Removing a worktree the harness created causes phantom state
-- **Fix:** Only clean up worktrees under `.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`
+- **Fix:** Only run `cleanup` for Options 1 and 4
 
 **No confirmation for discard**
 - **Problem:** Accidentally delete work
 - **Fix:** Require typed "discard" confirmation
+
+**Hand-rolling the mechanics with raw git**
+- **Problem:** Re-deriving detection/merge/cleanup reintroduces the classic failures: `git worktree remove` run from inside the worktree being removed, branch deleted before its worktree (so `git branch -d` fails), harness-owned worktrees removed (phantom state)
+- **Fix:** Use `scripts/finish-branch.sh` — it prevents all three by construction (cds to main root first, removes worktree before branch delete, refuses worktrees outside `.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`)
 
 ## Red Flags
 
 **Never:**
 - Proceed with failing tests
 - Merge without verifying tests on result
-- Delete work without confirmation
+- Delete work without typed confirmation
 - Force-push without explicit request
-- Remove a worktree before confirming merge success
-- Clean up worktrees you didn't create (provenance check)
-- Run `git worktree remove` from inside the worktree
+- Run `cleanup` before confirming the merge succeeded and tests pass on the result (Option 1)
+- Hand-roll the detect/merge/cleanup mechanics that `finish-branch.sh` implements
 
 **Always:**
 - Verify tests before offering options
-- Detect environment before presenting menu
-- Present exactly 4 options (or 3 for detached HEAD)
+- Run `finish-branch.sh detect` before presenting the menu
+- Present the structured choice with a recommended default (4 options, or 3 for detached HEAD)
 - Get typed confirmation for Option 4
-- Clean up worktree for Options 1 & 4 only
-- `cd` to main repo root before worktree removal
-- Run `git worktree prune` after removal
+- Run `cleanup` for Options 1 & 4 only
+
+## Supercharged vs upstream
+
+Baseline: obra/superpowers 5.1.0 `finishing-a-development-branch`, otherwise verbatim. Change applied: **Option A — Scriptify (+B menu), recommended option adopted 2026-06-11** (v1/SUPERCHARGING-OPTIONS.md).
+
+What changed and why:
+
+- **Shipped `scripts/finish-branch.sh` with `detect|merge|cleanup` subcommands** (Option A, CC3): environment detection, base-branch inference, CWD-safe merge, and provenance-checked worktree-then-branch cleanup are now executed, not re-derived from prose each time. Why: this skill was ~80% mechanical, and three of upstream's seven Common Mistakes (worktree removal from inside the worktree, branch-before-worktree deletion order, harness-owned cleanup) were prose rules the agent could violate — the script makes them impossible by construction (it cds to `MAIN_ROOT` first, removes the worktree before deleting the branch, and refuses worktrees outside the superpowers-owned paths).
+- **Steps 2–6 collapsed into Steps 2–4 around script calls**: upstream's hand-written `GIT_DIR`/`GIT_COMMON` detection, base-branch probing, merge recipe, and cleanup procedure are replaced by `detect` (fixed key=value output the agent reads), `merge` (stops on conflict, prints `MERGE_SHA`), and `cleanup` (`--force` for discard). Why: SKILL.md now carries only the judgment calls — verify tests, choose an exit, write the PR body, confirm destruction — per Option A's "skill text shrinks to judgment calls".
+- **Structured exit menu with recommended default** (Option B folded in, CC1): the prose 4-option/3-option menus become AskUserQuestion-style structured choices with per-option descriptions and a recommended default (PR when an `origin` remote exists, local merge otherwise). Why: prose menus get misread; structured choices don't. Discard keeps its typed-"discard" confirmation on top of the structured choice.
+- **Common Mistakes and Red Flags rewritten to match**: the three script-prevented mistakes collapse into one "hand-rolling the mechanics" entry; the remaining entries (test verification, structured choice, Option-2 preservation, typed discard) stay as judgment rules. Why: prose warnings should only cover what the script can't enforce.
