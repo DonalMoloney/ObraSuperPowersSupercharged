@@ -41,9 +41,7 @@ with an install hint.
 4. **Repeat the suspect action N times, N ≥ 3.** More repetitions make the
    leak's growth linear and unmistakable in the diff.
 5. **Second snapshot.** `take_heapsnapshot`.
-6. **Diff by constructor.** Compare retained object counts between snapshots
-   via `get_heapsnapshot_summary`, drilling into growing classes with
-   `get_heapsnapshot_class_nodes` and `get_heapsnapshot_retainers`.
+6. **Diff by constructor.** Compare retained object counts between snapshots.
    A real leak shows count growth proportional to N (e.g. +3 `Subscription`
    after 3 repetitions). Ignore noise that does not scale with N.
 7. **Produce the leak report** (the gate artifact):
