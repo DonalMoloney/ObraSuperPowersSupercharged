@@ -1,19 +1,34 @@
 # Skill & Plugin Manifest
 
-Generated 2026-06-11 from the filesystem (`SKILL.md` count). The filesystem is the
+Generated 2026-06-13 from the filesystem (`SKILL.md` count). The filesystem is the
 source of truth — README/CLAUDE.md prose counts may lag behind promotions/removals.
+Regenerate counts with `find v1 v2 v3 v4 v5 frontend -name SKILL.md | wc -l`.
+
+**Recent changes (2026-06-13):** three batches landed. (1) **12 fork skills promoted** out of
+v5 into the committed tiers (9 → v2, 2 → v3, 1 → v4), so v5 dropped 84 → 72 and the disk
+total was unchanged by that batch. (2) **6 net-new idea-sourced skills** designed from
+`SelfImprovingAgent/TOPIDEAS.md` (5 → v3 self-improvement loop, 1 → v4 `selective-priming`),
+raising the disk total 166 → 172. (3) **Cross-repo import wave** (from `IMPORT-CANDIDATES.md`,
+marked ⬇ below): v4 `karpathy-think` + `boris-compound`; v2 `semantic-skill-router`,
+`skill-graph`, `eval-driven-dev` (plus previously-undocumented `ubiquitous-language`); and a
+new v2 plugin `skill-quality-gate` (skills `skill-evaluator` + `skill-quality-validator`) —
+disk total → 180, plugins → 5. See `MANIFESTFLOW.html` for the commitment/build-on view.
+
+> **Snapshot note:** the counts below are a point-in-time census taken 2026-06-13 15:33 local.
+> Concurrent sessions are actively importing, so a live `find` may already exceed these —
+> regenerate with the command above before relying on exact totals.
 
 ## Totals
 
 | Tier | Skills | Plugins | Notes |
 |---|---:|---:|---|
 | v1 (supercharged obra core) | 14 | 0 | Flat layout, all 14 upstream identities, all supercharged |
-| v2 (supporting skills/plugins) | 42 | 4 | 36 standalone skills + 6 skills embedded in 2 toolkit plugins |
-| v3 (experimental AI ideas) | 12 | 0 | All `status: experimental` |
-| v4 (Karpathy/Cherny tools) | 6 | 0 | 3 Karpathy-inspired, 3 Cherny-inspired |
-| v5 (Forge fork holding area) | 84 | 0 | 70 flat + 14 nested in 8 fork category folders |
+| v2 (supporting skills/plugins) | 57 | 5 | 49 standalone skills + 8 skills embedded in 3 of the 5 toolkit plugins |
+| v3 (experimental AI ideas) | 19 | 0 | All `status: experimental` |
+| v4 (Karpathy/Cherny tools) | 10 | 0 | 5 Karpathy-inspired, 5 Cherny-inspired |
+| v5 (Forge fork holding area) | 72 | 0 | 58 flat + 14 nested in 8 fork category folders |
 | frontend (domain folder) | 8 | 0 | Browser-tool-driven; clusters: design/verify/debug/perf |
-| **Total** | **166** | **4** | |
+| **Total** | **180** | **5** | |
 
 ## v1 — Core workflow backbone (14 skills)
 
@@ -30,22 +45,24 @@ ideate → plan → isolate → implement (TDD) → debug → verify → review 
 | Workspace & completion | using-git-worktrees, finishing-a-development-branch | Isolation per effort; structured merge/PR/cleanup exits |
 | Meta | using-superpowers, writing-skills | Skill discovery and skill authoring discipline |
 
-## v2 — Supporting skills (36) and plugins (4)
+## v2 — Supporting skills (49) and plugins (5)
 
 Every v2 skill names the v1 skill(s) it supports (`supports:` frontmatter).
 Impact: multiplies v1 — tighter loops, stronger gates, parallel throughput.
+The 2026-06-13 promotion batch added 9 skills (marked ⬆); the cross-repo import
+wave added more (marked ⬇).
 
 | Group | Count | Skills | Impact |
 |---|---:|---|---|
-| Planning & ideation amplifiers | 8 | red-team-spec, scouter, fusion-dance, write-adr, decision-ledger, scope-decomposition, track-assumption, compile-goal-to-contract | Stress-test specs, record decisions/assumptions, decompose scope before execution |
-| Debugging amplifiers | 7 | loop-until-green, zenkai-boost, instant-transmission, dragon-radar, kaioken, incident-postmortem, delta-debugger | Faster fault isolation, post-incident learning, automated shrink-the-repro |
-| Verification & quality gates | 5 | done-gate, blast-radius, devils-advocate, security-audit, gravity-chamber | Hard "done" criteria, impact analysis, adversarial self-review, security pass |
-| Parallel & subagent orchestration | 6 | merge-parallel-results, parallel-plan-executor, shenron-wish, dispatch-triage, reviewer-lenses, migrate-codebase | Plan-level fan-out, result merging, multi-lens parallel review, bulk migration |
-| Skill authoring & meta | 4 | compress-md, skill-lint, house-rules, hyperbolic-time-chamber | Keeps the skill library itself lean, linted, and consistent |
+| Planning & ideation amplifiers | 11 | red-team-spec, scouter, fusion-dance, write-adr, decision-ledger, scope-decomposition, track-assumption, compile-goal-to-contract, spec-from-codebase ⬆, database-migration-planner ⬆, ubiquitous-language | Stress-test specs, record decisions/assumptions, decompose scope, reverse-spec undocumented code, risk-assess migrations, extract a DDD ubiquitous-language glossary |
+| Debugging amplifiers | 8 | loop-until-green, zenkai-boost, instant-transmission, dragon-radar, kaioken, incident-postmortem, delta-debugger, hypothesis-ranker ⬆ | Faster fault isolation, post-incident learning, shrink-the-repro, Bayesian hypothesis ranking |
+| Verification & quality gates | 9 | done-gate, blast-radius, devils-advocate, security-audit, gravity-chamber, evidence-trail ⬆, test-impact-analysis ⬆, detect-agent-cheats ⬆, eval-driven-dev ⬇ | Hard "done" criteria, impact analysis, adversarial self-review, security pass, hash-chained evidence, test selection, subagent-cheat audit, eval-suite-driven iteration for LLM features |
+| Parallel & subagent orchestration | 7 | merge-parallel-results, parallel-plan-executor, shenron-wish, dispatch-triage, reviewer-lenses, migrate-codebase, conflict-graph-scheduler ⬆ | Plan-level fan-out, result merging, multi-lens review, bulk migration, pre-dispatch independence/conflict analysis |
+| Skill authoring & meta | 7 | compress-md, skill-lint, house-rules, hyperbolic-time-chamber, skill-test-harness ⬆, semantic-skill-router ⬇, skill-graph ⬇ | Keeps the skill library lean, linted, consistent, behaviorally tested, uncertainty-aware-routed, and graph-validated |
 | Git workflow | 2 | spike-in-worktree, hoi-poi-capsule | Throwaway spikes and workspace capture/restore on top of worktrees |
 | Session continuity | 2 | session-handoff, senzu-bean | Survive context loss; recover mid-plan execution |
 | Review flow | 1 | review-clarification-gate | Blocks acting on ambiguous review feedback |
-| Retro | 1 | post-merge-retro | Closes the loop after merge |
+| Retro & delivery | 2 | post-merge-retro, write-release-notes ⬆ | Closes the loop after merge; drafts user-facing release notes at finish time |
 
 | Plugin | Components | Supports (v1) | Impact |
 |---|---|---|---|
@@ -53,47 +70,56 @@ Impact: multiplies v1 — tighter loops, stronger gates, parallel throughput.
 | bug-hunter | 6 hunter agents, 1 verifier agent, `/hunt-bugs` | systematic-debugging, requesting-code-review | Parallel adversarial bug sweep with independent verification |
 | chrome-devtools-toolkit | 3 skills: browser-evidence-debugging, performance-trace-audit, memory-leak-hunt | systematic-debugging, verification-before-completion | DevTools-MCP-driven evidence for browser bugs, perf, and leaks |
 | playwright-toolkit | 3 skills: ui-verification-loop, bug-reproduction-script, e2e-test-generation | verification-before-completion, systematic-debugging, test-driven-development | Playwright-MCP-driven UI proof, repro scripts, and E2E generation |
+| skill-quality-gate ⬇ | PostToolUse hook, `/skill-score`, 2 skills: skill-evaluator, skill-quality-validator | writing-skills, skill-lint, skill-test-harness | Mechanical pre-merge skill-quality scoring (structural shape + content rubric); warns by default, can block |
 
-## v3 — Experimental AI ideas (12 skills)
+## v3 — Experimental AI ideas (19 skills)
 
 All `status: experimental`; creativity over polish. Impact: an idea pipeline —
-graduates rewrite to v2 standards.
+graduates rewrite to v2 standards. The 2026-06-13 work added 7 skills (⬆ promoted
+from v5; ★ net-new, designed from `SelfImprovingAgent/TOPIDEAS.md`).
 
 | Theme | Count | Skills |
 |---|---:|---|
 | Self-improving skills | 3 | skill-darwin, skill-scar-tissue, skill-cannibal |
-| Swarms & ecology | 3 | agent-bazaar, predator-prey-review, parliament-of-ghosts |
+| Self-improving harness loop | 5 | eval-suite-from-git ★, eval-gated-evolution-loop ★, two-speed-evolution ★, cross-model-harness-transfer ★, meta-evolution ★ |
+| Swarms & ecology | 4 | agent-bazaar, predator-prey-review, parliament-of-ghosts, parallel-judge-panel ⬆ |
 | Memory & learning | 3 | project-hippocampus, belief-ledger, inherited-instincts |
 | Simulation | 3 | ghost-run, premortem-multiverse, branch-historian |
+| Routing | 1 | semantic-router ⬆ |
 
-## v4 — Karpathy/Cherny-inspired tools (6 skills)
+## v4 — Karpathy/Cherny-inspired tools (10 skills)
 
 Each cites its source idea (`inspiration:` frontmatter + Provenance section).
 Impact: operationalizes published agentic-coding doctrine as concrete tools.
+The 2026-06-13 work added boris-master-setup ⬆ (promoted from v5) and
+selective-priming ★ (net-new, Karpathy context-as-RAM, from SelfImprovingAgent ideas);
+the cross-repo import wave then added karpathy-think ⬇ (think-before-coding ritual) and
+boris-compound ⬇ (compounding lessons-learned).
 
 | Originator | Count | Tools |
 |---|---:|---|
-| Karpathy | 3 | fast-verify-loop, autonomy-slider, cognitive-prosthetics |
-| Cherny | 3 | verification-target-first, fresh-context-review, bash-first-tooling |
+| Karpathy | 5 | fast-verify-loop, autonomy-slider, cognitive-prosthetics, selective-priming ★, karpathy-think ⬇ |
+| Cherny | 5 | verification-target-first, fresh-context-review, bash-first-tooling, boris-master-setup ⬆, boris-compound ⬇ |
 
-## v5 — Forge fork holding area (84 skills)
+## v5 — Forge fork holding area (72 skills)
 
 Imported verbatim from `superpowers2/skills/`; no tier discipline. Impact:
 raw material — promotion candidates for v1–v4, idea fodder elsewhere.
-Note: CLAUDE.md says 88 and v5/README says 100; on-disk count is 84
-(drift from promotions/removals is expected here).
+Note: CLAUDE.md says 88 and v5/README says 100; on-disk count is 72 after the
+2026-06-13 promotion of 12 skills into v1–v4 (drift from promotions/removals is
+expected here).
 
-70 flat skills, grouped by function:
+58 flat skills, grouped by function:
 
 | Group | Count | Skills |
 |---|---:|---|
-| Multi-agent orchestration & parallel execution | 18 | agent-handoff, agent-harness, agent-watchdog, autonomous-issue-runner, background-runner, conflict-graph-scheduler, context-variable-relay, find-parallel-split, hook-message-bus, map-reduce-sweep, orchestrate-feature, parallel-judge-panel, parallel-layer-orchestrator, parallel-run-dashboard, pipeline-parallel, task-dag-planner, wave-runner, worktree-pool |
-| Skill ecosystem meta-management | 16 | adaptive-skill-router, analyse-routing, audit-dead-skills, compose-skill-chain, generate-skill-stub, index-skills, judge-skill, pick-skill-path, rename-skill, self-review-skill, semantic-router, skill-dependency-graph, skill-test-harness, smarter-routing-overlay, test-skill, upstream-watcher |
-| Verification, judging & integrity | 10 | challenge-implementation, ci-fan-out-gate, consensus-decision, detect-agent-cheats, evidence-trail, exhaustive-audit, hypothesis-ranker, merkle-proof-checkpoint, proof-chain-validator, test-impact-analysis |
-| Codebase maintenance & delivery | 10 | bulk-rename, database-migration-planner, dependency-risk-sweep, deprecation-ledger, feature-intake-pipeline, fetch-open-issues, find-dangling-refs, improve-codebase-architecture, spec-from-codebase, write-release-notes |
+| Multi-agent orchestration & parallel execution | 16 | agent-handoff, agent-harness, agent-watchdog, autonomous-issue-runner, background-runner, context-variable-relay, find-parallel-split, hook-message-bus, map-reduce-sweep, orchestrate-feature, parallel-layer-orchestrator, parallel-run-dashboard, pipeline-parallel, task-dag-planner, wave-runner, worktree-pool |
+| Skill ecosystem meta-management | 14 | adaptive-skill-router, analyse-routing, audit-dead-skills, compose-skill-chain, generate-skill-stub, index-skills, judge-skill, pick-skill-path, rename-skill, self-review-skill, skill-dependency-graph, smarter-routing-overlay, test-skill, upstream-watcher |
+| Verification, judging & integrity | 6 | challenge-implementation, ci-fan-out-gate, consensus-decision, exhaustive-audit, merkle-proof-checkpoint, proof-chain-validator |
+| Codebase maintenance & delivery | 7 | bulk-rename, dependency-risk-sweep, deprecation-ledger, feature-intake-pipeline, fetch-open-issues, find-dangling-refs, improve-codebase-architecture |
 | Context & communication | 8 | claude-md-watcher, format-markdown-for-claude, format-markdown-for-confluence, progressive-context-recovery, reword-for-clarity, salience-compressor, sample-context-fairly, sync-claude-md |
 | Loops & autonomy | 4 | ralph-loop-adapted, scheduled-maintenance, self-pacing-poller, self-repair-loop |
-| Utilities & misc | 4 | blastoise, boris-master-setup, graph-algorithms, telemetry-hook |
+| Utilities & misc | 3 | blastoise, graph-algorithms, telemetry-hook |
 
 14 skills nested in the fork's 8 category folders:
 

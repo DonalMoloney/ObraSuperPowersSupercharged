@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ObraSuperPowersSupercharged — Build Flow Manifest</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --panel: #171a23;
+    --panel-2: #1d212c;
+    --ink: #e7e9ee;
+    --muted: #9aa3b2;
+    --line: #2a2f3d;
+    --v1: #6366f1;   /* foundation - indigo */
+    --v2: #14b8a6;   /* amplifiers - teal */
+    --v4: #f59e0b;   /* doctrine - amber */
+    --fe: #a855f7;   /* frontend - purple */
+    --v3: #fb7185;   /* experimental - rose */
+    --v5: #64748b;   /* raw fork - slate */
+    --good: #34d399;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: radial-gradient(1200px 600px at 70% -10%, #1b2030 0%, var(--bg) 55%);
+    color: var(--ink); font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 24px 80px; }
+  header.page { margin-bottom: 28px; }
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); font-size: 15px; max-width: 760px; }
+  .meta { color: var(--muted); font-size: 12.5px; margin-top: 10px; }
+  .meta code { background: var(--panel-2); padding: 1px 6px; border-radius: 5px; color: var(--ink); }
+
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted);
+       margin: 48px 0 16px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+
+  /* legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 20px; margin: 18px 0 6px; font-size: 12.5px; color: var(--muted); }
+  .legend .item { display: flex; align-items: center; gap: 7px; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .star { color: var(--good); }
+
+  /* diagram layout */
+  .diagram { display: grid; grid-template-columns: 1fr 300px; gap: 18px; align-items: stretch; }
+  @media (max-width: 880px) { .diagram { grid-template-columns: 1fr; } }
+
+  .stack { display: flex; flex-direction: column; gap: 0; position: relative; }
+  .rail { position: absolute; left: -26px; top: 0; bottom: 0; width: 18px;
+          display: flex; align-items: center; justify-content: center; }
+  .rail span { writing-mode: vertical-rl; transform: rotate(180deg); color: var(--muted);
+               font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; }
+  @media (max-width: 880px) { .rail { display: none; } }
+
+  .band { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+          padding: 16px 18px; position: relative; }
+  .band + .arrowrow { height: 30px; }
+  .arrowrow { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--muted); font-size: 12px; }
+  .arrowrow .glyph { font-size: 16px; line-height: 1; }
+
+  .band .tier-tag { position: absolute; top: -10px; left: 16px; font-size: 11px; font-weight: 700;
+                    letter-spacing: 0.06em; padding: 2px 9px; border-radius: 999px; color: #0b0d12; }
+  .band-title { font-weight: 700; font-size: 15px; margin: 4px 0 2px; }
+  .band-note { color: var(--muted); font-size: 12.5px; margin-bottom: 12px; }
+
+  .band.l-v1 { border-color: color-mix(in srgb, var(--v1) 55%, var(--line)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--v1) 22%, transparent); }
+  .band.l-v2 { border-color: color-mix(in srgb, var(--v2) 50%, var(--line)); }
+  .band.l-v4 { border-color: color-mix(in srgb, var(--v4) 55%, var(--line)); }
+  .band.l-fe { border-color: color-mix(in srgb, var(--fe) 50%, var(--line)); }
+  .l-v1 .tier-tag { background: var(--v1); color: #fff; }
+  .l-v2 .tier-tag { background: var(--v2); }
+  .l-v4 .tier-tag { background: var(--v4); }
+  .l-fe .tier-tag { background: var(--fe); }
+
+  /* chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip { font-size: 12px; padding: 4px 10px; border-radius: 8px; background: var(--panel-2);
+          border: 1px solid var(--line); color: var(--ink); white-space: nowrap; }
+  .chip.core { border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+  .chip.core::before { content: "★ "; color: var(--good); font-size: 10px; }
+  .chip.muted { color: var(--muted); border-style: dashed; }
+  .chip.plugin { background: color-mix(in srgb, var(--v2) 16%, var(--panel-2)); border-color: color-mix(in srgb, var(--v2) 45%, var(--line)); }
+
+  .group { margin: 10px 0; }
+  .group h4 { margin: 0 0 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+
+  /* v1 loop */
+  .loop { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .loop .chip { background: color-mix(in srgb, var(--v1) 16%, var(--panel-2)); border-color: color-mix(in srgb, var(--v1) 40%, var(--line)); }
+  .loop .sep { color: var(--v1); font-weight: 700; }
+  .inner { margin-top: 8px; padding: 8px 10px; border: 1px dashed color-mix(in srgb, var(--v1) 40%, var(--line));
+           border-radius: 10px; font-size: 12px; color: var(--muted); }
+  .inner b { color: var(--ink); }
+  .crosscut { margin-top: 8px; font-size: 12px; color: var(--muted); }
+
+  /* backlog lane */
+  .lane { background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+          border: 1px dashed var(--line); border-radius: 14px; padding: 16px 16px 18px; position: relative; }
+  .lane h3 { margin: 2px 0 4px; font-size: 14px; }
+  .lane .promote { color: var(--good); font-size: 12px; margin: 6px 0 14px; display: flex; align-items: center; gap: 6px; }
+  .lane .blk { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px dashed var(--line); }
+  .lane .blk:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+  .lane .blk h4 { margin: 0 0 6px; font-size: 12.5px; display: flex; align-items: center; gap: 7px; }
+  .lane .count { font-size: 11px; color: var(--muted); }
+  .lane .desc { font-size: 12px; color: var(--muted); }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+  td code { background: var(--panel-2); padding: 1px 6px; border-radius: 5px; font-size: 12px; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* roadmap */
+  .road { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 760px) { .road { grid-template-columns: 1fr; } }
+  .phase { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; position: relative; }
+  .phase .ph { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .phase h3 { margin: 6px 0 8px; font-size: 15px; }
+  .phase ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 12.5px; }
+  .phase li { margin: 3px 0; }
+  .phase .done { color: var(--good); font-weight: 700; }
+  .phase.p1 { border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+
+  details { margin-top: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 0 16px; }
+  details summary { cursor: pointer; padding: 14px 0; font-weight: 600; font-size: 13.5px; }
+  details pre { overflow: auto; background: var(--panel-2); padding: 14px; border-radius: 10px; font-size: 12px; margin: 0 0 16px; }
+
+  footer { margin-top: 56px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); padding-top: 16px; }
+  a { color: #8ab4ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page">
+    <h1>ObraSuperPowersSupercharged — Build Flow</h1>
+    <p class="sub">
+      What we <strong>commit to</strong>, and how each tier <strong>builds on</strong> the one beneath it.
+      The committed core is one load-bearing stack (v1&nbsp;→&nbsp;v2&nbsp;→&nbsp;v4&nbsp;/&nbsp;frontend);
+      the raw tiers (v3,&nbsp;v5) sit in a backlog lane and feed <em>upward</em> by promotion.
+    </p>
+    <p class="meta">
+      Companion to <code>MANIFEST.md</code> (which is a flat census). This file is the
+      <strong>commitment + build-on flow</strong>, not an inventory. Re-synced 2026-06-13 15:33 from the filesystem (live source of truth; concurrent sessions are actively importing, so the live count may already exceed what's shown).
+    </p>
+    <div class="legend">
+      <span class="item"><span class="swatch" style="background:var(--v1)"></span> v1 foundation</span>
+      <span class="item"><span class="swatch" style="background:var(--v2)"></span> v2 amplifiers</span>
+      <span class="item"><span class="swatch" style="background:var(--v4)"></span> v4 doctrine</span>
+      <span class="item"><span class="swatch" style="background:var(--fe)"></span> frontend domain</span>
+      <span class="item"><span class="swatch" style="background:var(--v3)"></span> v3 experimental</span>
+      <span class="item"><span class="swatch" style="background:var(--v5)"></span> v5 raw fork</span>
+      <span class="item"><span class="star">★</span> committed core &nbsp;·&nbsp; dashed = backlog / situational</span>
+    </div>
+  </header>
+
+  <!-- ============ DIAGRAM ============ -->
+  <h2>The build-on stack</h2>
+  <div class="diagram">
+
+    <!-- committed stack -->
+    <div class="stack">
+      <div class="rail"><span>build-up&nbsp;↑&nbsp;&nbsp;·&nbsp;&nbsp;supports ↓</span></div>
+
+      <!-- v4 doctrine (top - wraps everything) -->
+      <div class="band l-v4">
+        <span class="tier-tag">v4 · DOCTRINE</span>
+        <div class="band-title">Karpathy + Cherny tools — principles that wrap the whole stack</div>
+        <div class="band-note">Each cites its published source. These don't replace the loop; they tune how it's run.</div>
+        <div class="group">
+          <h4>Karpathy</h4>
+          <div class="chips">
+            <span class="chip core">fast-verify-loop</span>
+            <span class="chip core">autonomy-slider</span>
+            <span class="chip core">cognitive-prosthetics</span>
+            <span class="chip core">selective-priming</span>
+            <span class="chip core">karpathy-think</span>
+          </div>
+        </div>
+        <div class="group">
+          <h4>Cherny</h4>
+          <div class="chips">
+            <span class="chip core">verification-target-first</span>
+            <span class="chip core">fresh-context-review</span>
+            <span class="chip core">bash-first-tooling</span>
+            <span class="chip core">boris-master-setup</span>
+            <span class="chip core">boris-compound</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrowrow"><span class="glyph">↓</span> informs every layer below</div>
+
+      <!-- frontend domain -->
+      <div class="band l-fe">
+        <span class="tier-tag">frontend · DOMAIN</span>
+        <div class="band-title">Browser-tool-driven application of the loop</div>
+        <div class="band-note">Applies the verify / debug / perf phases in the frontend domain; every skill ends in browser-tool evidence. References v1, never duplicates it.</div>
+        <div class="chips">
+          <span class="chip core">design-direction-first</span>
+          <span class="chip core">design-system-first</span>
+          <span class="chip core">visual-verification-loop</span>
+          <span class="chip core">a11y-and-audit-gate</span>
+          <span class="chip core">frontend-bug-forensics</span>
+          <span class="chip core">layout-break-hunt</span>
+          <span class="chip core">web-vitals-triage</span>
+          <span class="chip core">render-and-bundle-discipline</span>
+        </div>
+      </div>
+
+      <div class="arrowrow"><span class="glyph">↓</span> builds on the v1 verify / debug / review phases</div>
+
+      <!-- v2 amplifiers -->
+      <div class="band l-v2">
+        <span class="tier-tag">v2 · AMPLIFIERS</span>
+        <div class="band-title">Supporting skills + plugins — each <code>supports:</code> a v1 phase</div>
+        <div class="band-note">Best-of committed (★) shown here; situational v2 moved to the backlog lane. Plugins are mechanical enforcement.</div>
+
+        <div class="group">
+          <h4>Plan &amp; ideate → brainstorming / writing-plans</h4>
+          <div class="chips">
+            <span class="chip core">red-team-spec</span>
+            <span class="chip core">scope-decomposition</span>
+            <span class="chip core">decision-ledger</span>
+            <span class="chip core">compile-goal-to-contract</span>
+            <span class="chip core">spec-from-codebase</span>
+            <span class="chip core">database-migration-planner</span>
+          </div>
+        </div>
+        <div class="group">
+          <h4>Debug → systematic-debugging / TDD</h4>
+          <div class="chips">
+            <span class="chip core">loop-until-green</span>
+            <span class="chip core">delta-debugger</span>
+            <span class="chip core">incident-postmortem</span>
+            <span class="chip core">hypothesis-ranker</span>
+            <span class="chip core">test-impact-analysis</span>
+          </div>
+        </div>
+        <div class="group">
+          <h4>Verify &amp; gate → verification-before-completion / review</h4>
+          <div class="chips">
+            <span class="chip core">done-gate</span>
+            <span class="chip core">blast-radius</span>
+            <span class="chip core">security-audit</span>
+            <span class="chip core">evidence-trail</span>
+          </div>
+        </div>
+        <div class="group">
+          <h4>Parallel &amp; subagent → dispatching / subagent-driven-development</h4>
+          <div class="chips">
+            <span class="chip core">parallel-plan-executor</span>
+            <span class="chip core">merge-parallel-results</span>
+            <span class="chip core">reviewer-lenses</span>
+            <span class="chip core">conflict-graph-scheduler</span>
+            <span class="chip core">detect-agent-cheats</span>
+          </div>
+        </div>
+        <div class="group">
+          <h4>Meta / git / session / review</h4>
+          <div class="chips">
+            <span class="chip core">skill-lint</span>
+            <span class="chip core">compress-md</span>
+            <span class="chip core">spike-in-worktree</span>
+            <span class="chip core">session-handoff</span>
+            <span class="chip core">review-clarification-gate</span>
+            <span class="chip core">skill-test-harness</span>
+            <span class="chip core">write-release-notes</span>
+          </div>
+        </div>
+        <div class="group">
+          <h4>Plugins — mechanical enforcement</h4>
+          <div class="chips">
+            <span class="chip plugin">verification-gate</span>
+            <span class="chip plugin">bug-hunter</span>
+            <span class="chip plugin">chrome-devtools-toolkit</span>
+            <span class="chip plugin">playwright-toolkit</span>
+            <span class="chip plugin">skill-quality-gate</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrowrow"><span class="glyph">↓</span> supports / amplifies</div>
+
+      <!-- v1 foundation -->
+      <div class="band l-v1">
+        <span class="tier-tag">v1 · FOUNDATION</span>
+        <div class="band-title">The engineering loop — all 14 supercharged (the load-bearing slab)</div>
+        <div class="band-note">Every other tier exists to support, extend, or experiment around these. All 14 supercharges implemented 2026-06-11.</div>
+        <div class="loop">
+          <span class="chip">brainstorming</span><span class="sep">→</span>
+          <span class="chip">writing-plans</span><span class="sep">→</span>
+          <span class="chip">executing-plans</span>
+          <span class="sep">/</span>
+          <span class="chip">subagent-driven-development</span><span class="sep">→</span>
+          <span class="chip">verification-before-completion</span><span class="sep">→</span>
+          <span class="chip">requesting-code-review</span><span class="sep">→</span>
+          <span class="chip">receiving-code-review</span><span class="sep">→</span>
+          <span class="chip">finishing-a-development-branch</span>
+        </div>
+        <div class="inner"><b>Inner loops:</b> systematic-debugging · test-driven-development (run inside every implement step)</div>
+        <div class="crosscut"><b>Cross-cutting:</b> using-git-worktrees (isolation) · dispatching-parallel-agents (fan-out) &nbsp;·&nbsp; <b>Meta:</b> using-superpowers (routing) · writing-skills (authoring)</div>
+      </div>
+    </div>
+
+    <!-- backlog lane -->
+    <aside class="lane">
+      <h3>Backlog / promotion candidates</h3>
+      <div class="promote"><span>▲</span> promote into v1–v4 under each tier's rules</div>
+
+      <div class="blk">
+        <h4><span class="swatch" style="background:var(--v2)"></span> v2 — situational <span class="count">(22)</span></h4>
+        <div class="desc">Passed tier discipline but niche or novelty-overlapping (or freshly imported, awaiting curation). Promote into the committed v2 layer when a workflow needs them.</div>
+        <div class="chips" style="margin-top:8px">
+          <span class="chip muted">scouter</span><span class="chip muted">fusion-dance</span>
+          <span class="chip muted">write-adr</span><span class="chip muted">track-assumption</span>
+          <span class="chip muted">zenkai-boost</span><span class="chip muted">instant-transmission</span>
+          <span class="chip muted">dragon-radar</span><span class="chip muted">kaioken</span>
+          <span class="chip muted">devils-advocate</span><span class="chip muted">gravity-chamber</span>
+          <span class="chip muted">shenron-wish</span><span class="chip muted">dispatch-triage</span>
+          <span class="chip muted">migrate-codebase</span><span class="chip muted">house-rules</span>
+          <span class="chip muted">hyperbolic-time-chamber</span><span class="chip muted">hoi-poi-capsule</span>
+          <span class="chip muted">senzu-bean</span><span class="chip muted">post-merge-retro</span>
+          <span class="chip muted">ubiquitous-language</span><span class="chip muted">semantic-skill-router</span>
+          <span class="chip muted">skill-graph</span><span class="chip muted">eval-driven-dev</span>
+        </div>
+      </div>
+
+      <div class="blk">
+        <h4><span class="swatch" style="background:var(--v3)"></span> v3 — experimental <span class="count">(19)</span></h4>
+        <div class="desc">All <code>status: experimental</code>. Idea pipeline; graduates get rewritten to v2 standard.</div>
+        <div class="chips" style="margin-top:8px">
+          <span class="chip muted">skill-darwin</span><span class="chip muted">skill-scar-tissue</span>
+          <span class="chip muted">skill-cannibal</span><span class="chip muted">agent-bazaar</span>
+          <span class="chip muted">predator-prey-review</span><span class="chip muted">parliament-of-ghosts</span>
+          <span class="chip muted">project-hippocampus</span><span class="chip muted">belief-ledger</span>
+          <span class="chip muted">inherited-instincts</span><span class="chip muted">ghost-run</span>
+          <span class="chip muted">premortem-multiverse</span><span class="chip muted">branch-historian</span>
+          <span class="chip muted">semantic-router</span><span class="chip muted">parallel-judge-panel</span>
+          <span class="chip muted">eval-suite-from-git</span><span class="chip muted">eval-gated-evolution-loop</span>
+          <span class="chip muted">two-speed-evolution</span><span class="chip muted">cross-model-harness-transfer</span>
+          <span class="chip muted">meta-evolution</span>
+        </div>
+      </div>
+
+      <div class="blk">
+        <h4><span class="swatch" style="background:var(--v5)"></span> v5 — raw fork import <span class="count">(72)</span></h4>
+        <div class="desc">Verbatim from the Forge fork; no tier discipline. Raw material for v1–v4. <strong>A v5 skill that shadows a v1 obra skill is v1 improvement material, not a v2 promotion.</strong> Grouped:</div>
+        <table style="margin-top:8px">
+          <tr><td>orchestration / parallel</td><td class="num">16</td></tr>
+          <tr><td>skill-ecosystem meta</td><td class="num">14</td></tr>
+          <tr><td>verification / judging</td><td class="num">6</td></tr>
+          <tr><td>maintenance / delivery</td><td class="num">7</td></tr>
+          <tr><td>context / comms</td><td class="num">8</td></tr>
+          <tr><td>loops / autonomy</td><td class="num">4</td></tr>
+          <tr><td>utilities</td><td class="num">3</td></tr>
+          <tr><td>nested category folders</td><td class="num">14</td></tr>
+        </table>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ============ COMMITMENT TOTALS ============ -->
+  <h2>What we commit to — at a glance</h2>
+  <table>
+    <thead><tr><th>Lane</th><th>Tiers</th><th class="num">Skills</th><th class="num">Plugins</th><th>Role in the flow</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Committed core</strong></td><td>v1 + best-of v2 + v4 + frontend</td><td class="num">59</td><td class="num">5</td><td>The stack we stand behind today</td></tr>
+      <tr><td>Backlog / situational</td><td>situational v2 + v3 + v5</td><td class="num">113</td><td class="num">0</td><td>Feeds the core by promotion</td></tr>
+      <tr><td colspan="2"><strong>Total standalone skills</strong></td><td class="num"><strong>172</strong></td><td class="num"><strong>5</strong></td><td>+8 skills embedded in plugins = <strong>180</strong> SKILL.md on disk (snapshot 2026-06-13 15:33; regenerate before relying on exact totals)</td></tr>
+    </tbody>
+  </table>
+  <p class="meta">Committed-core skills = 14 (v1) + 27 (best-of v2) + 10 (v4) + 8 (frontend) = <strong>59</strong>, plus 5 plugins. Filesystem (<code>SKILL.md</code> count) is the source of truth per <code>CLAUDE.md</code>; README/prose counts may lag. Recent activity (2026-06-13): promotion batch of 12 fork skills (9 v2, 2 v3, 1 v4); then 6 net-new idea-sourced skills from SelfImprovingAgent — 5 v3 (<code>eval-suite-from-git</code>, <code>eval-gated-evolution-loop</code>, <code>two-speed-evolution</code>, <code>cross-model-harness-transfer</code>, <code>meta-evolution</code>) + 1 v4 (<code>selective-priming</code>); then a cross-repo import wave (from <code>IMPORT-CANDIDATES.md</code>) — v4 <code>karpathy-think</code> + <code>boris-compound</code>, v2 <code>semantic-skill-router</code>, <code>skill-graph</code>, <code>eval-driven-dev</code> (+ <code>ubiquitous-language</code>), and new plugin <code>skill-quality-gate</code> → v3 19, v4 10, disk total 180, plugins 5.</p>
+
+  <!-- ============ HOW THEY BUILD ON ONE ANOTHER ============ -->
+  <h2>How each committed v2 skill builds on v1 (the <code>supports:</code> wiring)</h2>
+  <table>
+    <thead><tr><th>v2 skill (committed ★)</th><th>builds on / supports (v1)</th></tr></thead>
+    <tbody>
+      <tr><td>red-team-spec</td><td><code>brainstorming</code> · <code>writing-plans</code> · <code>dispatching-parallel-agents</code></td></tr>
+      <tr><td>scope-decomposition</td><td><code>brainstorming</code> · <code>writing-plans</code></td></tr>
+      <tr><td>decision-ledger</td><td><code>brainstorming</code> · <code>writing-plans</code> · <code>executing-plans</code></td></tr>
+      <tr><td>compile-goal-to-contract</td><td><code>subagent-driven-development</code> · <code>writing-plans</code></td></tr>
+      <tr><td>loop-until-green</td><td><code>test-driven-development</code> · <code>verification-before-completion</code> · <code>systematic-debugging</code></td></tr>
+      <tr><td>delta-debugger</td><td><code>systematic-debugging</code> · <code>test-driven-development</code></td></tr>
+      <tr><td>incident-postmortem</td><td><code>systematic-debugging</code></td></tr>
+      <tr><td>done-gate</td><td><code>verification-before-completion</code> · <code>requesting-code-review</code></td></tr>
+      <tr><td>blast-radius</td><td><code>requesting-code-review</code> · <code>verification-before-completion</code></td></tr>
+      <tr><td>security-audit</td><td><code>requesting-code-review</code> · <code>verification-before-completion</code></td></tr>
+      <tr><td>parallel-plan-executor</td><td><code>writing-plans</code> · <code>executing-plans</code> · <code>dispatching-parallel-agents</code> · <code>using-git-worktrees</code></td></tr>
+      <tr><td>merge-parallel-results</td><td><code>dispatching-parallel-agents</code> · <code>verification-before-completion</code></td></tr>
+      <tr><td>reviewer-lenses</td><td><code>requesting-code-review</code> · <code>dispatching-parallel-agents</code></td></tr>
+      <tr><td>skill-lint</td><td><code>writing-skills</code></td></tr>
+      <tr><td>compress-md</td><td><code>writing-skills</code> · <code>using-superpowers</code></td></tr>
+      <tr><td>spike-in-worktree</td><td><code>using-git-worktrees</code> · <code>finishing-a-development-branch</code></td></tr>
+      <tr><td>session-handoff</td><td><code>executing-plans</code> · <code>writing-plans</code></td></tr>
+      <tr><td>review-clarification-gate</td><td><code>receiving-code-review</code> · <code>requesting-code-review</code></td></tr>
+      <tr><td>spec-from-codebase <span class="star">★new</span></td><td><code>brainstorming</code> · <code>writing-plans</code></td></tr>
+      <tr><td>database-migration-planner <span class="star">★new</span></td><td><code>writing-plans</code> · <code>systematic-debugging</code></td></tr>
+      <tr><td>hypothesis-ranker <span class="star">★new</span></td><td><code>systematic-debugging</code></td></tr>
+      <tr><td>test-impact-analysis <span class="star">★new</span></td><td><code>test-driven-development</code> · <code>verification-before-completion</code></td></tr>
+      <tr><td>evidence-trail <span class="star">★new</span></td><td><code>verification-before-completion</code> · <code>finishing-a-development-branch</code></td></tr>
+      <tr><td>conflict-graph-scheduler <span class="star">★new</span></td><td><code>dispatching-parallel-agents</code> · <code>subagent-driven-development</code></td></tr>
+      <tr><td>detect-agent-cheats <span class="star">★new</span></td><td><code>subagent-driven-development</code> · <code>verification-before-completion</code></td></tr>
+      <tr><td>skill-test-harness <span class="star">★new</span></td><td><code>writing-skills</code></td></tr>
+      <tr><td>write-release-notes <span class="star">★new</span></td><td><code>finishing-a-development-branch</code></td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Plugin (committed)</th><th>supports (v1)</th><th>what it enforces</th></tr></thead>
+    <tbody>
+      <tr><td>verification-gate</td><td><code>verification-before-completion</code> · <code>test-driven-development</code></td><td>Stop/PostToolUse hooks — can't claim done without evidence</td></tr>
+      <tr><td>bug-hunter</td><td><code>systematic-debugging</code> · <code>requesting-code-review</code></td><td>Parallel adversarial bug sweep + independent verifier</td></tr>
+      <tr><td>chrome-devtools-toolkit</td><td><code>systematic-debugging</code> · <code>verification-before-completion</code></td><td>DevTools-MCP evidence for browser bugs, perf, leaks</td></tr>
+      <tr><td>playwright-toolkit</td><td><code>verification-before-completion</code> · <code>systematic-debugging</code> · <code>test-driven-development</code></td><td>Playwright-MCP UI proof, repro scripts, E2E generation</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============ ROADMAP / THEN WHAT ============ -->
+  <h2>Then what — the roadmap</h2>
+  <div class="road">
+    <div class="phase p1">
+      <div class="ph">Phase 1 · foundation</div>
+      <h3>All v1 supercharged</h3>
+      <ul>
+        <li class="done">✓ Done — 2026-06-11</li>
+        <li>14/14 skills, each with a <code>## Supercharged vs upstream</code> section</li>
+        <li>Recommended option adopted per the decision tracker</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="ph">Phase 2 · improvements</div>
+      <h3>Best-of v2 + v4 + frontend committed</h3>
+      <ul>
+        <li>27 high-leverage v2 amplifiers + 4 enforcement plugins</li>
+        <li>8 doctrine tools (Karpathy / Cherny) wrapping the stack</li>
+        <li>8 browser-tool frontend skills with evidence gates</li>
+        <li>+1 doctrine tool from ideas: <code>selective-priming</code> (Karpathy context-as-RAM)</li>
+      </ul>
+    </div>
+    <div class="phase">
+      <div class="ph">Phase 3 · then what</div>
+      <h3>Promote + harden</h3>
+      <ul>
+        <li class="done">✓ Batch 1 — 2026-06-13: 12 fork skills promoted (9 v2, 2 v3, 1 v4), v5 84→72</li>
+        <li class="done">✓ Batch 2 — 2026-06-13: 6 idea-sourced skills from SelfImprovingAgent (5 v3 self-improvement + 1 v4 selective-priming)</li>
+        <li>Promote standout v3 / v5 skills into v1–v4 under tier rules</li>
+        <li>Graduate situational v2 as workflows demand them</li>
+        <li>Harden plugins → more mechanical enforcement (hooks)</li>
+        <li>Run <code>skill-auditor</code> on every promotion before commit</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ MERMAID SOURCE ============ -->
+  <details>
+    <summary>Mermaid source (regenerate a node-graph view)</summary>
+    <pre>flowchart TB
+  subgraph DOCT["v4 · DOCTRINE — informs every layer (not built on it)"]
+    v4[Karpathy: fast-verify-loop · autonomy-slider · cognitive-prosthetics · selective-priming · karpathy-think<br/>Cherny: verification-target-first · fresh-context-review · bash-first-tooling · boris-master-setup · boris-compound]
+  end
+  subgraph DOM["frontend · DOMAIN"]
+    fe[design · verify · debug · perf — 8 browser-tool skills]
+  end
+  subgraph AMP["v2 · AMPLIFIERS (best-of, ★ committed)"]
+    v2[plan: red-team-spec · scope-decomposition · decision-ledger · compile-goal-to-contract · spec-from-codebase · database-migration-planner<br/>debug: loop-until-green · delta-debugger · incident-postmortem · hypothesis-ranker · test-impact-analysis<br/>verify: done-gate · blast-radius · security-audit · evidence-trail<br/>parallel: parallel-plan-executor · merge-parallel-results · reviewer-lenses · conflict-graph-scheduler · detect-agent-cheats<br/>meta/git/session/review: skill-lint · compress-md · spike-in-worktree · session-handoff · review-clarification-gate · skill-test-harness · write-release-notes]
+    plugins[plugins: verification-gate · bug-hunter · chrome-devtools-toolkit · playwright-toolkit · skill-quality-gate]
+  end
+  subgraph FOUNDATION["v1 · FOUNDATION (the engineering loop)"]
+    v1[brainstorming → writing-plans → execute/SDD → verify → review → finish<br/>inner: systematic-debugging · TDD<br/>cross: worktrees · parallel-agents · using-superpowers · writing-skills]
+  end
+  subgraph BACKLOG["BACKLOG / promotion candidates"]
+    v2s[v2 situational — 22]
+    v3[v3 experimental — 19]
+    v5[v5 raw fork — 72]
+  end
+
+  v2 -- supports --> v1
+  plugins -- enforces --> v1
+  fe -- builds on --> v1
+  v4 -. informs .-> v1
+  v4 -. informs .-> v2
+  v4 -. informs .-> fe
+  v3 == promote into v1–v4 ==> AMP
+  v5 == promote into v1–v4 ==> AMP
+  v2s == promote ==> AMP
+  v5 -. shadows v1 → improve v1 .-> FOUNDATION</pre>
+  </details>
+
+  <footer>
+    <strong>Reading the diagram:</strong> bottom-up = how the system is built (v1 is the foundation everything rests on);
+    downward arrows = "supports / amplifies"; the dashed lane on the right promotes <em>upward</em> into the committed core.
+    Counts are from the filesystem; <code>MANIFEST.md</code> holds the full census. The committed v2 cut uses one rule —
+    <em>generic + high-leverage + non-duplicative</em> — so any item can be re-bucketed by moving its chip.
+  </footer>
+
+</div>
+</body>
+</html>

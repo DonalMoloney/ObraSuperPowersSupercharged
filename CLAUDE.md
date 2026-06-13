@@ -13,6 +13,10 @@ Boris Cherny (v4), and a general catch-all of skills imported from the Forge for
 and ~80 added skills. Imported wholesale into `v5/skills/` (88 skills) and useful as
 idea material for v2/v3/v4 — never copied into v1.
 
+**SelfImprovingAgent (v3/v4 idea source):** `/Users/donalmoloney/PycharmProjects/SelfImprovingAgent/`
+— useful source material for v3 experimental ideas and v4 Claude Code tools inspired by
+self-improving agent patterns and autonomous workflows.
+
 ## Tier rules — which folder you are in determines how you work
 
 | Folder | Purpose | Discipline |
@@ -35,6 +39,17 @@ idea material for v2/v3/v4 — never copied into v1.
 - v1 skills keep their upstream frontmatter shape and add a
   `## Supercharged vs upstream` body section.
 
+## Chaining skills together
+
+Skills compose into workflows, not just standalone invocations. The relationship
+vocabulary (`supports:`, `chains-to:`, `pairs-with:` frontmatter), the canonical
+14-skill workflow graph (CC2 in `v1/SUPERCHARGING-OPTIONS.md`), and the
+research-grounded options for chaining skills *better* — mapped to Anthropic's five
+agent-workflow patterns (prompt chaining, routing, parallelization,
+orchestrator-workers, evaluator-optimizer) — are documented in **`CHAINING-OPTIONS.md`**
+at the repo root. Consult it before adding a skill that hands off to, builds on, or
+runs alongside another.
+
 ## Workflow
 
 - All 14 v1 baselines are ported. Supercharging is driven by
@@ -43,8 +58,8 @@ idea material for v2/v3/v4 — never copied into v1.
   `## Supercharged vs upstream` section (tracker table at the bottom of the doc).
 - When adding a v2 skill, also add it to the "Current skills" table in
   `v2/README.md` with the v1 skill(s) it supports.
-- Design v3 skills with the `moonshot-ideator` agent; v4 tools with the
-  `karpathy-boris-architect` agent (idea backlog: `v4/IDEAS.md`).
+- Design v3 skills with the `moonshot-ideator` agent (idea backlog: `v3/IDEAS.md`);
+  v4 tools with the `karpathy-boris-architect` agent (idea backlog: `v4/IDEAS.md`).
 - v5 is import-only: copy verbatim from `superpowers2/skills/` via `skill-porter`.
   To promote a v5 skill, rewrite it under the target tier's rules, move it, and
   delete it from `v5/`.

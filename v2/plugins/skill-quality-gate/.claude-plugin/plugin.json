@@ -1,0 +1,8 @@
+{
+  "name": "skill-quality-gate",
+  "version": "0.1.0",
+  "description": "Mechanical pre-merge enforcement of skill authoring quality: a PostToolUse hook scores every SKILL.md write/edit against this repo's structural + content rubric and warns (default) or blocks low-quality skills. Supports v1 writing-skills; amplifies v2 skill-lint and skill-test-harness. tier: v2.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}

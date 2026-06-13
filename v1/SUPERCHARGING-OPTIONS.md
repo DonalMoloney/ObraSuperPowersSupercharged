@@ -25,8 +25,10 @@ Option letters are stable IDs — A–C are carried over from the previous revis
 this doc (the tracker references them), D+ were added next, and the 2026-06-10
 expansion appended three Simple + one Medium option per skill after each skill's
 last existing letter, and a second 2026-06-10 pass appended one Medium + one Advanced
-option per skill (citing the new CC7–CC8) — so letters appear out of alphabetical
-order within the bands.
+option per skill (citing the new CC7–CC8), and the 2026-06-13 breadth pass appended one
+Simple + one Medium + one Advanced option per skill (lettered M/N/O, or N/O/P for
+receiving-code-review which already reached M), filling each band's thinnest spots
+within CC1–CC8 — so letters appear out of alphabetical order within the bands.
 
 ---
 
@@ -97,6 +99,13 @@ visual exploration happened.
   didn't we do X?" is answerable months later. *Trade-off:* discipline-dependent;
   nothing enforces an entry.
 
+- **Option M — Decomposition trigger card.** A signal list for "this request is multiple
+  subsystems — split before questioning" (an "and" joining two nouns in the title, more
+  than one data store, independently-shippable halves) with the move: name the
+  sub-projects, sequence them, brainstorm only the first. The skill mentions decomposition
+  but gives no trigger. *Trade-off:* over-eager splitting fragments a coherent feature;
+  the signals are prompts, not verdicts.
+
 ### Medium
 
 - **Option A — Fidelity contract** *(uses CC1)*. At companion-accept time, ask one
@@ -123,6 +132,12 @@ visual exploration happened.
   register bloat with highly-deferential users; cap entries to assumptions that change
   the design.
 
+- **Option N — Pre-mortem pass.** Before locking the design, run one "assume this shipped
+  and failed — why?" round and fold the top three failure modes into the error-handling
+  and testing sections, so the spec is shaped by its likeliest failures, not only its
+  happy path. *Trade-off:* can spiral into speculative over-engineering; cap at three and
+  only on non-trivial designs.
+
 ### Advanced
 
 - **Option E — Mockup scaffolder** *(uses CC3)*. `scaffold-mockup.sh` generates the
@@ -140,6 +155,12 @@ visual exploration happened.
   starts, and surfaces what already exists — so brainstorming refines or extends prior
   work instead of unknowingly redesigning it. *Trade-off:* keyword matching misses
   renamed concepts; treat hits as prompts, not verdicts.
+
+- **Option O — Spec linter handoff** *(uses CC3)*. A script that checks the written spec
+  for the self-review failure modes — placeholder phrases, missing out-of-scope section,
+  UI described only in adjectives — before the user-review gate, so the self-review step
+  is mechanical instead of willpower. Mirrors writing-plans Option A. *Trade-off:* lexical
+  checks can't judge whether a requirement is correct, only whether it is present.
 
 > **Recommended: A (with the B escape hatch).** Chosen by Donal during the 2026-06-10
 > brainstorm — strongest coupling between mockup fidelity and spec depth, which was the
@@ -174,6 +195,11 @@ is freeform.
   checks, halving the pre-flight cost of mixed fan-outs. *Trade-off:* a "read-only"
   agent that quietly writes breaks the assumption; state that the tag is a contract.
 
+- **Option M — Fan-in summary card.** A fixed shape for the controller's post-merge
+  summary — per-domain outcome, conflicts found, net verification result — so a four-agent
+  fan-out collapses into one readable status instead of four pasted transcripts.
+  *Trade-off:* content only; honest summarization still rests on the controller.
+
 ### Medium
 
 - **Option C — Structured result contract** *(uses CC5)*. Every dispatched agent must
@@ -195,6 +221,12 @@ is freeform.
   so a conflict implicates exactly one agent instead of the whole batch. *Trade-off:*
   serial integration gives back some of the time parallel execution won.
 
+- **Option N — Partial-failure integration policy** *(uses CC5)*. When k of N write-agents
+  return failed, the rule for whether to integrate the successes now (independent domains)
+  or hold the whole batch (shared surface), with the failed domains re-dispatched per
+  Option J. *Trade-off:* integrating partial results can leave the tree half-done; reserve
+  it for genuinely independent domains.
+
 ### Advanced
 
 - **Option A — Harness-native dispatch** *(uses CC2)*. Rewrite around real Claude Code
@@ -212,6 +244,12 @@ is freeform.
   returned result to a durable artifacts path, so failed fan-outs can be forensically
   reviewed and effective prompt patterns reused instead of re-derived per session.
   *Trade-off:* archives grow unbounded; needs a retention rule.
+
+- **Option O — Pre-merge conflict probe** *(uses CC3)*. After agents return, a script
+  trial-merges each worktree against the integration branch and reports conflicts before
+  any real merge lands, so merge-order (K) starts from the actual conflict map instead of
+  discovering it mid-integration. *Trade-off:* a clean textual merge doesn't guarantee
+  semantic compatibility; the per-merge verification still has to run.
 
 > **Recommended: A.** The skill's value is parallelism, and worktree isolation makes the
 > "agents interfere" caveat largely obsolete — that's a step-change, not a polish.
@@ -245,6 +283,12 @@ body.
   writing-plans for an amendment, never improvise mid-execution. *Trade-off:*
   round-trips on small drift; the alternative is silent plan divergence.
 
+- **Option M — Whole-plan dry read.** Before executing task 1, read every task end-to-end
+  to surface forward references, ordering hazards, and any task that invalidates an
+  earlier one — caught now they cost a question, caught mid-execution they cost a redo.
+  *Trade-off:* a few minutes up front; on a well-written plan it finds nothing, which is
+  itself a fine result.
+
 ### Medium
 
 - **Option A — Checkpoint protocol** *(uses CC4, CC5)*. Define what a checkpoint
@@ -267,6 +311,12 @@ body.
   stay tolerable on long plans. *Trade-off:* a misclassified "trivial" task skips
   review exactly where it needed it; classification errors land on writing-plans.
 
+- **Option N — Checkpoint cadence choice** *(uses CC1)*. At kickoff, one structured
+  question sets review granularity — per-task, per-N-task batch, or per-phase — so a
+  high-stakes migration and a routine refactor don't get the same checkpoint rhythm.
+  *Trade-off:* the human has to predict the right cadence up front; Option A's protocol
+  still governs what each checkpoint contains.
+
 ### Advanced
 
 - **Option E — Plan-runner script** *(uses CC3)*. A script parses the plan's
@@ -284,6 +334,11 @@ body.
   the difference between this skill and subagent-driven-development. *Trade-off:*
   reviewer cost per checkpoint; blurs the boundary between the two execution skills
   (C must define it).
+
+- **Option O — Checkpoint snapshots** *(uses CC3)*. Each passed checkpoint tags a commit;
+  a failed checkpoint resets to the last green tag instead of unwinding edits by hand,
+  making batches atomic. *Trade-off:* requires committing at checkpoints (noisy pre-squash
+  history); not for plans run in a dirty tree.
 
 > **Recommended: C.** It fixes the real architectural gap — upstream's two execution
 > skills drift apart — and pulls A's checkpoint evidence in as part of the shared
@@ -318,6 +373,12 @@ time.
   commits, not worktrees. *Trade-off:* history rewriting has sharp edges; needs an
   "already pushed, don't rebase" guard.
 
+- **Option M — Pre-push safety sweep.** Before any push or PR exit, scan the diff for
+  committed secrets (API keys, tokens, .env), oversized binaries, and vendored files that
+  shouldn't ship — the leftovers sweep (H) catches your debris, this catches what should
+  never leave the machine. *Trade-off:* pattern-based secret detection has false
+  negatives; pair with a real scanner where the project has one.
+
 ### Medium
 
 - **Option B — Structured menu + typed-confirm** *(uses CC1)*. The 4-option menu becomes
@@ -337,6 +398,12 @@ time.
   discard into a structured warning and merge into a rebase-the-children reminder.
   *Trade-off:* a rare-situation tax on every finish — but it's one cheap command.
 
+- **Option N — Base-branch confirmation** *(uses CC1)*. Before the merge or PR exit, a
+  structured confirm of the target branch — main isn't always right (release branches,
+  stacked parents) and merging into the wrong base is expensive to unwind. *Trade-off:*
+  one extra confirm on the common main-is-correct case; cheap insurance against a costly
+  miss.
+
 ### Advanced
 
 - **Option A — Scriptify the mechanics** *(uses CC3)*. Ship `finish-branch.sh
@@ -354,6 +421,12 @@ time.
   time, while the context is still loaded — instead of reconstructing it at release
   time. *Trade-off:* draft quality tracks commit-message quality (pairs with I's
   commit-story audit).
+
+- **Option O — Post-merge integration check** *(uses CC3, CC5)*. After a local merge, run
+  the suite on the resulting main, not just the branch — a branch that was green can still
+  break main through interleaving changes — and emit the result into the finish receipt
+  (J). *Trade-off:* adds a full test run at finish; redundant where CI (F) already gates
+  the merge.
 
 > **Recommended: A.** This skill is 80% mechanical; mechanics belong in a script. B can
 > ride along almost for free.
@@ -386,6 +459,11 @@ time.
   pattern for each — run the check *before* drafting any response. *Trade-off:* the
   list invites overconfidence on claims that merely look fast-checkable.
 
+- **Option N — Out-of-scope parking.** Review items proposing work beyond this change's
+  stated intent get logged as follow-ups, not absorbed into the current branch — keeping
+  the diff reviewable and the scope honest. *Trade-off:* "out of scope" can become a dodge
+  for valid adjacent fixes; park with a real issue link, not a hand-wave.
+
 ### Medium
 
 - **Option A — Evidence-gated triage** *(uses CC5)*. For each feedback item, require a
@@ -411,6 +489,11 @@ time.
   instead of hand-fixing instance four. *Trade-off:* categorization is judgment;
   miscategorized entries hide the pattern they should reveal.
 
+- **Option O — Reviewer-conflict reconciliation** *(uses CC1)*. When two reviewers give
+  contradictory guidance on the same item, surface it as one structured decision (with the
+  trade-off) instead of silently following the last one or implementing both. *Trade-off:*
+  needs a human or a tie-break rule; rare on solo reviews.
+
 ### Advanced
 
 - **Option F — Feedback intake parser** *(uses CC3)*. A script pulls PR review comments
@@ -427,6 +510,12 @@ time.
   the evidence artifacts that evidence-gated triage (A) demands — verifying a claim
   becomes one command per item. *Trade-off:* only as good as its claim-type patterns;
   novel claims still need manual checks.
+
+- **Option P — Finding-to-test scaffold** *(uses CC3)*. Each accepted bug-class finding
+  spawns a failing regression test before the fix, so the review's value is captured as a
+  permanent guard rather than a patched line — mirroring systematic-debugging's repro
+  scaffolder. *Trade-off:* not every finding is test-shaped (style, naming); applies to
+  behavioral findings only.
 
 > **Recommended: A.** It converts the skill's core principle ("verify before
 > implementing") from exhortation into a gate, which is exactly how upstream's own
@@ -458,6 +547,12 @@ every change; reviewer context assembled by hand.
   instead of an accident. *Trade-off:* discourages legitimate early-feedback asks
   unless a WIP-labeled path is kept.
 
+- **Option M — Seeded questions.** Attach two or three specific questions the review must
+  answer ("is the lock ordering safe?", "does this leak on the error path?") alongside the
+  diff, converting open-ended review into targeted review where you already smell risk.
+  *Trade-off:* seeded questions can anchor the reviewer away from problems you didn't
+  anticipate; keep one slot for "anything else?".
+
 ### Medium
 
 - **Option A — Risk-scaled review depth.** Classify the change (diff size, files
@@ -477,6 +572,12 @@ every change; reviewer context assembled by hand.
   the re-review delta protocol (F) needs, available mechanically instead of from
   memory. *Trade-off:* worthless until F (or A) exists to consume it.
 
+- **Option N — Review-lens selection** *(uses CC1)*. A structured choice of the lens to
+  prioritize — correctness, security, performance, or API/contract design — so a crypto
+  change gets a security read and a hot-path change gets a perf read instead of a generic
+  once-over. *Trade-off:* a named lens narrows attention; pair with Option A's depth
+  scaling so high-risk changes still get multiple lenses.
+
 ### Advanced
 
 - **Option B — Specialized reviewer routing** *(uses CC2)*. Replace the one
@@ -493,6 +594,12 @@ every change; reviewer context assembled by hand.
   look-here hints, pointing reviewer depth at the genuinely unverified code.
   *Trade-off:* needs a working coverage setup per project; absent one, it must degrade
   silently to no hints.
+
+- **Option O — Churn annotation** *(uses CC3)*. A script that classifies each hunk as
+  logic, move, rename, generated, or formatting and prepends the map, so the reviewer
+  spends attention on the logic hunks instead of re-reading mechanical churn. *Trade-off:*
+  misclassifying a logic change as "move" hides exactly what needs eyes; classify
+  conservatively.
 
 > **Recommended: A**, with C's bundler as its mechanism — depth scaling is the visible
 > win, and it needs the bundled evidence anyway.
@@ -526,6 +633,12 @@ multiple implementation subagents in parallel."
   the blocking artifact; NEEDS_CONTEXT → the specific missing fact). *Trade-off:*
   content only; enforcement still sits with the orchestrator.
 
+- **Option M — Bounce-handling card.** When a review stage rejects a task, the signal for
+  re-dispatching a fresh implementer (context was wrong or polluted) versus returning to
+  the same one (small miss, context still good), so a bounced task doesn't default to an
+  expensive cold restart. *Trade-off:* keeping a bounced implementer risks compounding its
+  original misunderstanding; re-dispatch when the miss is conceptual.
+
 ### Medium
 
 - **Option B — Deterministic model routing.** Turn the model-selection prose into a
@@ -548,6 +661,12 @@ multiple implementation subagents in parallel."
   long tail. *Trade-off:* the threshold is gameable; the combined review must be able
   to bounce a task back to the full process.
 
+- **Option N — Inter-wave verification gate** *(uses CC5)*. Between parallel waves, the
+  full suite must pass on the merged result before the next wave dispatches, so a
+  badly-integrated wave halts the line instead of becoming the base for the next.
+  *Trade-off:* serializes at wave boundaries (some parallel speedup given back); only
+  relevant once Option A's waves exist.
+
 ### Advanced
 
 - **Option A — Parallel waves** *(uses CC2)*. Build the task dependency graph from the
@@ -563,6 +682,13 @@ multiple implementation subagents in parallel."
   an interrupted orchestration resumes from the journal and a failed plan can be
   post-mortemed from its records. *Trade-off:* journal upkeep is orchestrator overhead
   on every task.
+
+- **Option O — Automated bounce re-dispatch** *(uses CC5, CC8)*. A BLOCKED or
+  review-rejected task auto-re-dispatches with the blocking artifact and the reviewer's
+  findings attached, capped at one retry and logged to the journal (L), so the
+  orchestrator clears routine bounces without a human round-trip. *Trade-off:* auto-retry
+  on a conceptually-wrong task just burns a second agent; the cap and journal make the
+  give-up point visible.
 
 > **Recommended: A.** It's the biggest throughput unlock and composes with
 > dispatching-parallel-agents Option A (same isolation machinery).
@@ -595,6 +721,12 @@ conversation.
   keeping Phase 4 falsifiable. *Trade-off:* slower when the neighboring code really is
   broken; that's a feature.
 
+- **Option M — Differential debugging card.** When something works here but fails there
+  (one environment, one input, one user), list the deltas between the two and test them
+  one at a time — the diff between working and broken is the shortest path to the cause.
+  *Trade-off:* needs a genuine working reference; a never-worked bug needs the
+  from-scratch path instead.
+
 ### Medium
 
 - **Option A — Debugging ledger** *(uses CC5)*. Each phase writes to a structured ledger
@@ -616,6 +748,12 @@ conversation.
   instead of a hunch. *Trade-off:* low hit-rate while the file is young; value
   compounds with project age.
 
+- **Option N — Pattern blast-radius check** *(uses CC5)*. Once the root cause is
+  confirmed, grep for the same defect shape elsewhere (the same missing null-check, the
+  same unguarded await) and record the search — one bug is usually a class, and fixing the
+  single instance leaves its siblings live. *Trade-off:* widens a quick fix into a sweep;
+  scope the grep to the confirmed pattern, not a refactor.
+
 ### Advanced
 
 - **Option B — Instrumentation kit** *(uses CC3)*. Ship boundary-logging snippets and a
@@ -631,6 +769,11 @@ conversation.
   environment pins) — Phase 1's "shrink to the smallest failing case" becomes an
   artifact, which then becomes the regression test after the fix. *Trade-off:*
   scaffolds are stack-specific; build for the project's primary test harness.
+
+- **Option O — Bisect runner** *(uses CC3)*. A wrapper that drives `git bisect run` with
+  the minimal repro (from L's scaffold) as the test, pinpointing the introducing commit
+  automatically and appending it to the root-cause history (K). *Trade-off:* needs a
+  reliable, fast repro and a clean buildable history; a flaky repro poisons the bisect.
 
 > **Recommended: A.** The ledger makes the Iron Law auditable, and its fix count is
 > exactly what the architecture-escalation rule needs.
@@ -663,6 +806,12 @@ self-discipline.
   both gold-plating and permanent fakes. *Trade-off:* ladder discipline is invisible in
   the final diff; it lives in commit granularity.
 
+- **Option M — Test list.** Before the first RED, jot the list of behaviors to test (happy
+  path, each edge, each error) and work it one at a time, crossing off and adding as you
+  discover — so the cycle has a backlog instead of inventing the next test under pressure.
+  *Trade-off:* the list is a living scratchpad, not a contract; don't gold-plate it into a
+  spec.
+
 ### Medium
 
 - **Option A — Red-green evidence trail** *(uses CC5)*. Require the RED and GREEN runs
@@ -684,6 +833,12 @@ self-discipline.
   small for TDD" loophole instead of pretending it doesn't exist. *Trade-off:* every
   named exemption is a wedge; the list must be closed, not exemplary.
 
+- **Option N — Assertion-strength check** *(uses CC5)*. For each GREEN, confirm the test
+  would fail against a plausible wrong implementation (flip a return, drop a guard) — a
+  test that passes both right and wrong code asserts nothing — and capture the
+  deliberate-break failure as proof. *Trade-off:* manual mutation is judgment; reserve the
+  rigor for load-bearing tests, not every getter.
+
 ### Advanced
 
 - **Option C — TDD compliance check** *(uses CC3)*. A script that inspects the working
@@ -700,6 +855,12 @@ self-discipline.
   durable per-branch file instead of living only in the conversation, so finishing's
   PR bodies and verification's gate read the same artifact rather than trusting the
   transcript. *Trade-off:* depends on A; adds file churn per behavior.
+
+- **Option O — Mutation-testing pass** *(uses CC3)*. Wire the project's mutation tester
+  (mutmut, Stryker, go-mutesting) into a script that reports surviving mutants on changed
+  lines, mechanizing N's assertion-strength check across the diff. *Trade-off:* mutation
+  testing is slow and noisy; scope it to changed files with a surviving-mutant budget, not
+  the whole suite.
 
 > **Recommended: A.** Discipline skills get stronger when claims become evidence, and it
 > wires TDD tighter into the verification chain (CC2 for free).
@@ -730,6 +891,12 @@ self-discipline.
   each with its mitigation. The skill's silent assumption, made explicit. *Trade-off:*
   content only.
 
+- **Option M — When-not-to card.** The cases a worktree is overkill — a one-file fix on a
+  clean tree, a throwaway experiment a `git stash` covers, a read-only investigation — so
+  the isolation cost is paid only when concurrent work actually needs it. *Trade-off:*
+  guessing wrong means a mid-task stash-juggle; default to a worktree when concurrency is
+  in real doubt.
+
 ### Medium
 
 - **Option C — Baseline handshake** *(uses CC2, CC5)*. Record the baseline test result
@@ -750,6 +917,12 @@ self-discipline.
   drifts if manual `git worktree` commands bypass it; reconcile against
   `git worktree list`.
 
+- **Option N — Fresh-base check** *(uses CC5)*. Before creating a worktree, confirm its
+  base branch is current (fetch and compare to upstream) and record the base SHA — a
+  worktree branched from a week-old main starts behind and conflicts at merge.
+  *Trade-off:* a fetch adds latency at create time; skippable offline with the staleness
+  noted.
+
 ### Advanced
 
 - **Option A — Scriptify the tree** *(uses CC3)*. `setup-worktree.sh` implements
@@ -765,6 +938,12 @@ self-discipline.
   lockfile/config drift between a worktree and its base branch and re-runs installs as
   needed — mechanizing the biggest row of the not-isolated card (I). *Trade-off:*
   per-ecosystem logic (npm, pip, cargo); start with the project's own stack.
+
+- **Option O — Worktree GC** *(uses CC3, CC8)*. A teardown script that reconciles the
+  registry (K) against `git worktree list`, prunes finished or abandoned trees, runs
+  `git worktree prune`, and reports reclaimed disk — the cleanup half of A's setup script.
+  *Trade-off:* must confirm a tree is truly finished (merged or intentionally discarded)
+  before removing; never auto-delete uncommitted work.
 
 > **Recommended: A + C together.** They're nearly disjoint (mechanics + memory), and C
 > gives the finish skill something no amount of prose provides.
@@ -798,6 +977,12 @@ implicit.
   skill's content", "this is just a follow-up question") with rebuttals; prune three
   stale rows in exchange. *Trade-off:* table churn; net-zero size by rule.
 
+- **Option M — Non-trigger examples.** Two or three cases where no skill should fire (a
+  one-line factual lookup, reading back a value already in context) so "1% chance =
+  invoke" doesn't degrade into ceremony on genuinely trivial messages. Spends
+  always-loaded tokens; pairs with the diet (A). *Trade-off:* any explicit "skip" is a
+  crack the lazy path widens; keep the examples unambiguously trivial.
+
 ### Medium
 
 - **Option A — Token diet** *(uses CC6)*. Compress the always-loaded core to <200 words
@@ -819,6 +1004,12 @@ implicit.
   trigger eval harness (E) replays. *Trade-off:* inherits H's undercounting; the
   periodic review is one more habit to keep.
 
+- **Option N — Ambiguous-message default.** When a message plausibly maps to two skills
+  and the priority order doesn't decide it, invoke the process skill first and let it hand
+  off, rather than guessing the terminal skill — wrong guesses at the entry point cascade.
+  *Trade-off:* an extra hop when the guess would have been right; the hop is cheap, the
+  cascade isn't.
+
 ### Advanced
 
 - **Option E — Trigger eval harness** *(uses CC3)*. A script replays a corpus of past
@@ -835,6 +1026,11 @@ implicit.
   or dead weight) and over-firers (trigger too broad) — the empirical complement to
   E's synthetic evals. *Trade-off:* transcript formats are platform-specific; mind
   privacy on shared machines.
+
+- **Option O — Handoff-graph validator** *(uses CC3)*. A script that walks every skill's
+  declared entry/exit (CC2) and flags a handoff pointing at a renamed or missing skill, so
+  the workflow graph can't silently break as the library evolves. *Trade-off:* only as
+  complete as the CC2 wiring; skills without declared handoffs are invisible to it.
 
 > **Recommended: A + B.** Diet funds the routing table's token cost; together the entry
 > skill gets smaller *and* smarter.
@@ -865,6 +1061,12 @@ the agent voluntarily running the gate function at the moment it's most tempted 
   for the claims everyone skips. *Trade-off:* full negative verification is unbounded;
   scope it to the stated blast radius.
 
+- **Option M — Scope-match check.** The evidence must cover the entire claim, not a
+  convenient subset — "all tests pass" backed by a single-file run is the most common way
+  green evidence lies. State the claim's scope, then show evidence of exactly that scope.
+  *Trade-off:* full-scope runs are slower; the honest move is to narrow the claim, not the
+  evidence.
+
 ### Medium
 
 - **Option E — Standard evidence block** *(uses CC5)*. Define the fixed format — claim,
@@ -886,6 +1088,12 @@ the agent voluntarily running the gate function at the moment it's most tempted 
   instead of leaving J's scope to mood. *Trade-off:* the classification line invites
   litigation; default unknown claims to high.
 
+- **Option N — Clean-environment re-verify** *(uses CC5)*. For completion claims that
+  outlive the session (merge, release, handoff), re-run verification from a clean checkout
+  or fresh install — uncommitted files and local state are the classic reason verified
+  work fails for the next person. *Trade-off:* a clean run is slow; reserve it for
+  hand-off-grade claims, not every inner-loop check.
+
 ### Advanced
 
 - **Option A — Verification manifest** *(uses CC3, CC5)*. A per-project
@@ -903,6 +1111,12 @@ the agent voluntarily running the gate function at the moment it's most tempted 
   per-branch ledger as they're produced; finishing's receipt and PR bodies cite ledger
   entries instead of re-running commands or trusting the transcript. *Trade-off:* a
   stale ledger misleads worse than no ledger — pair with H's freshness rule.
+
+- **Option O — Change-scoped verification** *(uses CC3)*. A script that maps the diff to
+  the minimal sufficient verification set (changed module to its test target plus
+  dependents' smoke) so the gate stays fast enough to run every time instead of being
+  skipped for cost. *Trade-off:* an incomplete dependency map under-verifies; fall back to
+  the full manifest (A) for high-stakes or wide-blast changes.
 
 > **Recommended: A.** It makes the iron law *cheaper to obey than to skip*, which is the
 > only reliable way to beat end-of-task fatigue.
@@ -934,6 +1148,12 @@ boundary where subagents consume it.
   design problem early. *Trade-off:* trivial for most tasks; the value concentrates in
   the few risky ones.
 
+- **Option M — Per-task verification line.** Every task states the command or observation
+  that proves it done (the test to run, the output to see), so execution has an objective
+  stop condition instead of "looks finished" — the input executing-plans' checkpoints and
+  TDD's evidence trail both consume. *Trade-off:* trivial tasks get a trivial check ("file
+  exists"); an explicit weak check still beats an implicit none.
+
 ### Medium
 
 - **Option B — Execution metadata** *(uses CC2)*. Each task carries machine-readable
@@ -955,6 +1175,12 @@ boundary where subagents consume it.
   epic can't ship as a checklist. *Trade-off:* boundary cases burn a classification
   decision; default upward.
 
+- **Option N — Spike-gated unknowns.** A task resting on a genuine unknown (untested API
+  behavior, unclear data shape) gets a time-boxed spike task before it, whose output the
+  plan then incorporates — so the plan stops pretending certainty it doesn't have.
+  *Trade-off:* spikes can become rabbit holes; box them by time and by the single question
+  they answer.
+
 ### Advanced
 
 - **Option A — Plan linter** *(uses CC3)*. A script that checks a plan file for the
@@ -972,6 +1198,12 @@ boundary where subagents consume it.
   durable planning-lessons file the next planning session reads first — plans learn
   from their own execution history. *Trade-off:* depends on executing-plans D (the
   deviation log) producing the raw material.
+
+- **Option O — Dependency-graph check** *(uses CC3)*. A script that builds the task DAG
+  from declared dependencies and file lists, flagging cycles, orphaned tasks, and two
+  same-wave tasks that touch the same file — the static check that makes SDD's parallel
+  waves safe to dispatch. *Trade-off:* only as good as the declared dependencies (B) and
+  file lists (H); a missing edge passes the check and conflicts at runtime.
 
 > **Recommended: A**, adding B if subagent-driven-development Option A is chosen — the
 > two upgrades are designed to meet in the middle.
@@ -1004,6 +1236,12 @@ inline, and "run pressure scenarios with subagents" is described, never automate
   decomposition pressure at authoring time. *Trade-off:* over-splitting fragments the
   library; the test is a prompt, not a rule.
 
+- **Option M — Reference-don't-restate rule.** When a skill needs another skill's content,
+  link to it rather than copying — duplicated procedure is the highest-maintenance form of
+  skill rot, drifting silently as one copy updates — with one worked example of a good
+  cross-reference. *Trade-off:* over-referencing fragments a self-contained skill into a
+  scavenger hunt; inline the one-liner, link the procedure.
+
 ### Medium
 
 - **Option A — Progressive disclosure split** *(uses CC6)*. Keep the iron law,
@@ -1027,6 +1265,11 @@ inline, and "run pressure scenarios with subagents" is described, never automate
   exactly where triggering regressions hide; the reduced checklist must still include
   a trigger check.
 
+- **Option N — Anti-trigger phrasing.** Where a skill over-fires, add an explicit "not for
+  X" clause to its description (and a test that X does not trigger it), bounding the
+  trigger from both sides instead of only widening it. *Trade-off:* anti-triggers can
+  suppress legitimate edge fires; test the boundary, don't just assert it.
+
 ### Advanced
 
 - **Option B — Pressure-test harness** *(uses CC3)*. A script that scaffolds pressure
@@ -1043,6 +1286,12 @@ inline, and "run pressure scenarios with subagents" is described, never automate
   changes — pressure tests become regression tests instead of one-shot birth
   certificates. *Trade-off:* only meaningful after B exists; transcript-based
   assertions are fuzzy to evaluate.
+
+- **Option O — Trigger-overlap detector** *(uses CC3)*. A script that compares all skill
+  descriptions pairwise and flags overlapping trigger language, surfacing the routing
+  collisions that make the model pick wrong between two skills — the library-level
+  complement to the per-skill linter (C). *Trade-off:* lexical overlap isn't always real
+  ambiguity; treat hits as candidates to review, not defects.
 
 > **Recommended: B.** The skill's whole thesis is "no skill without a failing test
 > first" — the harness is what makes that law followable at scale. Take C as a cheap

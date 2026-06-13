@@ -54,12 +54,25 @@ Layout: skills live in `skills/<skill-name>/SKILL.md`, plugins in `plugins/<plug
 | `post-merge-retro` | finishing-a-development-branch |
 | `reviewer-lenses` | requesting-code-review, dispatching-parallel-agents |
 | `scope-decomposition` | brainstorming, writing-plans |
+| `conflict-graph-scheduler` | dispatching-parallel-agents, subagent-driven-development |
+| `hypothesis-ranker` | systematic-debugging |
+| `evidence-trail` | verification-before-completion, finishing-a-development-branch |
+| `test-impact-analysis` | test-driven-development, verification-before-completion |
+| `spec-from-codebase` | brainstorming, writing-plans |
+| `write-release-notes` | finishing-a-development-branch |
+| `skill-test-harness` | writing-skills |
+| `database-migration-planner` | writing-plans, systematic-debugging |
+| `detect-agent-cheats` | subagent-driven-development, verification-before-completion |
+| `ubiquitous-language` | brainstorming, writing-plans |
 | `browser-evidence-debugging` (plugin: chrome-devtools-toolkit) | systematic-debugging |
 | `performance-trace-audit` (plugin: chrome-devtools-toolkit) | verification-before-completion |
 | `memory-leak-hunt` (plugin: chrome-devtools-toolkit) | systematic-debugging |
 | `ui-verification-loop` (plugin: playwright-toolkit) | verification-before-completion |
 | `bug-reproduction-script` (plugin: playwright-toolkit) | systematic-debugging |
 | `e2e-test-generation` (plugin: playwright-toolkit) | test-driven-development |
+| `skill-graph` | writing-skills, using-superpowers |
+| `semantic-skill-router` | using-superpowers, dispatching-parallel-agents |
+| `eval-driven-dev` | test-driven-development, verification-before-completion |
 
 ## Current plugins
 
@@ -69,3 +82,4 @@ Layout: skills live in `skills/<skill-name>/SKILL.md`, plugins in `plugins/<plug
 | `bug-hunter` | systematic-debugging, requesting-code-review | 6 hunter agents, 1 verifier agent, `/hunt-bugs` command |
 | `chrome-devtools-toolkit` | systematic-debugging, verification-before-completion | 3 skills: browser-evidence-debugging, performance-trace-audit, memory-leak-hunt |
 | `playwright-toolkit` | verification-before-completion, systematic-debugging, test-driven-development | 3 skills: ui-verification-loop, bug-reproduction-script, e2e-test-generation |
+| `skill-quality-gate` | writing-skills, verification-before-completion | PostToolUse hook (scores SKILL.md writes, warn/block modes), `/skill-score` command, 2 skills: skill-evaluator, skill-quality-validator |
