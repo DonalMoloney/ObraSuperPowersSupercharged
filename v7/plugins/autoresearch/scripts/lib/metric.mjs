@@ -30,7 +30,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (cmd === 'extract-regex' || cmd === 'extract-json') {
     const type = cmd === 'extract-regex' ? 'regex' : 'json';
     const spec = type === 'regex' ? { type, pattern: a } : { type, path: a };
-    const out = readFileSync(b, 'utf8');
+    let out;
+    try { out = readFileSync(b, 'utf8'); } catch { process.exit(1); }
     const v = extractMetric(out, spec);
     if (v === null) process.exit(1);
     console.log(String(v));
