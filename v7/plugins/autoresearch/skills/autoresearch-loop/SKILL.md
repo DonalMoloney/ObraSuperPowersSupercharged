@@ -13,6 +13,9 @@ propose and apply one change.**
 
 ## Each iteration
 
+The proposer runs inside an isolated git worktree (branch `autoresearch/<run-id>`) at
+`$AR_WORKTREE`, so its edits never touch the user's main working tree.
+
 1. **Read the journal tail** (`AR_JOURNAL`). It is your only memory of prior iterations —
    what was tried, the resulting metric, and whether it was KEPT or REVERTED.
 2. **Pick one high-information change** toward the objective. Prefer the change most likely
@@ -30,12 +33,22 @@ propose and apply one change.**
 
 ## Helping a human configure a run
 
-When asked to set up autoresearch, produce an `autoresearch.config.json`:
-- `artifact`: the narrowest globs that contain the thing worth changing.
-- `eval_cmd`: a command that exits 0 and prints the metric, fast enough to run many times.
-- `metric`: a `regex` capture group or a `json` path into the eval's output.
-- `direction`: `minimize` or `maximize`.
-- `budget`: start conservative (e.g. 10 iterations) for the first run.
+When asked to set up autoresearch, produce a complete `autoresearch.config.json`. All of
+these fields are required by the harness validator (`scripts/lib/config.mjs`):
+
+- `objective` — a one-line description of the goal.
+- `artifact` — a non-empty array of globs naming the files the proposer may edit; use the
+  narrowest set that contains the thing worth changing.
+- `eval_cmd` — a command that exits 0 and prints the metric, fast enough to run many times.
+- `metric` — an object: `{ "type": "regex", "pattern": "...(capture group)..." }` or
+  `{ "type": "json", "path": "a.b.c" }`.
+- `direction` — `"minimize"` or `"maximize"`.
+- `budget` — an object with three positive numbers: `max_iterations`,
+  `max_wallclock_min`, `per_iter_timeout_sec`. Start conservative (e.g. `max_iterations: 10`)
+  for the first run.
+- Optional: `stop_after_no_improve` (plateau early-stop) and `baseline`.
+
+See the plugin `README.md` for a complete example.
 
 ## Provenance
 
