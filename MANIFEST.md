@@ -27,8 +27,9 @@ disk total → 180, plugins → 5. See `MANIFESTFLOW.html` for the commitment/bu
 | v3 (experimental AI ideas) | 19 | 0 | All `status: experimental` |
 | v4 (Karpathy/Cherny tools) | 10 | 0 | 5 Karpathy-inspired, 5 Cherny-inspired |
 | v5 (Forge fork holding area) | 72 | 0 | 58 flat + 14 nested in 8 fork category folders |
+| v7 (tool ports as plugins) | 1 | 1 | autoresearch — Karpathy AutoResearch keep-or-revert loop (1 embedded skill) |
 | frontend (domain folder) | 8 | 0 | Browser-tool-driven; clusters: design/verify/debug/perf |
-| **Total** | **180** | **5** | |
+| **Total** | **181** | **6** | |
 
 ## v1 — Core workflow backbone (14 skills)
 
@@ -146,3 +147,14 @@ design, verification, debugging, and performance.
 | verify | 2 | visual-verification-loop, a11y-and-audit-gate | Screenshot/audit evidence gates on every UI change |
 | debug | 2 | frontend-bug-forensics, layout-break-hunt | Console/network/layout evidence-driven bug isolation |
 | perf | 2 | web-vitals-triage, render-and-bundle-discipline | Trace-backed vitals triage and render/bundle budgets |
+
+## v7 — Tool ports as runnable plugins (1 skill, 1 plugin)
+
+Ports of specific published AI tools/artifacts into installable Claude Code plugins —
+distinct from v4, which distills *ideas*. Each port preserves the source's core invariant
+and ships a deterministic, runnable example. Impact: real, installable tools rather than
+guidance.
+
+| Plugin | Skill | Source artifact | What it does |
+|---|---|---|---|
+| autoresearch | autoresearch-loop | Karpathy AutoResearch (open-sourced 2026-03-07) | Domain-general keep-or-revert optimization loop: the harness owns accept/reject, a fresh `claude -p` proposer edits one artifact per iteration inside an isolated git worktree, kept only if a measurable metric improves. Ships a `/autoresearch` command and a deterministic `hillclimb` example. |
