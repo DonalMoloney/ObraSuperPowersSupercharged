@@ -54,6 +54,7 @@ assert_eq "reply records id 7 in watermark" "[7]" "$(jq -c '.handled_ids' "$TMPW
 PR_WATERMARK_DIR="$TMPWM" FAKE_GH_LOG="$LOG" GH_BIN="$HERE/fake_gh.sh" \
   bash "$SCRIPT" reply 5 review "$TMPWM/body.txt"
 assert_eq "reply review hits issues/comments endpoint" "yes" "$(grep -q 'issues/123/comments' "$LOG" && echo yes || echo no)"
+assert_eq "reply review records id 5 in watermark" "[5,7]" "$(jq -c '.handled_ids' "$TMPWM/123.json")"
 
 POSTS_BEFORE="$(grep -c '' "$LOG")"
 PR_WATERMARK_DIR="$TMPWM" FAKE_GH_LOG="$LOG" GH_BIN="$HERE/fake_gh.sh" \

@@ -76,11 +76,17 @@ do_fetch() {
 }
 
 add_handled() { # args: pr id
+  case "$2" in ''|*[!0-9]*) echo "pr_comments: id must be an integer" >&2; exit 1;; esac
   local dir f tmp; dir="$(watermark_dir)"; f="$dir/$1.json"
   mkdir -p "$dir"
+  # Assumes sequential invocation (the skill posts one reply at a time); not concurrency-safe.
   if [ ! -f "$f" ]; then printf '{"pr":%s,"last_poll":null,"handled_ids":[]}\n' "$1" > "$f"; fi
   tmp="$(mktemp)"
-  jq --argjson id "$2" '.handled_ids = ((.handled_ids + [$id]) | unique) | .last_poll = (now | todate)' "$f" > "$tmp" && mv "$tmp" "$f"
+  if jq --argjson id "$2" '.handled_ids = ((.handled_ids + [$id]) | unique) | .last_poll = (now | todate)' "$f" > "$tmp"; then
+    mv "$tmp" "$f"
+  else
+    rm -f "$tmp"; exit 1
+  fi
 }
 
 do_reply() {
