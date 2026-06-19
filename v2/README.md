@@ -73,6 +73,13 @@ Layout: skills live in `skills/<skill-name>/SKILL.md`, plugins in `plugins/<plug
 | `skill-graph` | writing-skills, using-superpowers |
 | `semantic-skill-router` | using-superpowers, dispatching-parallel-agents |
 | `eval-driven-dev` | test-driven-development, verification-before-completion |
+| `plan-drift-detector` | executing-plans, writing-plans |
+| `flaky-test-quarantine` | test-driven-development, verification-before-completion |
+| `bisect-the-regression` (plugin: regression-guard) | systematic-debugging |
+| `resolve-merge-conflict` | using-git-worktrees, verification-before-completion |
+| `safe-dependency-bump` | verification-before-completion, finishing-a-development-branch |
+| `review-feedback-triage` | receiving-code-review |
+| `pr-description-synthesizer` | requesting-code-review, finishing-a-development-branch |
 
 ## Current plugins
 
@@ -83,3 +90,5 @@ Layout: skills live in `skills/<skill-name>/SKILL.md`, plugins in `plugins/<plug
 | `chrome-devtools-toolkit` | systematic-debugging, verification-before-completion | 3 skills: browser-evidence-debugging, performance-trace-audit, memory-leak-hunt |
 | `playwright-toolkit` | verification-before-completion, systematic-debugging, test-driven-development | 3 skills: ui-verification-loop, bug-reproduction-script, e2e-test-generation |
 | `skill-quality-gate` | writing-skills, verification-before-completion | PostToolUse hook (scores SKILL.md writes, warn/block modes), `/skill-score` command, 2 skills: skill-evaluator, skill-quality-validator |
+| `regression-guard` | test-driven-development, systematic-debugging | Stop hook (fail-soft verifier, warn/block modes), 1 skill: bisect-the-regression; chains to standalone flaky-test-quarantine + delta-debugger |
+| `auto-format` | verification-before-completion, test-driven-development | PostToolUse hook (opt-in, formats edited file via project's prettier/ruff\|black/gofmt/rustfmt/shfmt), `/format-status` command |

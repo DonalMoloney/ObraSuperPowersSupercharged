@@ -1,0 +1,8 @@
+{
+  "name": "self-improving-harness",
+  "version": "0.1.0",
+  "description": "EXPERIMENTAL orchestration shell that packages the v3 self-improving skeleton into slash commands + a SCOREBOARD audit trail + a fail-soft capture hook. Wraps the MINE -> DIAGNOSE -> PROPOSE one edit -> GATE (keep iff the suite score rose, else revert + archive) loop, referencing v3 eval-suite-from-git and eval-gated-evolution-loop rather than vendoring them. Fitness signal: the eval-suite score climbs round-over-round. tier: v3.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}

@@ -32,6 +32,7 @@ Rules:
 | context-rot-monitor | Karpathy + Cherny | Context-as-RAM + `/clear` between tasks (keynote Jun 2025; best-practices post, Apr 2025) | boundary: selective-priming, K3 context-paging |
 | permission-tiers | Cherny | settings.json allowlists / permission modes (best-practices post, Apr 2025) | pairs-with: autonomy-slider; bundled by autonomy-control |
 | commit-checkpoints | Cherny | Commit frequently as rollback checkpoints (best-practices post, Apr 2025) | boundary: finishing-a-development-branch (v1); bundled by autonomy-control |
+| jagged-intelligence-guard | Karpathy | Jagged intelligence — LLM capability is spiky (X posts, 2024–2025) | territory for cognitive-prosthetics' jaggedness row |
 
 ## Current plugins
 

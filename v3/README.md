@@ -38,6 +38,12 @@ Rules:
 | `adversarial-self-distillation` | Self-improving | After passing, the agent writes a harder variant; self-defeats become new escalating-curriculum evals |
 | `skill-phylogenetics` | Self-improving | Maps skill lineage and detects convergent evolution; hands merge candidates to `skill-cannibal` |
 
+## Current plugins
+
+| Plugin | Theme | One-line hook |
+|--------|-------|---------------|
+| `self-improving-harness` | Self-improving | Packages `eval-suite-from-git` + `eval-gated-evolution-loop` into `/harness-run` + `/harness-score` + a SCOREBOARD audit trail and a fail-soft capture hook (references, doesn't vendor) |
+
 ## Idea backlog
 
 Captured but not yet built ideas live in [`IDEAS.md`](IDEAS.md) (mirrors `v4/IDEAS.md`).
