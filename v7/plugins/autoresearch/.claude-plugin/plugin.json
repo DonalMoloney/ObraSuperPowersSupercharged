@@ -1,0 +1,5 @@
+{
+  "name": "autoresearch",
+  "version": "0.1.0",
+  "description": "Karpathy's keep-or-revert optimization loop (agent proposes, harness judges) for any measurable objective."
+}
