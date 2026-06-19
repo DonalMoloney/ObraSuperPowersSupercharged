@@ -85,6 +85,8 @@ best="$baseline"
 start="$(date +%s)"
 iter=0
 no_improve=0
+kept=0
+base_commit="$(cd "$wt" && git rev-parse HEAD)"
 proposer_cmd="${AUTORESEARCH_PROPOSER_CMD:-$LIB/proposer.sh}"
 
 while [ "$iter" -lt "$MAX_ITER" ]; do
@@ -100,7 +102,7 @@ while [ "$iter" -lt "$MAX_ITER" ]; do
   AR_JOURNAL="$journal" AR_WORKTREE="$wt" AR_ARTIFACTS="$ARTIFACTS_NL" \
     "$proposer_cmd" >>"$rundir/proposer.log" 2>&1 || true
 
-  changed="$(cd "$wt" && git status --porcelain | sed 's/^...//')"
+  changed="$(cd "$wt" && git status --porcelain -z | while IFS= read -r -d '' entry; do printf '%s\n' "${entry:3}"; done)"
   if [ -z "$changed" ]; then
     printf '## iter %s — REVERTED (no change)\n\n' "$iter" >> "$journal"
     no_improve=$(( no_improve + 1 )); continue
@@ -123,7 +125,7 @@ while [ "$iter" -lt "$MAX_ITER" ]; do
     ( cd "$wt" && git add -A && git commit -q -m "autoresearch: $metric (was $best) [iter $iter]" )
     sha="$(cd "$wt" && git rev-parse --short HEAD)"
     printf '## iter %s — KEPT  (%s → %s)  commit: %s\n\n' "$iter" "$best" "$metric" "$sha" >> "$journal"
-    best="$metric"; no_improve=0
+    best="$metric"; no_improve=0; kept=$(( kept + 1 ))
   else
     revert_worktree
     printf '## iter %s — REVERTED  (%s vs best %s)\n\n' "$iter" "$metric" "$best" >> "$journal"
@@ -131,12 +133,18 @@ while [ "$iter" -lt "$MAX_ITER" ]; do
   fi
 done
 
+total_min=$(( ( $(date +%s) - start ) / 60 ))
 {
   echo "## summary"
-  echo "baseline: $baseline -> best: $best | iterations: $iter"
+  echo "baseline: $baseline -> best: $best | iterations: $iter | kept: $kept | wallclock: ${total_min}m"
+  echo
+  echo "### cumulative diff ($base_commit..HEAD)"
+  echo '```diff'
+  ( cd "$wt" && git --no-pager diff "$base_commit"..HEAD )
+  echo '```'
 } >> "$journal"
 
-echo "autoresearch done. best=$best (baseline=$baseline) after $iter iters."
+echo "autoresearch done. best=$best (baseline=$baseline) after $iter iters ($kept kept)."
 echo "branch:  autoresearch/$run_id"
 echo "journal: $journal"
 echo "merge:   git merge autoresearch/$run_id"
