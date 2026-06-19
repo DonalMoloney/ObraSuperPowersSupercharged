@@ -1,0 +1,71 @@
+# Autonomous issue fixer — copy to .github/workflows/issue-fixer.yml
+#
+# HARD-GATED. Only runs when a maintainer applies the `claude-fix` label to an
+# issue, or @claude is mentioned in an issue comment. Claude Code then posts a
+# plan, implements on a branch, and opens a DRAFT pull request. See README.md
+# for the security model before enabling.
+name: Autonomous Issue Fixer
+
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write # create a branch + commits
+  pull-requests: write # open the draft PR
+  issues: write # post the plan / status comments
+
+concurrency:
+  group: issue-fixer-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    # Authorization boundary. Both trigger paths require repo write access:
+    #  - label path: applying the `claude-fix` label needs write/triage.
+    #  - @claude comment path: restricted to issues (not PRs) AND to commenters
+    #    whose author_association is OWNER/MEMBER/COLLABORATOR. Without this guard
+    #    ANY GitHub user could trigger an autonomous agent that holds contents +
+    #    pull-requests + issues write and the ANTHROPIC_API_KEY secret, simply by
+    #    commenting `@claude` — an unauthenticated trigger / privilege escalation.
+    if: >-
+      (github.event_name == 'issues' && github.event.label.name == 'claude-fix') ||
+      (github.event_name == 'issue_comment' &&
+       !github.event.issue.pull_request &&
+       contains(github.event.comment.body, '@claude') &&
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Plan-first comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" \
+            --body "🤖 Claude is picking this up. It will post a short plan, implement on a branch, and open a **draft** PR for review."
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Implement with Claude Code
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # claude_args are Claude Code CLI flags. Default model: Opus 4.8.
+          claude_args: "--model ${{ vars.CLAUDE_FIXER_MODEL || 'claude-opus-4-8' }}"
+          prompt: |
+            Read issue #${{ github.event.issue.number }} in this repository.
+
+            1. Post a brief comment outlining your plan BEFORE changing any code.
+            2. Create a new branch named `claude/issue-${{ github.event.issue.number }}`.
+            3. Implement the smallest correct fix for the issue. Add or update tests
+               if the repo has a test suite. Keep the change surgical — no unrelated
+               refactors or new abstractions.
+            4. Open a DRAFT pull request targeting the default branch, with a body
+               that explains the change and includes "Fixes #${{ github.event.issue.number }}".
+
+            If the issue is ambiguous, out of scope, or unsafe to auto-fix, do NOT
+            guess — comment on the issue describing what you need and stop.

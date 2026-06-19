@@ -1,0 +1,65 @@
+# Incremental PR reviewer — copy to .github/workflows/pr-review.yml
+#
+# Posts line-level review comments on the DELTA since its last review, plus a
+# sticky summary that updates in place. See README.md for install + caveats.
+name: Incremental PR Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+# Least privilege: read the code, write review comments. No write to contents.
+permissions:
+  contents: read
+  pull-requests: write
+
+# Cancel a superseded review when new commits land on the same PR.
+concurrency:
+  group: pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so we can diff against the last-reviewed SHA
+
+      - name: Build review prompt (delta since last review)
+        id: prompt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node .github/workflows/scripts/review.mjs build
+
+      - name: Review with Claude (cost-guarded)
+        id: claude
+        if: steps.prompt.outputs.changed == 'true'
+        uses: ./.github/actions/cost-guardrail
+        with:
+          prompt-file: ${{ steps.prompt.outputs.prompt_file }}
+          schema-file: .github/workflows/scripts/review-schema.json
+          system: |
+            You are a precise senior code reviewer. You review only the changed lines
+            in a unified diff. You report correctness bugs, security issues, resource
+            leaks, and clear maintainability hazards — not style preferences. You never
+            restate the diff or add praise. Be specific and actionable.
+          model: ${{ vars.CLAUDE_REVIEW_MODEL || 'claude-sonnet-4-6' }}
+          max-tokens: "8000"
+          effort: medium
+          monthly-cap-usd: ${{ vars.CLAUDE_MONTHLY_CAP_USD || '25' }}
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Post review comments
+        if: steps.prompt.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          RESPONSE_FILE: ${{ steps.claude.outputs.response-file }}
+        run: node .github/workflows/scripts/review.mjs post

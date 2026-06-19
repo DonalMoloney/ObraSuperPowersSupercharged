@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "summary": {
+      "type": "string",
+      "description": "One to three sentence overall assessment of the changes."
+    },
+    "comments": {
+      "type": "array",
+      "description": "Line-level findings on changed lines only.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Repository-relative file path from the diff."
+          },
+          "line": {
+            "type": "integer",
+            "description": "Line number on the NEW (right) side of the diff."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["blocker", "warning", "nit"]
+          },
+          "body": {
+            "type": "string",
+            "description": "The finding and a concrete suggestion."
+          }
+        },
+        "required": ["path", "line", "severity", "body"]
+      }
+    }
+  },
+  "required": ["summary", "comments"]
+}

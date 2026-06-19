@@ -1,0 +1,86 @@
+name: Claude Cost Guardrail
+description: >-
+  Wraps a single Anthropic Messages API call with cost safety: a hard per-run
+  output ceiling, a persisted monthly USD spend ceiling that fails the step
+  before calling Claude when exceeded, and a cost notice. Returns the model's
+  text response in a file.
+
+inputs:
+  prompt-file:
+    description: Path to a UTF-8 file containing the user prompt.
+    required: true
+  anthropic-api-key:
+    description: Anthropic API key — pass ${{ secrets.ANTHROPIC_API_KEY }}.
+    required: true
+  model:
+    description: Claude model ID.
+    required: false
+    default: claude-opus-4-8
+  system:
+    description: Optional system prompt (inline string).
+    required: false
+    default: ""
+  max-tokens:
+    description: Hard per-response output ceiling. Keep <= 16000 (this action is non-streaming).
+    required: false
+    default: "8000"
+  effort:
+    description: Output effort — low | medium | high | max.
+    required: false
+    default: high
+  schema-file:
+    description: Optional path to a JSON Schema file. If set, the response is constrained to it (structured output).
+    required: false
+    default: ""
+  monthly-cap-usd:
+    description: Monthly spend ceiling (USD). The step fails before calling Claude if month-to-date spend meets or exceeds this.
+    required: false
+    default: "25"
+
+outputs:
+  response-file:
+    description: Path to the file containing the model's text response.
+    value: ${{ steps.run.outputs.response-file }}
+  spent-usd:
+    description: Running month-to-date spend after this call (USD).
+    value: ${{ steps.run.outputs.spent-usd }}
+
+runs:
+  using: composite
+  steps:
+    - name: Restore monthly spend counter
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ runner.temp }}/cost-guardrail-spend.json
+        # Unique key per run so each run writes a fresh entry; restore-keys picks
+        # the most recent month-to-date counter to read from (rolling cache).
+        key: cost-guardrail-spend-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: |
+          cost-guardrail-spend-
+
+    - name: Install Anthropic SDK
+      shell: bash
+      run: npm install --silent --no-audit --no-fund --prefix "$GITHUB_ACTION_PATH" @anthropic-ai/sdk
+
+    - name: Call Claude (cost-guarded)
+      id: run
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+        CG_PROMPT_FILE: ${{ inputs.prompt-file }}
+        CG_MODEL: ${{ inputs.model }}
+        CG_SYSTEM: ${{ inputs.system }}
+        CG_MAX_TOKENS: ${{ inputs.max-tokens }}
+        CG_EFFORT: ${{ inputs.effort }}
+        CG_SCHEMA_FILE: ${{ inputs.schema-file }}
+        CG_MONTHLY_CAP_USD: ${{ inputs.monthly-cap-usd }}
+        CG_SPEND_FILE: ${{ runner.temp }}/cost-guardrail-spend.json
+        CG_RESPONSE_FILE: ${{ runner.temp }}/cost-guardrail-response.txt
+      run: node "$GITHUB_ACTION_PATH/scripts/budget.mjs"
+
+    - name: Save monthly spend counter
+      if: always()
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ runner.temp }}/cost-guardrail-spend.json
+        key: cost-guardrail-spend-${{ github.run_id }}-${{ github.run_attempt }}

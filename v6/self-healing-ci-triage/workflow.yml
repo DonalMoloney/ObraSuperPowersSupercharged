@@ -1,0 +1,64 @@
+# Self-healing CI triage — copy to .github/workflows/ci-triage.yml
+#
+# When a watched workflow fails, reads its failed-step logs and posts a
+# root-cause + suggested-fix diagnosis on the associated PR (or commit).
+name: Self-Healing CI Triage
+
+on:
+  workflow_run:
+    # CHANGE THIS to the workflow name(s) you want triaged (the `name:` of those
+    # workflows). workflow_run does not support wildcards.
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read # download the failed run's logs
+  pull-requests: write # comment on the associated PR
+
+concurrency:
+  group: ci-triage-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  triage:
+    # Only act on failures.
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect failed logs + build prompt
+        id: prompt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: node .github/workflows/scripts/diagnose.mjs build
+
+      - name: Diagnose with Claude (cost-guarded)
+        id: claude
+        uses: ./.github/actions/cost-guardrail
+        with:
+          prompt-file: ${{ steps.prompt.outputs.prompt_file }}
+          system: |
+            You are an expert CI/build-failure triager. Given the tail of a failing
+            job log, identify the single most likely root cause and the smallest
+            concrete fix. Be precise and brief. Never invent file contents or errors
+            that are not present in the log; if the cause is unclear, say so and name
+            what additional information would resolve it.
+          model: ${{ vars.CLAUDE_TRIAGE_MODEL || 'claude-sonnet-4-6' }}
+          max-tokens: "4000"
+          effort: medium
+          monthly-cap-usd: ${{ vars.CLAUDE_MONTHLY_CAP_USD || '25' }}
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Post diagnosis
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ steps.prompt.outputs.head_sha }}
+          PR_NUMBER: ${{ steps.prompt.outputs.pr_number }}
+          WORKFLOW_NAME: ${{ steps.prompt.outputs.workflow_name }}
+          RESPONSE_FILE: ${{ steps.claude.outputs.response-file }}
+        run: node .github/workflows/scripts/diagnose.mjs post
