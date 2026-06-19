@@ -1,0 +1,8 @@
+{
+  "name": "autonomy-control",
+  "version": "0.1.0",
+  "description": "The enforcement bundle for partial-autonomy work: it ties together autonomy-slider (the policy — which level), permission-tiers (the settings.json mechanism), and commit-checkpoints (mid-work rollback), all referenced as standalone v4 skills, then adds the net-new piece — a PreToolUse hook on Edit|Write|MultiEdit that enforces the currently-declared autonomy level at tool-call time so an L0 (suggest-only) declaration mechanically blocks file writes instead of merely advising against them. tier: v4.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}

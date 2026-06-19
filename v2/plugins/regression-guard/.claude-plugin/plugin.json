@@ -1,0 +1,8 @@
+{
+  "name": "regression-guard",
+  "version": "0.1.0",
+  "description": "A regression workflow that turns a test failure into a localized cause and a mechanically re-checked green: rule out flakiness, bisect history to a single bad commit, then a Stop hook re-runs the suite so the verifier can never be forgotten. Supports test-driven-development and systematic-debugging. tier: v2.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}

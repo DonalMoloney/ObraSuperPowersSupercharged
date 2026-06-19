@@ -251,3 +251,87 @@ doc's Sources section.
 | #7 Delta-memory (ACE) | candidate — overlap; reference `project-hippocampus` |
 | #8 Evolve on Haiku / deploy on Opus | candidate — backlog |
 | #9 Skill Darwinism | candidate — overlap; reference `skill-darwin`/`skill-cannibal` |
+
+---
+
+## Round two — net-new candidates (2026-06-18)
+
+A second brainstorm, independent of the SelfImprovingAgent shortlist above. Same v3
+contract: every idea names a **fitness signal**; ideas overlapping an existing v3 skill say
+*extend* or *reference*, never duplicate.
+
+| # | Build | Fitness signal | Effort | Overlap |
+|---|-------|----------------|--------|---------|
+| R1 | **regression-immune-system** | reinfection rate of bug-classes → 0 | M | adjacent to `eval-suite-from-git` |
+| R2 | **counterfactual-replay** (ablation) | measured score delta per component | M | feeds `skill-cannibal`; vs `ghost-run` |
+| R3 | **dream-consolidation** | next-day cold-start score: consolidated vs raw log | M | OVERLAP → reference `project-hippocampus` |
+| R4 | **adversarial-self-distillation** | difficulty-calibrated pass rate (self-curriculum) | M | vs `red-team-spec`, `predator-prey-review` |
+| R5 | **confidence-calibration-ledger** | Brier score / calibration error → down | S | OVERLAP → extend `belief-ledger` |
+| R6 | **skill-phylogenetics** | redundant skill-pairs found & merged | M | vs `skill-graph` (deps vs lineage) |
+| RP | **self-improving-harness** (plugin) | suite score climbs round-over-round | M | packages #1 + #2 + #6 (this file) |
+
+### R1. regression-immune-system
+Every fix auto-synthesizes a minimal "antibody" reproduction test injected into the suite;
+tracks the *reinfection rate* (same bug-class recurring).
+- **Fitness:** reinfection rate trends to zero.
+- **Boundary:** `eval-suite-from-git` (#1) *mines history* into tasks in batch; R1 is
+  *real-time, per-fix*, with an immune-memory metric. Adjacent — R1 could feed #1's suite.
+
+### R2. counterfactual-replay (ablation)
+Re-runs a completed task with one harness variable flipped (a skill removed, autonomy
+lowered) to measure that component's causal contribution.
+- **Fitness:** measured score delta attributable to the flipped variable.
+- **Boundary:** the eval-gated loop (#2) tests *proposed edits*; R2 *ablates existing
+  components* to find dead weight. Output feeds `skill-cannibal`. Distinct from `ghost-run`
+  (dry-run preview) — R2 is a controlled A/B against the suite.
+
+### R3. dream-consolidation
+An overnight "sleep" pass replays the day's traces, extracts patterns, and rewrites memory
+into compressed schemas (generative replay, REM-style).
+- **Fitness:** next-day cold-start task score using consolidated memory vs the raw log.
+- **Boundary — OVERLAP with `project-hippocampus`.** That does *episodic* memories on an
+  Ebbinghaus forgetting curve; R3 does *generative replay / schema extraction*. **Reference,
+  don't duplicate** — frame R3 as the consolidation pass that writes what hippocampus stores.
+
+### R4. adversarial-self-distillation
+The agent writes a *harder* variant of each task it just passed; if it then fails its own
+harder task, that becomes a new eval — a self-generated curriculum.
+- **Fitness:** difficulty-calibrated pass rate; the agent's own tasks become the curriculum.
+- **Boundary:** `red-team-spec` attacks *specs*, `predator-prey-review` attacks *code*; R4
+  generates *escalating tasks* for the eval suite. New lane; feeds #1.
+
+### R5. confidence-calibration-ledger
+Logs a confidence value before each answer/action, scores it against the outcome, and shows
+the agent its own miscalibration to correct over time.
+- **Fitness:** Brier score / calibration error trends down.
+- **Boundary — OVERLAP with `belief-ledger`.** That tracks *assumption* probabilities and
+  audits when a belief collapses; R5 tracks *self-confidence vs outcome* calibration.
+  **Extend** `belief-ledger` with a confidence-vs-outcome row type rather than a parallel store.
+
+### R6. skill-phylogenetics
+Builds a family tree of skills (which was forked/derived from which), detects convergent
+evolution (two skills drifting to the same purpose), and recommends merges.
+- **Fitness:** redundant skill-pairs detected and merged; library entropy down.
+- **Boundary:** `skill-graph` maps *dependencies*; `skill-cannibal` *eats* underperformers.
+  R6 maps *lineage/ancestry* and finds convergence — the analysis that *feeds*
+  `skill-cannibal`'s merge decisions. New lane.
+
+### RP. self-improving-harness (plugin)
+Packages the skeleton from this file — #1 `eval-suite-from-git` + #2 `eval-gated-evolution-loop`
++ #6 Ralph wrapper / `SCOREBOARD.md` — as a hook+command plugin (`/harness-run`,
+`/harness-score`, capture hooks).
+- **Fitness:** suite score climbs round-over-round (the SCOREBOARD curve).
+- **Boundary:** directly answers this file's **open question #4** (does #6 belong as a plugin
+  with hooks?). RP is the packaging, not a re-implementation of #1/#2/#6.
+
+### Status tracker (round two — 2026-06-18)
+
+| Idea | Status |
+|------|--------|
+| R1 regression-immune-system | candidate — backlog |
+| R2 counterfactual-replay | candidate — backlog (feeds `skill-cannibal`) |
+| R3 dream-consolidation | candidate — overlap; reference `project-hippocampus` |
+| R4 adversarial-self-distillation | candidate — backlog (feeds eval suite) |
+| R5 confidence-calibration-ledger | candidate — overlap; extend `belief-ledger` |
+| R6 skill-phylogenetics | candidate — backlog |
+| RP self-improving-harness (plugin) | candidate — packages #1/#2/#6 |
