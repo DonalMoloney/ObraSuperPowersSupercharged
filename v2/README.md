@@ -23,6 +23,7 @@ Layout: skills live in `skills/<skill-name>/SKILL.md`, plugins in `plugins/<plug
 | `parallel-plan-executor` | writing-plans, executing-plans, dispatching-parallel-agents, using-git-worktrees |
 | `red-team-spec` | brainstorming, writing-plans, dispatching-parallel-agents |
 | `review-clarification-gate` | receiving-code-review, requesting-code-review |
+| `respond-to-pr-comments` | receiving-code-review, requesting-code-review |
 | `session-handoff` | executing-plans, writing-plans |
 | `compress-md` | writing-skills, using-superpowers |
 | `skill-lint` | writing-skills |
