@@ -24,5 +24,14 @@ assert_eq "human filter keeps only real non-self humans" "alice,bob" "$out"
 out="$(bash "$SCRIPT" filter --self me --handled "7" < "$FIX/mixed.json" | authors)"
 assert_eq "handled filter drops id 7 (bob)" "alice" "$out"
 
+# --- Task 4: normalization shape ---
+norm="$(bash "$SCRIPT" filter --self me --handled "" < "$FIX/mixed.json")"
+bob="$(printf '%s' "$norm" | jq -r '.[] | select(.author=="bob") | "\(.type)|\(.path)|\(.line)|\(.url)|\(.diff_hunk)"')"
+assert_eq "inline comment normalized with code fields" "inline|a.py|10|u7|@@ -1 +1 @@" "$bob"
+alice="$(printf '%s' "$norm" | jq -r '.[] | select(.author=="alice") | "\(.type)|\(.path)|\(.line)"')"
+assert_eq "conversation comment has null code fields" "conversation|null|null" "$alice"
+keys="$(printf '%s' "$norm" | jq -r '.[0] | keys_unsorted | join(",")')"
+assert_eq "normalized keys exact" "id,type,author,created_at,body,url,path,line,diff_hunk,in_reply_to_id" "$keys"
+
 echo "----"; echo "passed=$PASS failed=$FAIL"
 [ "$FAIL" -eq 0 ]
