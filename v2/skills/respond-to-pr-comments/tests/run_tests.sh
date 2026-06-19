@@ -20,5 +20,9 @@ authors() { jq -r '[.[].author] | sort | join(",")'; }
 out="$(bash "$SCRIPT" filter --self me --handled "" < "$FIX/mixed.json" | authors)"
 assert_eq "human filter keeps only real non-self humans" "alice,bob" "$out"
 
+# --- Task 3: new (handled-id) filter ---
+out="$(bash "$SCRIPT" filter --self me --handled "7" < "$FIX/mixed.json" | authors)"
+assert_eq "handled filter drops id 7 (bob)" "alice" "$out"
+
 echo "----"; echo "passed=$PASS failed=$FAIL"
 [ "$FAIL" -eq 0 ]

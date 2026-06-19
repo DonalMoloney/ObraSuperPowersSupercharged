@@ -29,6 +29,7 @@ do_filter() {
       and ((.user.login | endswith("[bot]")) | not)
       and (.user.login != $self)
       and ((.user.login | ascii_downcase) as $l | ($denylist | map(ascii_downcase) | index($l)) == null)
+      and ((.id) as $i | ($handled | index($i)) == null)
     ))
     | map({
         id: .id,
