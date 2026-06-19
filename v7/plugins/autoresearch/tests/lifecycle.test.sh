@@ -7,7 +7,9 @@ assert() { if eval "$2"; then echo "ok - $1"; else echo "NOT ok - $1"; fails=$((
 
 # BIN lives outside every repo so scratch files never dirty any git tree.
 BIN="$(mktemp -d)"
-trap 'rm -rf "$BIN"' EXIT
+REPO_A=""
+REPO_B=""
+trap 'rm -rf "$BIN" "${REPO_A:-}" "${REPO_B:-}"' EXIT
 
 mkrepo() {
   TMP="$(mktemp -d)"
