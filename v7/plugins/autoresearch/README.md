@@ -34,7 +34,7 @@ Create `autoresearch.config.json` in your repo (or run `/autoresearch` to genera
 ## Run
 
 \`\`\`bash
-node ... ; bash scripts/autoresearch.sh [autoresearch.config.json] [--allow-dirty]
+bash scripts/autoresearch.sh [autoresearch.config.json] [--allow-dirty]
 \`\`\`
 
 The run is isolated in a git worktree on branch `autoresearch/<run-id>`. Stop early with
