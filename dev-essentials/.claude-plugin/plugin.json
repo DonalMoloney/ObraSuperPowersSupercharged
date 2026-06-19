@@ -1,0 +1,8 @@
+{
+  "name": "dev-essentials",
+  "version": "0.1.0",
+  "description": "Fifteen general-purpose skills for the universal dev loop — plan, build, debug, verify, review, ship — plus worktree and pre-task thinking discipline. Self-contained; works in any codebase.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}
