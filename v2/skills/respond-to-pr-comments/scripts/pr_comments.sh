@@ -75,11 +75,35 @@ do_fetch() {
     | do_filter --self "$self" --handled "$handled"
 }
 
+add_handled() { # args: pr id
+  local dir f tmp; dir="$(watermark_dir)"; f="$dir/$1.json"
+  mkdir -p "$dir"
+  if [ ! -f "$f" ]; then printf '{"pr":%s,"last_poll":null,"handled_ids":[]}\n' "$1" > "$f"; fi
+  tmp="$(mktemp)"
+  jq --argjson id "$2" '.handled_ids = ((.handled_ids + [$id]) | unique) | .last_poll = (now | todate)' "$f" > "$tmp" && mv "$tmp" "$f"
+}
+
+do_reply() {
+  local id="$1" type="$2" bodyfile="$3" pr repo body
+  pr="$(resolve_pr "")"; repo="$(resolve_repo)"
+  body="$(cat "$bodyfile")"
+  case "$type" in
+    inline)               "$GH_BIN" api --method POST "/repos/$repo/pulls/$pr/comments/$id/replies" -f "body=$body" >/dev/null;;
+    conversation|review)  "$GH_BIN" api --method POST "/repos/$repo/issues/$pr/comments" -f "body=$body" >/dev/null;;
+    *) echo "unknown comment type: $type" >&2; exit 1;;
+  esac
+  add_handled "$pr" "$id"
+}
+
+do_skip() { local id="$1" pr; pr="$(resolve_pr "")"; add_handled "$pr" "$id"; }
+
 main() {
   local cmd="${1:-}"; shift || true
   case "$cmd" in
     filter) do_filter "$@";;
     fetch) do_fetch "$@";;
+    reply) do_reply "$@";;
+    skip) do_skip "$@";;
     -h|--help|help) usage;;
     *) usage >&2; exit 2;;
   esac

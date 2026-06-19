@@ -41,5 +41,27 @@ assert_eq "fetch merges paginated pages + 3 types, drops Copilot + empty-body re
 carol_ts="$(printf '%s' "$fetched" | jq -r '.[] | select(.author=="carol") | .created_at')"
 assert_eq "review created_at falls back to submitted_at" "2026-06-19T10:07:00Z" "$carol_ts"
 
+# --- Task 6: reply + skip + watermark ---
+TMPWM="$(mktemp -d)"
+printf 'reply body\n' > "$TMPWM/body.txt"
+LOG="$TMPWM/posts.log"; : > "$LOG"
+
+PR_WATERMARK_DIR="$TMPWM" FAKE_GH_LOG="$LOG" GH_BIN="$HERE/fake_gh.sh" \
+  bash "$SCRIPT" reply 7 inline "$TMPWM/body.txt"
+assert_eq "reply inline hits replies endpoint" "yes" "$(grep -q 'pulls/123/comments/7/replies' "$LOG" && echo yes || echo no)"
+assert_eq "reply records id 7 in watermark" "[7]" "$(jq -c '.handled_ids' "$TMPWM/123.json")"
+
+PR_WATERMARK_DIR="$TMPWM" FAKE_GH_LOG="$LOG" GH_BIN="$HERE/fake_gh.sh" \
+  bash "$SCRIPT" reply 5 review "$TMPWM/body.txt"
+assert_eq "reply review hits issues/comments endpoint" "yes" "$(grep -q 'issues/123/comments' "$LOG" && echo yes || echo no)"
+
+POSTS_BEFORE="$(grep -c '' "$LOG")"
+PR_WATERMARK_DIR="$TMPWM" FAKE_GH_LOG="$LOG" GH_BIN="$HERE/fake_gh.sh" \
+  bash "$SCRIPT" skip 9
+POSTS_AFTER="$(grep -c '' "$LOG")"
+assert_eq "skip posts nothing" "$POSTS_BEFORE" "$POSTS_AFTER"
+assert_eq "skip records id 9 in watermark (sorted unique)" "[5,7,9]" "$(jq -c '.handled_ids' "$TMPWM/123.json")"
+rm -rf "$TMPWM"
+
 echo "----"; echo "passed=$PASS failed=$FAIL"
 [ "$FAIL" -eq 0 ]
