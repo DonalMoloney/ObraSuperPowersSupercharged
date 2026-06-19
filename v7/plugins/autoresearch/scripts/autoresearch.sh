@@ -27,7 +27,7 @@ command -v node >/dev/null 2>&1 || die "node not found"
 repo="$(git rev-parse --show-toplevel 2>/dev/null)" || die "not a git repo"
 [ -f "$CONFIG" ] || die "config not found: $CONFIG"
 
-if [ "$ALLOW_DIRTY" -eq 0 ] && [ -n "$(git status --porcelain | grep -v '^??')" ]; then
+if [ "$ALLOW_DIRTY" -eq 0 ] && [ -n "$(git status --porcelain)" ]; then
   die "working tree is dirty; commit/stash or pass --allow-dirty"
 fi
 
@@ -69,12 +69,11 @@ measure() {  # prints metric to stdout, or nothing on failure
   fi
 }
 
-revert_worktree() { ( cd "$wt" && git checkout -- . >/dev/null 2>&1; git clean -fdq >/dev/null 2>&1 ); }
+revert_worktree() { ( cd "$wt" && git checkout -- . >/dev/null 2>&1 && git clean -fdq >/dev/null 2>&1 ); }
 
 baseline="$(measure)"
 [ -n "$baseline" ] || die "baseline evaluation failed (see $evalout)"
 best="$baseline"
-last="$baseline"   # last measured metric (passed as AR_BEST to proposer)
 
 {
   echo "# autoresearch run $run_id"
@@ -97,7 +96,7 @@ while [ "$iter" -lt "$MAX_ITER" ]; do
   fi
   iter=$(( iter + 1 ))
 
-  AR_OBJECTIVE="$OBJECTIVE" AR_BEST="$last" AR_DIRECTION="$DIRECTION" \
+  AR_OBJECTIVE="$OBJECTIVE" AR_BEST="$best" AR_DIRECTION="$DIRECTION" \
   AR_JOURNAL="$journal" AR_WORKTREE="$wt" AR_ARTIFACTS="$ARTIFACTS_NL" \
     "$proposer_cmd" >>"$rundir/proposer.log" 2>&1 || true
 
@@ -124,11 +123,10 @@ while [ "$iter" -lt "$MAX_ITER" ]; do
     ( cd "$wt" && git add -A && git commit -q -m "autoresearch: $metric (was $best) [iter $iter]" )
     sha="$(cd "$wt" && git rev-parse --short HEAD)"
     printf '## iter %s — KEPT  (%s → %s)  commit: %s\n\n' "$iter" "$best" "$metric" "$sha" >> "$journal"
-    best="$metric"; last="$metric"; no_improve=0
+    best="$metric"; no_improve=0
   else
     revert_worktree
     printf '## iter %s — REVERTED  (%s vs best %s)\n\n' "$iter" "$metric" "$best" >> "$journal"
-    last="$metric"  # pass the reverted metric to the next proposer as context
     no_improve=$(( no_improve + 1 ))
   fi
 done

@@ -204,6 +204,41 @@
       "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
       "rule_matched": "sub-claude-md",
       "ts": "2026-06-13T18:42:27Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/CLAUDE.md",
+      "rule_matched": "sub-claude-md",
+      "ts": "2026-06-19T13:58:25Z"
+    },
+    {
+      "file": "d=$(mktemp",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-19T14:02:34Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-19T14:29:36Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/.claude/worktrees/respond-to-pr-comments/v2/skills/respond-to-pr-comments/scripts",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-19T14:31:59Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/.git/sdd",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-19T14:51:15Z"
+    },
+    {
+      "file": "/Users/donalmoloney/PycharmProjects/ObraSuperPowersSupercharged/v7/plugins/autoresearch/tests",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-19T14:54:54Z"
+    },
+    {
+      "file": "/tmp",
+      "rule_matched": "new-top-level-dir",
+      "ts": "2026-06-19T15:05:15Z"
     }
   ]
 }

@@ -46,13 +46,16 @@ script + command bundle).
 - **Provenance:** Karpathy, LLM-as-OS analogy — keynote June 2025 and earlier
   "LLM OS" posts on X (2023–2024).
 - **The tool:** Context-budget discipline: before exploring, declare what question
-  each read answers; prefer targeted reads over whole-file loads; "evict" by
-  summarizing findings and not re-reading; track a rough page table of what is
-  already in context.
+  each read answers; "evict" by summarizing findings and not re-reading; track a
+  rough page table of what is already in context. *(The tactical read mechanics —
+  locate-then-range-read and trimming output at the source — were taken by
+  `token-thrift` (built 2026-06-19); K3's remaining lane is the strategic
+  accounting only.)*
 - **Boundary:** v5 has `salience-compressor` and `sample-context-fairly` (Forge
-  imports, verbatim). This must either carve a distinct lane (budgeting *before*
-  reading vs compressing *after*) or trigger promotion/deletion bookkeeping for
-  the v5 items. Flagged as the riskiest overlap in this list.
+  imports, verbatim). K3 must carve a distinct lane (budgeting/accounting *before*
+  reading vs compressing *after*); the tactical *how* of a thrifty read now lives in
+  `token-thrift`, so K3's residue is the page-table / question-per-read discipline.
+  Still needs the v5 promote-or-delete round before building.
 
 ### K4. vibe-coding-guardrails — skill
 - **Idea:** Vibe coding — "fully give in to the vibes, forget the code exists" —
@@ -229,7 +232,7 @@ second round. K2/C3/C5/C6 are good but narrower; K4 is fun but lowest daily valu
 |------|--------|
 | K1 autonomy-slider | built (round one) |
 | K2 short-leash-increments | deferred — narrower; fold-in candidate for autonomy-slider |
-| K3 context-paging | deferred — v5 collision (salience-compressor, sample-context-fairly); needs promote-or-delete round |
+| K3 context-paging | deferred & narrowed — tactical read mechanics taken by `token-thrift` (2026-06-19); residual lane is strategic accounting (page table / question-per-read); still needs v5 promote-or-delete round |
 | K4 vibe-coding-guardrails | deferred — lowest daily value this round |
 | K5 fast-verify-loop | built (round one) |
 | K6 cognitive-prosthetics | built (round one) |
@@ -240,3 +243,154 @@ second round. K2/C3/C5/C6 are good but narrower; K4 is fun but lowest daily valu
 | C4 fresh-context-review | built (round one) |
 | C5 checklist-working-memory | deferred — narrower |
 | C6 hook-the-must-happens | deferred — possible merge with K7 next round |
+
+---
+
+## Round two — candidates (2026-06-18)
+
+A second brainstorm. Same v4 contract: every tool cites a **specific published Karpathy or
+Cherny idea** and a **boundary** against existing tier items. Net-new where possible; the two
+deferred v5-collision picks (K3, K7) are *not* re-listed here.
+
+| # | Build | Provenance | Effort | Overlap |
+|---|-------|-----------|--------|---------|
+| K8 | **headless-claude-pipelines** | Cherny — `claude -p` headless mode (best-practices, Apr 2025) | M | NEW — vs `bash-first-tooling` |
+| K9 | **context-rot-monitor** | Karpathy LLM-as-OS (context=RAM) + Cherny `/clear` discipline | S | vs deferred K3 `context-paging` |
+| C7 | **rich-feedback-channels** | Cherny — give Claude tools to see its output (tests/logs/browser) | S | vs `fast-verify-loop` |
+| C8 | **permission-tiers** | Cherny — settings.json allowlists + permission modes | S | backs `autonomy-slider` |
+| C9 | **commit-checkpoints** | Cherny — commit frequently as rollback points | S | NEW — vs v1 `finishing-a-development-branch` |
+| K10 | **jagged-intelligence-guard** | Karpathy — "jagged intelligence" (X posts) | S | fold-in vs `cognitive-prosthetics` |
+| CP | **autonomy-control** (plugin) | Cherny permissions + Karpathy autonomy slider | M | bundles K1 + C8 + C9 |
+
+### K8. headless-claude-pipelines — skill
+Write `claude -p` headless one-liners as programmable subroutines: CI gates, bulk labeling,
+lint-fix sweeps, doc generation.
+- **Provenance:** Cherny, "Claude Code: Best practices for agentic coding" (Anthropic eng
+  blog, Apr 2025) — the headless-mode / `-p` automation section.
+- **Boundary:** `bash-first-tooling` (C2) is general tool-acquisition; K8 is specifically
+  *Claude-as-a-subroutine* in a shell pipeline. New identity.
+
+### K9. context-rot-monitor — skill (optionally + hook)
+Watches conversation length / staleness and prompts a compact/clear at the right moment,
+tracking "context pressure."
+- **Provenance:** Karpathy LLM-as-OS (context window = RAM, paged deliberately) + Cherny's
+  `/clear`-between-tasks discipline (best-practices, Apr 2025).
+- **Boundary:** deferred K3 `context-paging` budgets *reads before exploring*; K9 governs
+  *when to clear/compact the running session*. Distinct lane — and K9 may be the cleaner one
+  to build first since it sidesteps the v5 `salience-compressor` collision.
+
+### C7. rich-feedback-channels — skill
+Ensures every task has a readable observability channel (test output, logs, screenshots)
+wired *before* work starts, so the agent can self-correct.
+- **Provenance:** Cherny, best-practices (Apr 2025) — give Claude the ability to *see* results
+  (run tests, read logs, view the browser) to close the loop.
+- **Boundary:** `fast-verify-loop` (K5) *picks* the fastest verifier; C7 *guarantees the
+  feedback channel exists and is legible*. C7 is the precondition; K5 is the choice.
+
+### C8. permission-tiers — skill
+settings.json permission templates matched to each `autonomy-slider` level, enforced by a
+`PreToolUse` gate.
+- **Provenance:** Cherny, best-practices (Apr 2025) — allowlists / permission modes /
+  `--dangerously-skip-permissions` used deliberately.
+- **Boundary:** `autonomy-slider` (K1) is the *policy* (which level); C8 is the *mechanism*
+  (the settings.json that makes the level real). Pairs, doesn't duplicate.
+
+### C9. commit-checkpoints — skill
+Auto-commits at each verified increment so any step is revertible; resume from a clean state
+after a wrong turn.
+- **Provenance:** Cherny, best-practices (Apr 2025) — commit frequently as checkpoints to roll
+  back to.
+- **Boundary:** v1 `finishing-a-development-branch` is end-of-work integration; C9 is
+  *mid-work checkpointing*. Pairs with deferred K2 `short-leash-increments`.
+
+### K10. jagged-intelligence-guard — skill
+Flags when a task enters a known-spiky domain (arithmetic, counting, spatial reasoning,
+fresh/unseen APIs) and forces a tool or verify step instead of trusting the model.
+- **Provenance:** Karpathy, "jagged intelligence" (X posts, 2024–2025).
+- **Boundary — fold-in tension with `cognitive-prosthetics` (K6)**, which already lists
+  jaggedness as *one* deficit row. K10 is the standalone *routing guard*. Decision at build
+  time: deepen K6's row, or split K10 out as a guard that K6 references.
+
+### CP. autonomy-control — plugin
+Bundles `autonomy-slider` (K1) + `permission-tiers` (C8) + `commit-checkpoints` (C9) with a
+`PreToolUse` gate that enforces the declared autonomy level at tool-call time.
+- **Provenance:** Karpathy autonomy-slider + Cherny permissions / hooks-as-enforcement.
+- **Boundary:** the plugin is the *enforcement bundle*; the three skills remain usable
+  standalone. The hook makes the level mechanical, not advisory.
+
+### Status tracker (round two — 2026-06-18)
+
+| Idea | Status |
+|------|--------|
+| K8 headless-claude-pipelines | candidate — backlog (recommended build-first) |
+| K9 context-rot-monitor | candidate — backlog (recommended build-first; cleaner than deferred K3) |
+| C7 rich-feedback-channels | candidate — backlog |
+| C8 permission-tiers | candidate — backlog (pairs `autonomy-slider`) |
+| C9 commit-checkpoints | candidate — backlog (pairs deferred K2) |
+| K10 jagged-intelligence-guard | candidate — fold-in vs `cognitive-prosthetics` |
+| CP autonomy-control (plugin) | candidate — bundles K1 + C8 + C9 |
+
+---
+
+## Net-new builds (post round two)
+
+Builds that did not come from either candidate list above — added as the lane became clear.
+
+### TT. token-thrift — skill (built 2026-06-19)
+Reduce the token cost of tool results and reads *at the point of the call*: trim output at the
+source (`rg`/`head`/`--stat`/`jq`/`-q`), scope reads (locate with `Grep`/`git grep -n`, then
+`Read` with `offset`+`limit`), and offload broad file-sweeps to a subagent that returns only the
+conclusion + `file:line` pointers.
+- **Provenance:** Cherny — CLI tools are "the most context-efficient way" to work + "use
+  subagents ... tends to preserve context availability" (best-practices, Apr 2025); Karpathy —
+  context-window-as-RAM / accuracy degrades with fill, cited as the *why*.
+- **Boundary:** owns the *generation-side* footprint of each tool call. Distinct from
+  `selective-priming` (what to load in at start), `context-rot-monitor` (when to clear/compact
+  what is already in), v5 `salience-compressor` (compress after the fact), and
+  `cognitive-prosthetics` (externalize state). Takes the *tactical read mechanics* from deferred
+  K3 `context-paging`, leaving K3 its strategic accounting lane.
+
+| Idea | Status |
+|------|--------|
+| TT token-thrift | built (net-new, 2026-06-19) |
+
+---
+
+## Round three — candidate (2026-06-19)
+
+One net-new Cherny tool, prompted by the live `.claude/claude-md-drift.json` ledger this repo
+already writes. Same v4 contract: cite a specific published idea, draw a boundary against the
+drift machinery that already exists (v5 `claude-md-watcher`, v2 `plan-drift-detector`,
+v4 `context-rot-monitor`).
+
+| # | Build | Provenance | Effort | Overlap |
+|---|-------|-----------|--------|---------|
+| C10 | **claude-md-drift-guard** | Cherny — hooks make the must-happens deterministic + CLAUDE.md is a living, tuned file (best-practices, Apr 2025) | M | NEW — *enforces* what v5 `claude-md-watcher` only reconciles |
+
+### C10. claude-md-drift-guard — skill + hook
+Treat CLAUDE.md as **verifiable claims, not trusted prose.** Extract the machine-checkable
+assertions a CLAUDE.md actually makes — counts ("14 skills"), paths that must exist, the default
+branch, the setup/test commands that must run — and check them deterministically against the repo.
+When the drift ledger is non-empty *and* a claim is provably false on disk, a `Stop` / pre-commit
+hook **blocks the done/commit step** until CLAUDE.md is reconciled, instead of emitting the advisory
+reminder the current watcher relies on (easy to ignore mid-task).
+- **Provenance:** Cherny, "Claude Code: Best practices for agentic coding" (Anthropic eng blog,
+  Apr 2025) — hooks used to make the must-happens *deterministic* rather than advisory, and CLAUDE.md
+  treated as a living file you tune over time. The verification-loop framing ("give Claude tools to
+  *see* results") applied to project memory: the doc's claims are checked, not trusted.
+- **Boundary:**
+  - vs v5 `claude-md-watcher` — the watcher *reconciles when invoked* (reads the ledger, patches the
+    implicated section). C10 is the **enforcement + claim-extraction front end**: it decides *when a
+    claim is provably stale* and *gates* on it, then hands the actual patching to the watcher. Guard
+    detects-and-blocks; watcher edits. They chain, they don't duplicate.
+  - vs v4 `context-rot-monitor` — that governs *session* staleness (conversation length); C10 governs
+    *repo-vs-doc* staleness that persists across sessions.
+  - vs v2 `plan-drift-detector` — plan-vs-implementation drift, not doc-vs-repo.
+- **Open question:** auto-infer claims vs. annotate them. A `<!-- verify: skills==14 -->` marker
+  convention makes each claim explicit and machine-checkable but asks the author to tag it; pure
+  inference (regex for counts / referenced paths / fenced commands) needs no tags but is noisier.
+  Likely answer: annotate the high-value claims, infer paths and commands.
+
+| Idea | Status |
+|------|--------|
+| C10 claude-md-drift-guard | candidate — backlog (chains to v5 `claude-md-watcher`; cites the live drift ledger) |

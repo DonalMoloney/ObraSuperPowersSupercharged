@@ -6,8 +6,10 @@ fails=0
 assert() { if eval "$2"; then echo "ok - $1"; else echo "NOT ok - $1"; fails=$((fails+1)); fi; }
 
 # --- build a throwaway target repo ---
-TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
-cd "$TMP"
+TMP="$(mktemp -d)"
+BIN="$(mktemp -d)"
+trap 'rm -rf "$TMP" "$BIN"' EXIT
+cd "$TMP" || exit 1
 git init -q && git config user.email t@t && git config user.name t
 echo "value = 0" > knob.txt
 # eval prints metric = the integer in knob.txt; lower is "worse" here we MAXIMIZE
@@ -25,21 +27,23 @@ EOF
 git add -A && git commit -qm init
 
 # mock proposer: iter1 improves (good), iter2 worsens (bad), iter3 edits out-of-scope
-cat > mock.sh <<'EOF'
+# mock lives OUTSIDE the temp repo so the tree stays clean (no untracked files)
+export MOCK_COUNTER="$BIN/itercount"
+cat > "$BIN/mock.sh" <<'EOF'
 #!/usr/bin/env bash
 cd "$AR_WORKTREE" || exit 1
-n=$(grep -oE '[0-9]+' knob.txt | head -1); n=${n:-0}
-case "$AR_BEST" in
-  0) echo "value = 5" > knob.txt ;;        # iter1: 0 -> 5  (KEEP)
-  5) echo "value = 1" > knob.txt ;;        # iter2: 5 -> 1  (REVERT, worse)
-  *) echo "x" > out_of_scope.txt ;;        # iter3: out-of-scope (REVERT)
+n=$(cat "$MOCK_COUNTER" 2>/dev/null || echo 0); n=$((n+1)); echo "$n" > "$MOCK_COUNTER"
+case "$n" in
+  1) echo "value = 5" > knob.txt ;;     # improve  -> KEPT (0 -> 5)
+  2) echo "value = 1" > knob.txt ;;     # worse    -> REVERTED (1 vs best 5)
+  *) echo "x" > out_of_scope.txt ;;     # out-of-scope -> REVERTED
 esac
 EOF
-chmod +x mock.sh
+chmod +x "$BIN/mock.sh"
 
-AUTORESEARCH_PROPOSER_CMD="$TMP/mock.sh" bash "$HARNESS" autoresearch.config.json >run.log 2>&1
+AUTORESEARCH_PROPOSER_CMD="$BIN/mock.sh" bash "$HARNESS" autoresearch.config.json >run.log 2>&1
 
-run="$(ls -d .autoresearch/*/ | head -1)"
+run="$(find .autoresearch -maxdepth 1 -mindepth 1 -type d | head -1)"
 journal="${run}journal.md"
 assert "journal exists"            "[ -f '$journal' ]"
 assert "baseline recorded as 0"    "grep -q 'baseline: 0' '$journal'"
@@ -53,4 +57,5 @@ assert "one kept commit" "[ \"\$(cd '${run}worktree' && { git rev-list --count H
 # out-of-scope file was removed
 assert "out-of-scope file gone"    "[ ! -f '${run}worktree/out_of_scope.txt' ]"
 
-echo "---"; [ "$fails" -eq 0 ] && echo "ALL PASS" || { echo "$fails FAILED"; exit 1; }
+echo "---"
+if [ "$fails" -eq 0 ]; then echo "ALL PASS"; else echo "$fails FAILED"; exit 1; fi
