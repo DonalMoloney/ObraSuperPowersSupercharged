@@ -2,6 +2,7 @@
 set -euo pipefail
 
 GH_BIN="${GH_BIN:-gh}"
+# "copilot" has no [bot] suffix so needs explicit listing; the rest are defense-in-depth.
 DENYLIST_JSON='["copilot","github-copilot[bot]","copilot-pull-request-reviewer[bot]","coderabbitai[bot]","github-actions[bot]"]'
 
 usage() {
@@ -18,8 +19,8 @@ do_filter() {
   local self="" handled="[]"
   while [ $# -gt 0 ]; do
     case "$1" in
-      --self) self="${2:-}"; shift 2;;
-      --handled) if [ -n "${2:-}" ]; then handled="$(printf '%s' "$2" | jq -R 'split(",") | map(tonumber)')"; fi; shift 2;;
+      --self) self="${2:-}"; shift; [ $# -gt 0 ] && shift;;
+      --handled) if [ -n "${2:-}" ]; then handled="$(printf '%s' "$2" | jq -R 'split(",") | map(tonumber)')"; fi; shift; [ $# -gt 0 ] && shift;;
       *) shift;;
     esac
   done
@@ -51,7 +52,7 @@ main() {
   case "$cmd" in
     filter) do_filter "$@";;
     -h|--help|help) usage;;
-    *) usage; exit 2;;
+    *) usage >&2; exit 2;;
   esac
 }
 main "$@"
