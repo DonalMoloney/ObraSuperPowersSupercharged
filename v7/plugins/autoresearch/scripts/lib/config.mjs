@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const REQUIRED = ['objective', 'artifact', 'eval_cmd', 'metric', 'direction', 'budget'];
 const BUDGET_KEYS = ['max_iterations', 'max_wallclock_min', 'per_iter_timeout_sec'];
@@ -54,7 +55,7 @@ export function getArray(cfg, key) {
   return v.map(String);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [cmd, path, key] = process.argv.slice(2);
   try {
     if (cmd === 'validate') { loadConfig(path); console.log('OK'); }
