@@ -13,6 +13,12 @@ CC8) carry the same meaning as in that doc.
 > graph itself is defined by **CC2** in `v1/SUPERCHARGING-OPTIONS.md`; this doc is
 > about making that graph (and the v2–v5 / frontend extensions of it) explicit,
 > discoverable, and checkable.
+>
+> **`v6/` is a second chaining surface — out of session.** v6 members are runnable
+> GitHub Actions, not skills: they chain through GitHub *events* and a shared composite
+> action rather than `chains-to:` frontmatter, and run in CI rather than a Claude Code
+> conversation. They get their own section below; the A–G options target the in-session
+> skill graph and do not apply to them.
 
 ---
 
@@ -78,6 +84,38 @@ follow the skills that already implement it.
 | **Parallelization** | Independent subtasks fan out (sectioning); repeated runs vote (voting) | `dispatching-parallel-agents`, `parallel-plan-executor`, `subagent-driven-development` (sectioning); `reviewer-lenses`, `red-team-spec` (voting/multi-lens) |
 | **Orchestrator-workers** | A controller decomposes dynamically and synthesizes | `orchestrate-feature`, `subagent-driven-development` wave construction, `merge-parallel-results` (fan-in) |
 | **Evaluator-optimizer** | Generate, then critique/score in a loop | `loop-until-green`, `done-gate`, `devils-advocate`, `reviewer-lenses`, `verification-before-completion` |
+
+---
+
+## v6 — CI-side chaining (out of session)
+
+The `v6/` tier chains too, but on a different surface: its members are runnable GitHub
+Actions, so they compose through **GitHub events** and a **shared composite action**
+rather than `chains-to:` frontmatter, and they run in CI instead of a conversation. The
+three best-practice rules still hold — they just take CI forms:
+
+- **The seam is `_cost-guardrail`.** The reviewer and triage actions both hand their
+  prompt to one composite action and read back its `response-file` / `spent-usd`
+  outputs — "memo, not report" as a reusable worker, not per-action HTTP.
+- **The handoff state is a sticky-comment marker.** Each action records what it did in a
+  hidden marker (`<!-- last-sha=… -->`, `<!-- claude-ci-triage:… -->`) that the next run
+  reads — "log received / did / returned" made idempotent.
+- **Testing the seam** is `actionlint` + `node --check` on the helper scripts, before
+  the workflow goes live.
+
+Each v6 action is the **headless / CI mirror** of an in-session skill chain:
+
+| v6 action | Chains via | Anthropic pattern | In-session mirror |
+|---|---|---|---|
+| `_cost-guardrail` | reused by the reviewer + triage actions | shared worker (infra seam) | — |
+| `incremental-pr-reviewer` | `pull_request` → build → guardrail → post → sticky summary | prompt chaining + evaluator-optimizer | `requesting-code-review` / `receiving-code-review` |
+| `self-healing-ci-triage` | `workflow_run` failure → guardrail → diagnosis comment | evaluator-optimizer | `systematic-debugging` |
+| `autonomous-issue-fixer` | `claude-fix` label / authorized `@claude` → branch → draft PR | routing (trigger gate) + orchestrator-workers | the `brainstorming → … → finishing-a-development-branch` chain, run headless via `anthropics/claude-code-action` |
+
+v6 is intentionally **outside the A–G scope below**: those options target the frontmatter
+skill graph, and v6 templates carry no skill frontmatter, so the machine-readable graph
+(option A) neither includes nor validates them. Treat this table as v6's pattern catalog
+and keep it current as the tier grows (menu items #4–#10 in the design spec are deferred).
 
 ---
 
