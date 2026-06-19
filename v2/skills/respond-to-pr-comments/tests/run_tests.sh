@@ -15,5 +15,10 @@ out="$(bash "$SCRIPT" bogus 2>&1)"; rc=$?
 assert_eq "unknown subcommand exits non-zero" "nonzero" "$([ $rc -ne 0 ] && echo nonzero || echo zero)"
 assert_eq "unknown subcommand prints usage" "yes" "$(echo "$out" | grep -q 'Usage:' && echo yes || echo no)"
 
+# --- Task 2: human filter ---
+authors() { jq -r '[.[].author] | sort | join(",")'; }
+out="$(bash "$SCRIPT" filter --self me --handled "" < "$FIX/mixed.json" | authors)"
+assert_eq "human filter keeps only real non-self humans" "alice,bob" "$out"
+
 echo "----"; echo "passed=$PASS failed=$FAIL"
 [ "$FAIL" -eq 0 ]

@@ -1,0 +1,9 @@
+[
+  {"_type":"conversation","id":1,"user":{"login":"alice","type":"User"},"body":"hi","created_at":"2026-06-19T10:00:00Z","html_url":"u1"},
+  {"_type":"conversation","id":2,"user":{"login":"dependabot[bot]","type":"Bot"},"body":"bump","created_at":"2026-06-19T10:01:00Z","html_url":"u2"},
+  {"_type":"review","id":3,"user":{"login":"some-bot[bot]","type":"User"},"body":"lgtm","submitted_at":"2026-06-19T10:02:00Z","html_url":"u3"},
+  {"_type":"conversation","id":4,"user":{"login":"me","type":"User"},"body":"mine","created_at":"2026-06-19T10:03:00Z","html_url":"u4"},
+  {"_type":"review","id":5,"user":{"login":"Copilot","type":"User"},"body":"nit","submitted_at":"2026-06-19T10:04:00Z","html_url":"u5"},
+  {"_type":"conversation","id":6,"user":{"login":"coderabbitai[bot]","type":"Bot"},"body":"x","created_at":"2026-06-19T10:05:00Z","html_url":"u6"},
+  {"_type":"inline","id":7,"user":{"login":"bob","type":"User"},"body":"fix this","created_at":"2026-06-19T10:06:00Z","html_url":"u7","path":"a.py","line":10,"diff_hunk":"@@ -1 +1 @@","in_reply_to_id":null}
+]
