@@ -28,3 +28,13 @@ Rules:
 | bash-first-tooling | Cherny | Bash as the universal tool (best-practices post, Apr 2025) | — |
 | boris-master-setup | Cherny | "Configure your environment" setup checklist (best-practices post, Apr 2025) | boundary: bash-first-tooling, autonomy-slider |
 | selective-priming | Karpathy | Context-window-as-RAM / context engineering (X post, Jun 2025) | boundary: cognitive-prosthetics, bash-first-tooling |
+| headless-claude-pipelines | Cherny | Headless mode `claude -p` for automation/CI (best-practices post, Apr 2025) | boundary: bash-first-tooling |
+| context-rot-monitor | Karpathy + Cherny | Context-as-RAM + `/clear` between tasks (keynote Jun 2025; best-practices post, Apr 2025) | boundary: selective-priming, K3 context-paging |
+| permission-tiers | Cherny | settings.json allowlists / permission modes (best-practices post, Apr 2025) | pairs-with: autonomy-slider; bundled by autonomy-control |
+| commit-checkpoints | Cherny | Commit frequently as rollback checkpoints (best-practices post, Apr 2025) | boundary: finishing-a-development-branch (v1); bundled by autonomy-control |
+
+## Current plugins
+
+| Plugin | Originator | Idea (source) | Components |
+|--------|-----------|---------------|-----------|
+| autonomy-control | Karpathy + Cherny | Autonomy slider + hooks-as-enforcement (keynote Jun 2025; best-practices post, Apr 2025) | PreToolUse hook (fail-soft; enforces declared L0–L3 at tool-call time); references skills autonomy-slider, permission-tiers, commit-checkpoints |

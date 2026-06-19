@@ -31,6 +31,12 @@ Rules:
 | `two-speed-evolution` | Self-improving | Free in-session Haiku friction capture + a separate gated overnight pass; only the gated path may touch the harness |
 | `cross-model-harness-transfer` | Self-improving | Evolve the harness cheap on Haiku, freeze, deploy on Opus; a held-out eval slice re-verifies the transfer |
 | `meta-evolution` | Self-improving | The loop tunes its own thresholds from tracked metrics, with gaming-detection vetoing suspicious score jumps |
+| `confidence-calibration-ledger` | Memory & learning | Logs confidence before acting, scores it against outcomes; extends `belief-ledger` with a calibration row type |
+| `regression-immune-system` | Self-improving | Each fix auto-synthesizes an antibody test into the suite; tracks bug-class reinfection rate toward zero |
+| `counterfactual-replay` | Self-improving | Re-runs a task with one harness component ablated to measure its causal score contribution; feeds `skill-cannibal` |
+| `dream-consolidation` | Memory & learning | Overnight generative replay compresses the day's traces into schemas; scored vs raw logs on a cold-start task |
+| `adversarial-self-distillation` | Self-improving | After passing, the agent writes a harder variant; self-defeats become new escalating-curriculum evals |
+| `skill-phylogenetics` | Self-improving | Maps skill lineage and detects convergent evolution; hands merge candidates to `skill-cannibal` |
 
 ## Idea backlog
 
