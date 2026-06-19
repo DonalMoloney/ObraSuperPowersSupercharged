@@ -33,5 +33,12 @@ assert_eq "conversation comment has null code fields" "conversation|null|null" "
 keys="$(printf '%s' "$norm" | jq -r '.[0] | keys_unsorted | join(",")')"
 assert_eq "normalized keys exact" "id,type,author,created_at,body,url,path,line,diff_hunk,in_reply_to_id" "$keys"
 
+# --- Task 5: fetch orchestration via fake gh ---
+chmod +x "$HERE/fake_gh.sh"
+out="$(GH_BIN="$HERE/fake_gh.sh" bash "$SCRIPT" fetch 123 | authors)"
+assert_eq "fetch keeps new humans across 3 types, drops Copilot + empty-body review" "alice,bob,carol" "$out"
+carol_ts="$(GH_BIN="$HERE/fake_gh.sh" bash "$SCRIPT" fetch 123 | jq -r '.[] | select(.author=="carol") | .created_at')"
+assert_eq "review created_at falls back to submitted_at" "2026-06-19T10:07:00Z" "$carol_ts"
+
 echo "----"; echo "passed=$PASS failed=$FAIL"
 [ "$FAIL" -eq 0 ]
