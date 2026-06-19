@@ -6,7 +6,6 @@ tier: v2
 supports: [receiving-code-review, requesting-code-review]
 type: technique
 chains-to: receiving-code-review
-pairs-with: loop-until-green
 ---
 
 ## Not this skill if
@@ -58,13 +57,13 @@ Pull *new* *human* comments off a PR, draft replies, and post only what the user
 
 ## Watch mode
 
-No extra machinery — wrap this skill with the existing `/loop` skill:
+No extra machinery — wrap this workflow with Claude Code's built-in `/loop` command, which re-runs a prompt on an interval:
 
 ```
-/loop 5m respond-to-pr-comments
+/loop 5m respond to any new human comments on my open PR
 ```
 
-Each tick re-runs the workflow; the watermark guarantees only genuinely new human comments surface, and the step-2 no-op keeps idle ticks silent.
+Each tick re-runs this skill; the watermark guarantees only genuinely new human comments surface, and the step-2 no-op keeps idle ticks silent.
 
 ## Human filter
 
@@ -75,6 +74,7 @@ Each tick re-runs the workflow; the watermark guarantees only genuinely new huma
 - **Watermark:** per-PR file at `${PR_WATERMARK_DIR:-$(git rev-parse --git-dir)/pr-comment-watermarks}/<pr>.json` — local to the clone, never committed. `handled_ids` is the authoritative dedup set.
 - **`--paginate`:** `fetch` slurps and merges all pages (`jq -s 'add | ...'`), so PRs with many comments are handled correctly.
 - **Reply routing:** inline → the review thread (`/pulls/<pr>/comments/<id>/replies`); conversation and review-summary → a timeline comment (`/issues/<pr>/comments`), since GitHub has no "reply to a review" endpoint.
+- **Branch context:** `reply`/`skip` resolve the PR from the current branch, so run the whole workflow from the PR's branch. The explicit `fetch <PR>` argument is only safe when you are already on that PR's branch — otherwise replies would target the branch's PR, not the one you fetched.
 
 ## Verification
 
