@@ -41,9 +41,9 @@ esac
 EOF
 chmod +x "$BIN/mock.sh"
 
-AUTORESEARCH_PROPOSER_CMD="$BIN/mock.sh" bash "$HARNESS" autoresearch.config.json >run.log 2>&1
+AUTORESEARCH_PROPOSER_CMD="$BIN/mock.sh" bash "$HARNESS" autoresearch.config.json >"$BIN/run.log" 2>&1
 
-run="$(find .autoresearch -maxdepth 1 -mindepth 1 -type d | head -1)"
+run="$(find .autoresearch -maxdepth 1 -mindepth 1 -type d | head -1)/"
 journal="${run}journal.md"
 assert "journal exists"            "[ -f '$journal' ]"
 assert "baseline recorded as 0"    "grep -q 'baseline: 0' '$journal'"
