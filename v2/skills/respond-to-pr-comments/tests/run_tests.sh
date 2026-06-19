@@ -35,9 +35,10 @@ assert_eq "normalized keys exact" "id,type,author,created_at,body,url,path,line,
 
 # --- Task 5: fetch orchestration via fake gh ---
 chmod +x "$HERE/fake_gh.sh"
-out="$(GH_BIN="$HERE/fake_gh.sh" bash "$SCRIPT" fetch 123 | authors)"
-assert_eq "fetch keeps new humans across 3 types, drops Copilot + empty-body review" "alice,bob,carol" "$out"
-carol_ts="$(GH_BIN="$HERE/fake_gh.sh" bash "$SCRIPT" fetch 123 | jq -r '.[] | select(.author=="carol") | .created_at')"
+fetched="$(GH_BIN="$HERE/fake_gh.sh" bash "$SCRIPT" fetch 123)"
+out="$(printf '%s' "$fetched" | authors)"
+assert_eq "fetch merges paginated pages + 3 types, drops Copilot + empty-body review" "alice,bob,carol,erin" "$out"
+carol_ts="$(printf '%s' "$fetched" | jq -r '.[] | select(.author=="carol") | .created_at')"
 assert_eq "review created_at falls back to submitted_at" "2026-06-19T10:07:00Z" "$carol_ts"
 
 echo "----"; echo "passed=$PASS failed=$FAIL"

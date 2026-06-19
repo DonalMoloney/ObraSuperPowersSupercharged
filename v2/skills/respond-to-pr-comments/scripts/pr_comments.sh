@@ -3,6 +3,7 @@ set -euo pipefail
 
 GH_BIN="${GH_BIN:-gh}"
 # "copilot" has no [bot] suffix so needs explicit listing; the rest are defense-in-depth.
+# Already lower-cased so jq need not call ascii_downcase on the list per invocation.
 DENYLIST_JSON='["copilot","github-copilot[bot]","copilot-pull-request-reviewer[bot]","coderabbitai[bot]","github-actions[bot]"]'
 
 usage() {
@@ -29,7 +30,7 @@ do_filter() {
       (.user.type != "Bot")
       and ((.user.login | endswith("[bot]")) | not)
       and (.user.login != $self)
-      and ((.user.login | ascii_downcase) as $l | ($denylist | map(ascii_downcase) | index($l)) == null)
+      and ((.user.login | ascii_downcase) as $l | ($denylist | index($l)) == null)
       and ((.id) as $i | ($handled | index($i)) == null)
     ))
     | map({
@@ -49,23 +50,26 @@ do_filter() {
 
 resolve_repo() { "$GH_BIN" repo view --json owner,name | jq -r '.owner.login + "/" + .name'; }
 resolve_pr()   { if [ -n "${1:-}" ]; then printf '%s' "$1"; else "$GH_BIN" pr view --json number | jq -r '.number'; fi; }
-resolve_self() { "$GH_BIN" api user | jq -r '.login'; }
+resolve_self() {
+  local s; s="$("$GH_BIN" api user | jq -r '.login')"
+  if [ -z "$s" ] || [ "$s" = "null" ]; then echo "pr_comments: could not resolve GitHub login (run: gh auth status)" >&2; exit 1; fi
+  printf '%s' "$s"
+}
 
-watermark_dir()  { printf '%s' "${PR_WATERMARK_DIR:-$(git rev-parse --git-dir)/pr-comment-watermarks}"; }
-watermark_file() { printf '%s/%s.json' "$(watermark_dir)" "$1"; }
+watermark_dir() { printf '%s' "${PR_WATERMARK_DIR:-$(git rev-parse --git-dir 2>/dev/null || printf '.')/pr-comment-watermarks}"; }
 read_handled() { # arg: pr -> csv (possibly empty)
-  local f; f="$(watermark_file "$1")"
+  local f; f="$(watermark_dir)/$1.json"
   if [ -f "$f" ]; then jq -r '.handled_ids | map(tostring) | join(",")' "$f"; else printf ''; fi
 }
 
 do_fetch() {
-  local pr repo self o r inline conv reviews handled
+  local pr repo self inline conv reviews handled
   pr="$(resolve_pr "${1:-}")"
-  repo="$(resolve_repo)"; o="${repo%%/*}"; r="${repo##*/}"
+  repo="$(resolve_repo)"
   self="$(resolve_self)"
-  inline="$("$GH_BIN" api --paginate "/repos/$o/$r/pulls/$pr/comments" | jq 'map(. + {_type:"inline"})')"
-  conv="$("$GH_BIN" api --paginate "/repos/$o/$r/issues/$pr/comments" | jq 'map(. + {_type:"conversation"})')"
-  reviews="$("$GH_BIN" api --paginate "/repos/$o/$r/pulls/$pr/reviews" | jq 'map(select(.body != null and .body != "")) | map(. + {_type:"review"})')"
+  inline="$("$GH_BIN" api --paginate "/repos/$repo/pulls/$pr/comments" | jq -s 'add | map(. + {_type:"inline"})')"
+  conv="$("$GH_BIN" api --paginate "/repos/$repo/issues/$pr/comments" | jq -s 'add | map(. + {_type:"conversation"})')"
+  reviews="$("$GH_BIN" api --paginate "/repos/$repo/pulls/$pr/reviews" | jq -s 'add | map(select(.body != null and .body != "") | . + {_type:"review"})')"
   handled="$(read_handled "$pr")"
   jq -n --argjson a "$inline" --argjson b "$conv" --argjson c "$reviews" '$a + $b + $c' \
     | do_filter --self "$self" --handled "$handled"
