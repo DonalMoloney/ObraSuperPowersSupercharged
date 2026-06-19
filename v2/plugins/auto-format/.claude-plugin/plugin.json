@@ -1,0 +1,8 @@
+{
+  "name": "auto-format",
+  "version": "0.1.0",
+  "description": "Opt-in PostToolUse hook that runs the project's own formatter (prettier / ruff|black / gofmt / rustfmt / shfmt) on each file right after Claude edits it, so diffs stay clean without manual reformatting. Enable with AUTOFORMAT_ENABLED=1. Supports v1 verification-before-completion. tier: v2.",
+  "author": {
+    "name": "Donal Moloney"
+  }
+}
