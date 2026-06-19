@@ -1,0 +1,9 @@
+{
+  "objective": "Set VALUE in knob.py as close to 0.7 as possible.",
+  "artifact": ["knob.py"],
+  "eval_cmd": "bash eval.sh",
+  "metric": { "type": "regex", "pattern": "metric=([0-9.]+)" },
+  "direction": "minimize",
+  "budget": { "max_iterations": 12, "max_wallclock_min": 30, "per_iter_timeout_sec": 30 },
+  "stop_after_no_improve": 5
+}
