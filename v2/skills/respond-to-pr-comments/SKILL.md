@@ -75,6 +75,7 @@ Each tick re-runs this skill; the watermark guarantees only genuinely new human 
 - **`--paginate`:** `fetch` slurps and merges all pages (`jq -s 'add | ...'`), so PRs with many comments are handled correctly.
 - **Reply routing:** inline → the review thread (`/pulls/<pr>/comments/<id>/replies`); conversation and review-summary → a timeline comment (`/issues/<pr>/comments`), since GitHub has no "reply to a review" endpoint.
 - **Branch context:** `reply`/`skip` resolve the PR from the current branch, so run the whole workflow from the PR's branch. The explicit `fetch <PR>` argument is only safe when you are already on that PR's branch — otherwise replies would target the branch's PR, not the one you fetched.
+- **`filter` subcommand:** an internal composability hook — it applies the human/handled/normalization logic to a tagged JSON array on stdin. `fetch` uses it; you normally won't call it directly.
 
 ## Verification
 

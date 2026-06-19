@@ -64,5 +64,23 @@ assert_eq "skip posts nothing" "$POSTS_BEFORE" "$POSTS_AFTER"
 assert_eq "skip records id 9 in watermark (sorted unique)" "[5,7,9]" "$(jq -c '.handled_ids' "$TMPWM/123.json")"
 rm -rf "$TMPWM"
 
+# --- conversation reply routing (own temp dir/log so the grep is meaningful) ---
+TMPC="$(mktemp -d)"; printf 'thanks\n' > "$TMPC/body.txt"; CLOG="$TMPC/posts.log"; : > "$CLOG"
+PR_WATERMARK_DIR="$TMPC" FAKE_GH_LOG="$CLOG" GH_BIN="$HERE/fake_gh.sh" \
+  bash "$SCRIPT" reply 1 conversation "$TMPC/body.txt"
+assert_eq "reply conversation hits issues/comments endpoint" "yes" "$(grep -q 'issues/123/comments' "$CLOG" && echo yes || echo no)"
+assert_eq "reply conversation records id 1" "[1]" "$(jq -c '.handled_ids' "$TMPC/123.json")"
+rm -rf "$TMPC"
+
+# --- full dedup cycle: fetch, handle every returned id, re-fetch must be empty ---
+TMPD="$(mktemp -d)"
+ids="$(PR_WATERMARK_DIR="$TMPD" GH_BIN="$HERE/fake_gh.sh" bash "$SCRIPT" fetch 123 | jq -r '.[].id')"
+for id in $ids; do
+  PR_WATERMARK_DIR="$TMPD" GH_BIN="$HERE/fake_gh.sh" bash "$SCRIPT" skip "$id"
+done
+again="$(PR_WATERMARK_DIR="$TMPD" GH_BIN="$HERE/fake_gh.sh" bash "$SCRIPT" fetch 123 | jq -c '.')"
+assert_eq "re-fetch after handling all returns empty" "[]" "$again"
+rm -rf "$TMPD"
+
 echo "----"; echo "passed=$PASS failed=$FAIL"
 [ "$FAIL" -eq 0 ]
